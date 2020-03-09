@@ -1,10 +1,18 @@
 # borrowed from https://github.com/goreleaser/homebrew-tap
 language: minimal
-if: branch = master
+if: (branch = master) AND (tag IS present)
 before_install:
-  - curl -L https://git.io/get_helm.sh | bash
-  - helm init --client-only
+  - curl -L https://raw.githubusercontent.com/helm/helm/master/scripts/get-helm-3 | bash
 script:
-  - helm repo index . --url https://fusionauth.github.io/charts/
+  - helm package ../chart --destination ./
+  - helm repo index . --url https://github.com/FusionAuth/charts/releases/download/${TRAVIS_TAG} --merge
 after_success:
   - .ci/push.sh
+deploy:
+  provider: releases
+  api_key:
+    secure: GITHUB_TOKEN
+  file: "fusionauth-${TRAVIS_TAG}.tgz"
+  skip_cleanup: true
+  on:
+    tags: true

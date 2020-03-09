@@ -7,12 +7,12 @@ setup_git() {
 
 commit_website_files() {
   git checkout master
-  git add . *.yaml
+  git add repo/index.yaml
   git commit --message "Update index [skip ci]"
 }
 
 upload_files() {
-  git remote add remote https://${GITHUB_TOKEN}@github.com/FusionAuth/charts.git > /dev/null 2>&1
+  git remote add remote https://${GITHUB_TOKEN}@github.com/FusionAuth/charts.git >/dev/null 2>&1
   git push --quiet remote master
 }
 
