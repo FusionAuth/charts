@@ -4,6 +4,7 @@ if: (branch = master) AND (tag IS present)
 before_install:
   - curl -L https://raw.githubusercontent.com/helm/helm/master/scripts/get-helm-3 | bash
 script:
+  - cd repo
   - helm package ../chart --destination ./
   - helm repo index . --url https://github.com/FusionAuth/charts/releases/download/${TRAVIS_TAG} --merge
 after_success:
@@ -12,7 +13,7 @@ deploy:
   provider: releases
   api_key:
     secure: GITHUB_TOKEN
-  file: "fusionauth-${TRAVIS_TAG}.tgz"
+  file: "repo/fusionauth-${TRAVIS_TAG}.tgz"
   skip_cleanup: true
   on:
     tags: true
