@@ -40,6 +40,26 @@ elasticsearch-master
 {{- end -}}
 {{- end -}}
 
+{{/*
+Set apiVersion for ingress
+*/}}
+{{- define "fusionauth.ingressApiVersion" -}}
+{{- if .Capabilities.APIVersions.Has "networking.k8s.io/v1beta1" -}}
+networking.k8s.io/v1beta1
+{{- else -}}
+extensions/v1beta1
+{{- end -}}
+{{- end -}}
+
+{{/*
+Configure TLS if enabled
+*/}}
+{{- define "fusionauth.databaseTLS" -}}
+{{- if .Values.data.database.tls -}}
+?sslmode=require
+{{- end -}}
+{{- end -}}
+
 {{- define "fusionauth.searchLogin" -}}
 {{- if .Values.search.user -}}
 {{- printf "%s:%s@" .Values.search.user .Values.search.password -}}
