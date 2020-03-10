@@ -28,7 +28,7 @@ spec:
             - -c
             - >
               set -x;
-              while [[ "$(nc -zv '{{ include "fusionauth.databaseHost" . }}' {{ .Values.data.database.port }} &> /dev/null; echo $?)" != 0 ]]; do
+              while [[ "$(nc -zv '{{ include "fusionauth.databaseHost" . }}' 5432 &> /dev/null; echo $?)" != 0 ]]; do
                 echo '.'
                 sleep 15;
               done
@@ -40,7 +40,7 @@ spec:
             - -c
             - >
               set -x;
-              while [[ "$(nc -zv '{{ include "fusionauth.elasticsearchHost" . }}' {{ .Values.data.elasticsearch.port }} &> /dev/null; echo $?)" != 0 ]]; do
+              while [[ "$(nc -zv '{{ include "fusionauth.searchHost" . }}' 9200 &> /dev/null; echo $?)" != 0 ]]; do
                 echo '.'
                 sleep 15;
               done
@@ -62,21 +62,34 @@ spec:
               port: http
           env:
             - name: DATABASE_USER
-              value: {{ .Values.data.database.user }}
+              value: {{ .Values.database.user }}
             - name: DATABASE_PASSWORD
-              value: {{ .Values.data.database.password }}
+              value: {{ .Values.database.password }}
             - name: DATABASE_ROOT_PASSWORD
-              value: {{ .Values.data.database.root.password }}
+              value: {{ .Values.database.root.password }}
             - name: DATABASE_ROOT_USER
-              value: {{ .Values.data.database.root.user }}
+              value: {{ .Values.database.root.user }}
             - name: DATABASE_URL
-              value: "jdbc:postgresql://{{ include "fusionauth.databaseHost" . }}:{{ .Values.data.database.port }}/{{ .Values.data.database.name }}{{ include "fusionauth.databaseTLS" .}}"
-            - name: FUSIONAUTH_MEMORY
-              value: {{ .Values.data.memory }}
+              value: "jdbc:postgresql://{{ include "fusionauth.databaseHost" . }}:{{ .Values.database.port }}/{{ .Values.database.name }}"
             - name: FUSIONAUTH_SEARCH_SERVERS
-              value: http://{{ include "fusionauth.elasticsearchHost" . }}:{{ .Values.data.elasticsearch.port }}
+              value: "{{ .Values.search.protocol }}://{{ include "fusionauth.searchLogin" . }}{{ include "fusionauth.searchHost" . }}:{{ .Values.search.port }}"
+            {{- range $key, $value := .Values.environment }}
+            - name: {{ $key }}
+              value: {{ $value }}
+            {{- end }}
           resources:
               {{- toYaml .Values.resources | nindent 12 }}
+          {{- if .Values.kickstart.enabled }}
+          volumeMounts:
+            - name: {{ template "fusionauth.fullname" . }}-config-volume
+              mountPath: /kickstart
+          {{- end }}
+      {{- if .Values.kickstart.enabled }}
+      volumes:
+        - name: {{ template "fusionauth.fullname" . }}-config-volume
+          configMap:
+            name: {{ template "fusionauth.fullname" . }}-kickstart-config
+      {{- end }}
       {{- with .Values.nodeSelector }}
       nodeSelector:
           {{- toYaml . | nindent 8 }}

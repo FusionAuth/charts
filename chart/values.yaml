@@ -4,9 +4,23 @@
 
 replicaCount: 1
 
+elasticsearch:
+  enabled: true
+  imageTag: 6.8.6
+  master:
+    name: master
+
+postgresql: 
+  # if enabled = false u need to set data.database.host
+  enabled: true
+  image:
+    tag: 9.6.15
+  postgresqlUsername: localhost
+  postgresqlPassword: localhost
+
 image:
   repository: fusionauth/fusionauth-app
-  tag: latest
+  tag: 1.14.0
   pullPolicy: IfNotPresent
 
 nameOverride: ""
@@ -15,74 +29,72 @@ fullnameOverride: ""
 service:
   type: ClusterIP
   port: 9011
-  annotations: {}
-  # Merge additional spec into service specification.
-  spec: {}
 
-migrations:
-  image:
-    repository: ninjaneers/flywait
-    tag: 1.2.8
-    pullPolicy: IfNotPresent
-  enabled: false
-  data:
-    # We start with V2 because of baselineOnMigrate=true
-    # V2__create-init-user.sql: |
-    #   INSERT INTO users (id, active, birth_date, clean_speak_id, data, expiry, first_name, full_name, image_url,
-    #                       insert_instant, last_name, middle_name, mobile_phone, tenants_id, timezone)
-    #   VALUES ('a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11', true, null, null, '{"data":{},"preferredLanguages":[]}', null, 'Admin',
-    #           'Main Admin', null, (extract(epoch from now()) * 1000), null, null, null, (SELECT id FROM tenants WHERE name = 'default'), null);
-
-    # Use https://8gwifi.org/pbkdf.jsp with (see query for salt and factor)
-    # Salt: qzDxRCKxuVJ6Wgag6upCwbv7xFtGlxp6ppLp0D/dSIM= (salt),
-    # Iterations: 24000 (factor),
-    # dkLen: 256
-    # PBE Ciphers: PBKDF2WithHmacSHA256
-    # example password: admin
-    # to generate password
-    # V3__create-init-user-identity.sql: |
-    #   INSERT INTO identities (email, encryption_scheme, factor, last_login_instant, password,
-    #                            password_change_required, password_last_update_instant, salt, status, tenants_id,
-    #                            two_factor_delivery, two_factor_enabled, two_factor_secret, username, username_index,
-    #                            username_status, users_id, verified)
-    #   VALUES ('admin@domain.com', 'salted-pbkdf2-hmac-sha256', 24000, null,
-    #           'u1qqKqyPS7q7eT+nCVw1llAPNHW4ROP7xzyRv3ZWhzQ=', false, 1560439562924,
-    #           'qzDxRCKxuVJ6Wgag6upCwbv7xFtGlxp6ppLp0D/dSIM=', 0, (SELECT id FROM tenants WHERE name = 'default'), 0, false,
-    #           null, null, null, 0, 'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11', true);
-
-    # V4__create-init-user-registration.sql: |
-    #   INSERT INTO user_registrations (id, applications_id, authentication_token, clean_speak_id, data, insert_instant,
-    #                                         last_login_instant, timezone, username, username_status, users_id, verified)
-    #   VALUES ('4200e85b-5ee2-45fb-93e6-45d9ded5a276', (SELECT id FROM applications WHERE name = 'FusionAuth'), null, null,
-    #           '{"data":{},"preferredLanguages":[],"tokens":{}}', (extract(epoch from now()) * 1000), null, null, null, 0,
-    #           'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11', true);
-
-    # V5__create-init-user-app-registration.sql: |
-    #   INSERT INTO user_registrations_application_roles (application_roles_id, user_registrations_id)
-    #   VALUES ((SELECT id FROM application_roles WHERE name = 'admin'), '4200e85b-5ee2-45fb-93e6-45d9ded5a276');
-
-    # V6__create-api-key.sql: |
-    #    INSERT INTO authentication_keys (id, permissions, meta_data, tenants_id)
-    #    VALUES ('admin_api_key', null, null, (SELECT id FROM tenants WHERE name = 'default'));
-
-data:
-  memory: 256M
-  database:
-    # if empty {{- .Release.Name -}}-postgresql will be used
-    host: ""
-    port: 5432
-    tls: false
-    name: fusionauth
+database:
+  # if empty {{- .Release.Name -}}-postgresql will be used
+  host: ""
+  port: 5432
+  name: fusionauth
+  user: localhost
+  password: localhost
+  root:
     user: localhost
     password: localhost
-    root:
-      user: localhost
-      password: localhost
-  elasticsearch:
-    # if empty {{- .Release.Name -}}-elasticsearch-client will be used
-    host: ""
-    port: 9200
 
+search:
+  protocol: http
+  host: ""
+  port: 9200
+  # user: ""
+  # password: ""
+
+environment: 
+# Database env DATABASE_USER, DATABASE_PASSWORD, DATABASE_ROOT_USER, DATABASE_ROOT_PASSWORD, DATABASE_URL will be 
+# defined in data.database
+  FUSIONAUTH_MEMORY: 256M
+  # FUSIONAUTH_API_KEY: test
+  # Its important to add /kickstart/<file> as prefix to your kickstart file else it won't work! All other files 
+  # will be mounted below /kickstart/
+  # FUSIONAUTH_KICKSTART: /kickstart/kickstart.json
+kickstart:
+  enabled: false
+  data: {}
+    # kickstart.json: |
+    #    {
+    #      "variables": {
+    #        "defaultTenantId": "d7d09513-a3f5-401c-9685-34ab6c552453",
+    #        "adminEmail": "admin@fusionauth.io",
+    #        "adminPassword": "password",
+    #      },
+    #      "apiKeys": [
+    #        {
+    #          "key": "bf69486b-4733-4470-a592-f1bfce7af580",
+    #          "description": "Core API Key"
+    #        }
+    #      ],
+    #      "requests": [
+    #        {
+    #          "method": "POST",
+    #          "url": "/api/user/registration",
+    #          "body": {
+    #            "user": {
+    #              "email": "#{adminEmail}",
+    #              "password": "#{adminPassword}"
+    #            },
+    #            "registration": {
+    #              "applicationId": "#{FUSIONAUTH_APPLICATION_ID}",
+    #              "roles": [
+    #                "admin"
+    #              ]
+    #            }
+    #          }
+    #        }
+    #      ]
+    #    }
+    # setup-password.html: |
+    #    <div>Test</div>
+    # setup-password.txt: |
+    #    Hallo
 
 ingress:
   enabled: false
@@ -90,8 +102,6 @@ ingress:
     # kubernetes.io/ingress.class: nginx
     # kubernetes.io/tls-acme: "true"
   paths: []
-  # Define complete path objects, will be inserted before regular paths. Can be useful for things like ALB Ingress Controller actions
-  extraPaths: []
   hosts:
     - chart-example.local
   tls: []
@@ -116,15 +126,3 @@ nodeSelector: {}
 tolerations: []
 
 affinity: {}
-
-elasticsearch:
-  # if enabled = false, you must set data.elasticsearch.host
-  enabled: true
-  master:
-    name: master
-
-postgresql:
-  # if enabled = false you need to set data.database.host
-  enabled: true
-  postgresqlUsername: localhost
-  postgresqlPassword: localhost
