@@ -1,6 +1,6 @@
 # borrowed from https://github.com/goreleaser/homebrew-tap
 language: minimal
-if: (branch = master) AND (tag IS present)
+if: tag IS present
 before_install:
   - curl -L https://raw.githubusercontent.com/helm/helm/master/scripts/get-helm-3 | bash
 script:
