@@ -25,10 +25,26 @@ If release name contains chart name it will be used as a full name.
 {{- end -}}
 
 {{- define "fusionauth.databaseHost" -}}
-{{- if .Values.data.database.host -}}
-{{- .Values.data.database.host -}}
+{{- if .Values.database.host -}}
+{{- .Values.database.host -}}
 {{- else -}}
 {{- .Release.Name -}}-postgresql
+{{- end -}}
+{{- end -}}
+
+{{- define "fusionauth.searchHost" -}}
+{{- if .Values.search.host -}}
+{{- .Values.search.host -}}
+{{- else -}}
+elasticsearch-master
+{{- end -}}
+{{- end -}}
+
+{{- define "fusionauth.searchLogin" -}}
+{{- if .Values.search.user -}}
+{{- printf "%s:%s@" .Values.search.user .Values.search.password -}}
+{{- else -}}
+{{- printf "" -}}
 {{- end -}}
 {{- end -}}
 
@@ -37,35 +53,4 @@ Create chart name and version as used by the chart label.
 */}}
 {{- define "fusionauth.chart" -}}
 {{- printf "%s-%s" .Chart.Name .Chart.Version | replace "+" "_" | trunc 63 | trimSuffix "-" -}}
-{{- end -}}
-
-{{/*
-Set name of elasticsearch service
-*/}}
-{{- define "fusionauth.elasticsearchHost" -}}
-{{- if .Values.data.elasticsearch.host -}}
-{{- .Values.data.elasticsearch.host -}}
-{{- else -}}
-{{- .Release.Name -}}-elasticsearch-client
-{{- end -}}
-{{- end -}}
-
-{{/*
-Set apiVersion for ingress
-*/}}
-{{- define "fusionauth.ingressApiVersion" -}}
-{{- if .Capabilities.APIVersions.Has "networking.k8s.io/v1beta1" -}}
-networking.k8s.io/v1beta1
-{{- else -}}
-extensions/v1beta1
-{{- end -}}
-{{- end -}}
-
-{{/*
-Configure TLS if enabled
-*/}}
-{{- define "fusionauth.databaseTLS" -}}
-{{- if .Values.data.database.tls -}}
-?sslmode=require
-{{- end -}}
 {{- end -}}
