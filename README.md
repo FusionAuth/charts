@@ -3,7 +3,7 @@
 To add the FusionAuth public repo:
 
 ```
-helm repo add fusionauth https://github.com/FusionAuth/charts
+helm repo add fusionauth 'https://raw.githubusercontent.com/FusionAuth/charts/master/repo/'
 ```
 
 
