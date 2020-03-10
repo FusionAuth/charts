@@ -56,8 +56,8 @@ All other user-configurable settings, default values and some commentary about t
 To install the chart with the release name `my-release`:
 
 ```console
-$ helm repo add ninjaneers https://ninjaneers-team.github.io/charts
-$ helm install ninjaneers/fusionauth  --name my-release
+$ helm repo add fusionauth https://fusionauth.github.io/charts
+$ helm install fusionauth/fusionauth  --name my-release
 ```
 
 The command deploys FusionAuth and all dependencies (elasticsearch, postgresql) on the Kubernetes cluster with the default configuration. The [configuration](#configuration) section lists the parameters that can be configured during installation.

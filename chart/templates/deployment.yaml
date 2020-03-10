@@ -28,7 +28,7 @@ spec:
             - -c
             - >
               set -x;
-              while [[ "$(nc -zv '{{ include "fusionauth.databaseHost" . }}' 5432 &> /dev/null; echo $?)" != 0 ]]; do
+              while [[ "$(nc -zv '{{ include "fusionauth.databaseHost" . }}' {{ .Values.database.port }} &> /dev/null; echo $?)" != 0 ]]; do
                 echo '.'
                 sleep 15;
               done
@@ -40,7 +40,7 @@ spec:
             - -c
             - >
               set -x;
-              while [[ "$(nc -zv '{{ include "fusionauth.searchHost" . }}' 9200 &> /dev/null; echo $?)" != 0 ]]; do
+              while [[ "$(nc -zv '{{ include "fusionauth.searchHost" . }}' {{ .Values.search.port }} &> /dev/null; echo $?)" != 0 ]]; do
                 echo '.'
                 sleep 15;
               done

@@ -1,7 +1,7 @@
 {{- if .Values.ingress.enabled -}}
 {{- $fullName := include "fusionauth.fullname" . -}}
 {{- $ingressPaths := .Values.ingress.paths -}}
-apiVersion: networking.k8s.io/v1beta1
+apiVersion: {{ include "fusionauth.ingressApiVersion" . }}
 kind: Ingress
 metadata:
   name: {{ $fullName }}
@@ -30,6 +30,9 @@ spec:
     - host: {{ . | quote }}
       http:
         paths:
+        {{- if $extraPaths }}
+{{ $extraPaths | toYaml | indent 10 }}
+        {{- end }}
         {{- range $ingressPaths }}
           - path: {{ . }}
             backend:
