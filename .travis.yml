@@ -6,7 +6,7 @@ before_install:
 script:
   - cd repo
   - helm package ../chart --destination ./
-  - helm repo index . --url https://github.com/FusionAuth/charts/releases/download/${TRAVIS_TAG} --merge
+  - helm repo index . --url https://github.com/FusionAuth/charts/releases/download/${TRAVIS_TAG} --merge ./index.yaml
 after_success:
   - .ci/push.sh
 deploy:
