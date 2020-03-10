@@ -7,7 +7,7 @@ setup_git() {
 
 commit_website_files() {
   git checkout -b master
-  git add repo/index.yaml
+  git add ./index.yaml
   git commit --message "Update index [skip ci]"
 }
 

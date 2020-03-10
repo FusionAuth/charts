@@ -10,8 +10,8 @@ elasticsearch:
   master:
     name: master
 
-postgresql: 
-  # if enabled = false u need to set data.database.host
+postgresql:
+  # if enabled = false you need to set database.host
   enabled: true
   image:
     tag: 9.6.15
@@ -48,12 +48,12 @@ search:
   # user: ""
   # password: ""
 
-environment: 
-# Database env DATABASE_USER, DATABASE_PASSWORD, DATABASE_ROOT_USER, DATABASE_ROOT_PASSWORD, DATABASE_URL will be 
-# defined in data.database
+environment:
+# Database env DATABASE_USER, DATABASE_PASSWORD, DATABASE_ROOT_USER, DATABASE_ROOT_PASSWORD, DATABASE_URL will be
+# defined in database
   FUSIONAUTH_MEMORY: 256M
   # FUSIONAUTH_API_KEY: test
-  # Its important to add /kickstart/<file> as prefix to your kickstart file else it won't work! All other files 
+  # Its important to add /kickstart/<file> as prefix to your kickstart file else it won't work! All other files
   # will be mounted below /kickstart/
   # FUSIONAUTH_KICKSTART: /kickstart/kickstart.json
 kickstart:

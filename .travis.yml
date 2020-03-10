@@ -4,14 +4,14 @@ if: tag IS present
 before_install:
   - curl -L https://raw.githubusercontent.com/helm/helm/master/scripts/get-helm-3 | bash
 script:
-  - helm package ./chart --destination ./repo/
-  - helm repo index ./repo --url https://github.com/FusionAuth/charts/releases/download/${TRAVIS_TAG}/ --merge ./repo/index.yaml
+  - helm package ./chart --destination ./
+  - helm repo index ./ --url https://github.com/FusionAuth/charts/releases/download/${TRAVIS_TAG}/ --merge ./index.yaml
 after_success:
   - .ci/push.sh
 deploy:
   provider: releases
   api_key: ${GITHUB_TOKEN}
-  file: "repo/fusionauth-${TRAVIS_TAG}.tgz"
+  file: "fusionauth-${TRAVIS_TAG}.tgz"
   skip_cleanup: true
   on:
     tags: true
