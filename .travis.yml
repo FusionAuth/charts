@@ -11,8 +11,7 @@ after_success:
   - .ci/push.sh
 deploy:
   provider: releases
-  api_key:
-    secure: GITHUB_TOKEN
+  api_key: ${GITHUB_TOKEN}
   file: "repo/fusionauth-${TRAVIS_TAG}.tgz"
   skip_cleanup: true
   on:
