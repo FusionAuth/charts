@@ -3,7 +3,7 @@ entries:
   fusionauth:
   - apiVersion: v1
     appVersion: "1.0"
-    created: "2020-03-10T02:39:08.464647094Z"
+    created: "2020-03-10T02:40:44.608682174Z"
     description: Helm chart for fusionauth
     digest: 78cb53f98fc12f5e2785c2936b5af405cb4a1dd65092298ea75bd06ac5863c26
     name: fusionauth
@@ -12,7 +12,7 @@ entries:
     version: 1.3.2
   - apiVersion: v1
     appVersion: "1.0"
-    created: "2020-03-10T02:39:08.459747261Z"
+    created: "2020-03-10T02:40:44.601884845Z"
     description: Helm chart for fusionauth
     digest: 3bf826e890373b0137c6458a167916cdd451d102fdf3877c5cd367528400b55e
     name: fusionauth
@@ -21,11 +21,11 @@ entries:
     version: 1.3.1
   - apiVersion: v1
     appVersion: "1.0"
-    created: "2020-03-10T02:39:08.453266731Z"
+    created: "2020-03-10T02:40:44.597089674Z"
     description: Helm chart for fusionauth
     digest: 09e647060b178624354545ae838dc444ee7df730a9b05825317d8517ad022194
     name: fusionauth
     urls:
     - https://fusionauth.github.io/charts/fusionauth-1.3.0.tgz
     version: 1.3.0
-generated: "2020-03-10T02:39:08.447552332Z"
+generated: "2020-03-10T02:40:44.590293176Z"
