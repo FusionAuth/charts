@@ -20,7 +20,7 @@ postgresql:
 
 image:
   repository: fusionauth/fusionauth-app
-  tag: 1.14.0
+  tag: 1.15.4
   pullPolicy: IfNotPresent
 
 nameOverride: ""
