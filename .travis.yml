@@ -4,6 +4,7 @@ if: tag IS present
 before_install:
   - curl -L https://raw.githubusercontent.com/helm/helm/master/scripts/get-helm-3 | bash
 script:
+  - 'sed -i "s|version: 0.0.0+dev|version: ${TRAVIS_TAG}|" chart/Chart.yaml'
   - helm package ./chart --destination ./
   - helm repo index ./ --url https://github.com/FusionAuth/charts/releases/download/${TRAVIS_TAG}/ --merge ./index.yaml
 after_success:
