@@ -55,7 +55,7 @@ extensions/v1beta1
 Configure TLS if enabled
 */}}
 {{- define "fusionauth.databaseTLS" -}}
-{{- if .Values.data.database.tls -}}
+{{- if .Values.database.tls -}}
 ?sslmode=require
 {{- end -}}
 {{- end -}}
