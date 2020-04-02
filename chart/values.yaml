@@ -5,13 +5,14 @@
 replicaCount: 1
 
 elasticsearch:
+# if `enabled = false` you need to set search.host
   enabled: true
   imageTag: 6.8.6
   master:
     name: master
 
 postgresql:
-  # if enabled = false you need to set database.host
+  # if `enabled = false` you need to set database.host
   enabled: true
   image:
     tag: 9.6.15
@@ -20,7 +21,7 @@ postgresql:
 
 image:
   repository: fusionauth/fusionauth-app
-  tag: 1.15.4
+  tag: 1.15.6
   pullPolicy: IfNotPresent
 
 nameOverride: ""
@@ -31,7 +32,7 @@ service:
   port: 9011
 
 database:
-  # if empty {{- .Release.Name -}}-postgresql will be used
+  # if `host` is empty {{- .Release.Name -}}-postgresql will be used
   host: ""
   port: 5432
   tls: false
@@ -44,18 +45,17 @@ database:
 
 search:
   protocol: http
+  # if `host` is empty {{- .Release.Name -}}-elasticsearch-client will be used
   host: ""
   port: 9200
   # user: ""
   # password: ""
 
 environment:
-# Database env DATABASE_USER, DATABASE_PASSWORD, DATABASE_ROOT_USER, DATABASE_ROOT_PASSWORD, DATABASE_URL will be
-# defined in database
+  # Database env DATABASE_USER, DATABASE_PASSWORD, DATABASE_ROOT_USER, DATABASE_ROOT_PASSWORD, DATABASE_URL will be defined in database
   FUSIONAUTH_MEMORY: 256M
   # FUSIONAUTH_API_KEY: test
-  # Its important to add /kickstart/<file> as prefix to your kickstart file else it won't work! All other files
-  # will be mounted below /kickstart/
+  # Its important to add /kickstart/<file> as prefix to your kickstart file else it won't work! All other files will be mounted below /kickstart/
   # FUSIONAUTH_KICKSTART: /kickstart/kickstart.json
 kickstart:
   enabled: false
