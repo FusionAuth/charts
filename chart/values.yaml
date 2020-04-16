@@ -21,7 +21,7 @@ postgresql:
 
 image:
   repository: fusionauth/fusionauth-app
-  tag: 1.15.7
+  tag: 1.15.8
   pullPolicy: IfNotPresent
 
 nameOverride: ""
@@ -129,3 +129,19 @@ nodeSelector: {}
 tolerations: []
 
 affinity: {}
+
+livenessProbe:
+  httpGet:
+    path: /
+    port: http
+  periodSeconds: 30
+readinessProbe:
+  httpGet:
+    path: /
+    port: http
+startupProbe:
+  httpGet:
+    path: /
+    port: http
+  failureThreshold: 20
+  periodSeconds: 10
