@@ -4,6 +4,9 @@
 
 ## Installing the Chart
 
+### Important upgrade info:
+In `0.4.0`, the external postgresql and elasticsearch charts were dropped. You will need to maintain those dependencies on your own.
+
 To install the chart with the release name `my-release`:
 
 ```console
@@ -11,7 +14,7 @@ $ helm repo add fusionauth https://fusionauth.github.io/charts
 $ helm install fusionauth/fusionauth  --name my-release
 ```
 
-The command deploys FusionAuth and all dependencies (elasticsearch, postgresql) on the Kubernetes cluster with the default configuration. The [configuration](#configuration) section lists the parameters that can be configured during installation.
+The command deploys FusionAuth.
 
 ## Uninstalling the Chart
 
@@ -25,7 +28,7 @@ The command removes all the Kubernetes components associated with the chart and 
 
 ## Configuration
 
-See the values.yaml file for configuration options. By default this chart will deploy elasticsearch and postgresql charts to go along with fusionauth.
+See the values.yaml file for configuration options.
 
 
 ### Notice

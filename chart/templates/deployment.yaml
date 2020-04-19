@@ -28,7 +28,7 @@ spec:
             - -c
             - >
               set -x;
-              while [[ "$(nc -zv '{{ include "fusionauth.databaseHost" . }}' {{ .Values.database.port }} &> /dev/null; echo $?)" != 0 ]]; do
+              while [[ "$(nc -zv '{{- .Values.database.host -}}' {{ .Values.database.port }} &> /dev/null; echo $?)" != 0 ]]; do
                 echo '.'
                 sleep 15;
               done
@@ -40,7 +40,7 @@ spec:
             - -c
             - >
               set -x;
-              while [[ "$(nc -zv '{{ include "fusionauth.searchHost" . }}' {{ .Values.search.port }} &> /dev/null; echo $?)" != 0 ]]; do
+              while [[ "$(nc -zv '{{- .Values.search.host -}}' {{ .Values.search.port }} &> /dev/null; echo $?)" != 0 ]]; do
                 echo '.'
                 sleep 15;
               done
@@ -68,9 +68,9 @@ spec:
             - name: DATABASE_ROOT_USER
               value: {{ .Values.database.root.user }}
             - name: DATABASE_URL
-              value: "jdbc:{{ .Values.database.protocol }}://{{ include "fusionauth.databaseHost" . }}:{{ .Values.database.port }}/{{ .Values.database.name }}{{ include "fusionauth.databaseTLS" . }}"
+              value: "jdbc:{{ .Values.database.protocol }}://{{- .Values.database.host -}}:{{ .Values.database.port }}/{{ .Values.database.name }}{{ include "fusionauth.databaseTLS" . }}"
             - name: FUSIONAUTH_SEARCH_SERVERS
-              value: "{{ .Values.search.protocol }}://{{ include "fusionauth.searchLogin" . }}{{ include "fusionauth.searchHost" . }}:{{ .Values.search.port }}"
+              value: "{{ .Values.search.protocol }}://{{ include "fusionauth.searchLogin" . }}{{- .Values.search.host -}}:{{ .Values.search.port }}"
             {{- range $key, $value := .Values.environment }}
             - name: {{ $key }}
               value: {{ $value }}

@@ -24,22 +24,6 @@ If release name contains chart name it will be used as a full name.
 {{- end -}}
 {{- end -}}
 
-{{- define "fusionauth.databaseHost" -}}
-{{- if .Values.database.host -}}
-{{- .Values.database.host -}}
-{{- else -}}
-{{- .Release.Name -}}-postgresql
-{{- end -}}
-{{- end -}}
-
-{{- define "fusionauth.searchHost" -}}
-{{- if .Values.search.host -}}
-{{- .Values.search.host -}}
-{{- else -}}
-{{- .Release.Name -}}-elasticsearch-client
-{{- end -}}
-{{- end -}}
-
 {{/*
 Set apiVersion for ingress
 */}}

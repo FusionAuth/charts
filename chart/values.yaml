@@ -3,22 +3,6 @@
 # Declare variables to be passed into your templates.
 
 replicaCount: 1
-
-elasticsearch:
-# if `enabled = false` you need to set search.host
-  enabled: true
-  imageTag: 6.8.6
-  master:
-    name: master
-
-postgresql:
-  # if `enabled = false` you need to set database.host
-  enabled: true
-  image:
-    tag: 9.6.15
-  postgresqlUsername: localhost
-  postgresqlPassword: localhost
-
 image:
   repository: fusionauth/fusionauth-app
   tag: 1.15.8
@@ -35,7 +19,6 @@ service:
 
 database:
   protocol: postgresql
-  # if `host` is empty {{- .Release.Name -}}-postgresql will be used
   host: ""
   port: 5432
   tls: false
@@ -49,7 +32,6 @@ database:
 
 search:
   protocol: http
-  # if `host` is empty {{- .Release.Name -}}-elasticsearch-client will be used
   host: ""
   port: 9200
   # user: ""
