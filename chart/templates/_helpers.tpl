@@ -56,7 +56,7 @@ Configure TLS if enabled
 */}}
 {{- define "fusionauth.databaseTLS" -}}
 {{- if .Values.database.tls -}}
-?sslmode=require
+?sslmode={{ .Values.database.tlsMode }}
 {{- end -}}
 {{- end -}}
 
