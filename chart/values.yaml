@@ -30,6 +30,8 @@ fullnameOverride: ""
 service:
   type: ClusterIP
   port: 9011
+  annotations: {}
+  spec: {}
 
 database:
   # if `host` is empty {{- .Release.Name -}}-postgresql will be used
