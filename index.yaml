@@ -3,6 +3,24 @@ entries:
   fusionauth:
   - apiVersion: v1
     appVersion: 1.15.8
+    created: "2020-04-19T06:48:14.46465104Z"
+    dependencies:
+    - condition: elasticsearch.enabled
+      name: elasticsearch
+      repository: https://helm.elastic.co
+      version: 7.5.2
+    - condition: postgresql.enabled
+      name: postgresql
+      repository: https://kubernetes-charts.storage.googleapis.com
+      version: 8.1.4
+    description: Helm chart for fusionauth
+    digest: d974d83b759c876fc3e189f33099154ddc2d347b98977c72169cf79949ddec84
+    name: fusionauth
+    urls:
+    - https://github.com/FusionAuth/charts/releases/download/0.3.4/fusionauth-0.3.4.tgz
+    version: 0.3.4
+  - apiVersion: v1
+    appVersion: 1.15.8
     created: "2020-04-16T21:50:26.798062139Z"
     dependencies:
     - condition: elasticsearch.enabled
@@ -163,4 +181,4 @@ entries:
     urls:
     - https://github.com/FusionAuth/charts/releases/download/0.1.28/fusionauth-0.1.28.tgz
     version: 0.1.28
-generated: "2020-04-16T21:50:26.794338706Z"
+generated: "2020-04-19T06:48:14.460910141Z"
