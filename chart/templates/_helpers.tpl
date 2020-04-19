@@ -58,3 +58,14 @@ Create chart name and version as used by the chart label.
 {{- define "fusionauth.chart" -}}
 {{- printf "%s-%s" .Chart.Name .Chart.Version | replace "+" "_" | trunc 63 | trimSuffix "-" -}}
 {{- end -}}
+
+{{/*
+Set name of secret to use for credentials
+*/}}
+{{- define "fusionauth.database.secretName" -}}
+{{- if .Values.database.secretName -}}
+{{- .Values.database.secretName -}}
+{{- else -}}
+{{ .Release.Name }}-credentials
+{{- end -}}
+{{- end -}}

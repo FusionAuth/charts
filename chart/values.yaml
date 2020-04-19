@@ -24,11 +24,15 @@ database:
   tls: false
   tlsMode: require
   name: fusionauth
-  user: localhost
-  password: localhost
+
+  # To use an existing secret, set `existingSecret` to the name of the secret. We expect two keys: `password` and `rootpassword`
+  existingSecret: ""
+  user: ""
+  password: ""
+  # These credentials are used for bootstrapping the database
   root:
-    user: localhost
-    password: localhost
+    user: ""
+    password: ""
 
 search:
   protocol: http

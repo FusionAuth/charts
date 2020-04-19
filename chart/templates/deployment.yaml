@@ -62,15 +62,21 @@ spec:
             - name: DATABASE_USER
               value: {{ .Values.database.user }}
             - name: DATABASE_PASSWORD
-              value: {{ .Values.database.password }}
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "fusionauth.database.secretName" . }}
+                  key: password
             - name: DATABASE_ROOT_PASSWORD
-              value: {{ .Values.database.root.password }}
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "fusionauth.database.secretName" . }}
+                  key: rootpassword
             - name: DATABASE_ROOT_USER
               value: {{ .Values.database.root.user }}
             - name: DATABASE_URL
-              value: "jdbc:{{ .Values.database.protocol }}://{{- .Values.database.host -}}:{{ .Values.database.port }}/{{ .Values.database.name }}{{ include "fusionauth.databaseTLS" . }}"
+              value: "jdbc:{{ .Values.database.protocol }}://{{- required "A valid database host is required!" .Values.database.host -}}:{{ .Values.database.port }}/{{ .Values.database.name }}{{ include "fusionauth.databaseTLS" . }}"
             - name: FUSIONAUTH_SEARCH_SERVERS
-              value: "{{ .Values.search.protocol }}://{{ include "fusionauth.searchLogin" . }}{{- .Values.search.host -}}:{{ .Values.search.port }}"
+              value: "{{ .Values.search.protocol }}://{{ include "fusionauth.searchLogin" . }}{{- required "A valid elasticsearch host is required!" .Values.search.host -}}:{{ .Values.search.port }}"
             {{- range $key, $value := .Values.environment }}
             - name: {{ $key }}
               value: {{ $value }}
