@@ -63,8 +63,8 @@ Create chart name and version as used by the chart label.
 Set name of secret to use for credentials
 */}}
 {{- define "fusionauth.database.secretName" -}}
-{{- if .Values.database.secretName -}}
-{{- .Values.database.secretName -}}
+{{- if .Values.database.existingSecret -}}
+{{- .Values.database.existingSecret -}}
 {{- else -}}
 {{ .Release.Name }}-credentials
 {{- end -}}
