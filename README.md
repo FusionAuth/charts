@@ -2,6 +2,9 @@
 
 [FusionAuth](https://fusionauth.io/) is a modern platform for Customer Identity and Access Management (CIAM). FusionAuth provides APIs and a responsive web user interface to support login, registration, localized email, multi-factor authentication, reporting and much more.
 
+### Notice
+This repository is community maintained and it is provided to assist in your deployment and management of FusionAuth. Use of this software is not covered under the FusionAuth license agreement and is provided "as is" without warranty.  https://fusionauth.io/license
+
 ## Installing the Chart
 
 ### Important upgrade info:
@@ -30,6 +33,3 @@ The command removes all the Kubernetes components associated with the chart and 
 
 See the values.yaml file for configuration options.
 
-
-### Notice
-This repository is community maintained and it is provided to assist in your deployment and management of FusionAuth. Use of this software is not covered under the FusionAuth license agreement and is provided "as is" without warranty.  https://fusionauth.io/license
