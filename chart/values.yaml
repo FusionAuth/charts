@@ -35,6 +35,8 @@ database:
     password: ""
 
 search:
+  # Valid values for engine are 'elasticsearch' or (if you are using fusionauth >= 1.16.0-rc.1) 'database'.
+  engine: elasticsearch
   protocol: http
   host: ""
   port: 9200

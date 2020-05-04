@@ -33,6 +33,7 @@ spec:
                 sleep 15;
               done
         # App has to wait for elasticsearch to be online "depends_on" workaround
+        {{- if eq .Values.search.engine "elasticsearch" }}
         - name: wait-for-search
           image: darthcabs/tiny-tools:1
           args:
@@ -44,6 +45,7 @@ spec:
                 echo '.'
                 sleep 15;
               done
+        {{- end }}
       containers:
         - name: {{ .Chart.Name }}
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
@@ -75,8 +77,12 @@ spec:
               value: {{ .Values.database.root.user }}
             - name: DATABASE_URL
               value: "jdbc:{{ .Values.database.protocol }}://{{- required "A valid database host is required!" .Values.database.host -}}:{{ .Values.database.port }}/{{ .Values.database.name }}{{ include "fusionauth.databaseTLS" . }}"
+            - name: FUSIONAUTH_SEARCH_ENGINE_TYPE
+              value: {{ .Values.search.engine }}
+              {{- if eq .Values.search.engine "elasticsearch" }}
             - name: FUSIONAUTH_SEARCH_SERVERS
               value: "{{ .Values.search.protocol }}://{{ include "fusionauth.searchLogin" . }}{{- required "A valid elasticsearch host is required!" .Values.search.host -}}:{{ .Values.search.port }}"
+              {{- end }}
             {{- range $key, $value := .Values.environment }}
             - name: {{ $key }}
               value: {{ $value }}
