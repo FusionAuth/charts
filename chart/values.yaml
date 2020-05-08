@@ -97,8 +97,8 @@ ingress:
   paths: []
   # Define complete path objects, will be inserted before regular paths. Can be useful for things like ALB Ingress Controller actions
   extraPaths: []
-  hosts:
-    - chart-example.local
+  hosts: []
+    # - chart-example.local
   tls: []
   #  - secretName: chart-example-tls
   #    hosts:
