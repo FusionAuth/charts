@@ -5,7 +5,7 @@
 replicaCount: 1
 image:
   repository: fusionauth/fusionauth-app
-  tag: 1.15.8
+  tag: 1.16.0
   pullPolicy: IfNotPresent
 
 nameOverride: ""
