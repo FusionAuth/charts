@@ -8,6 +8,11 @@ image:
   tag: 1.16.1
   pullPolicy: IfNotPresent
 
+# This image should contain `nc` and a shell of some kind to do a simple loop.
+initImage:
+  repository: busybox
+  tag: latest
+
 nameOverride: ""
 fullnameOverride: ""
 

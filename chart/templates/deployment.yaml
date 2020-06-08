@@ -22,7 +22,7 @@ spec:
       initContainers:
         # App has to wait for the database to be online "depends_on" workaround
         - name: wait-for-db
-          image: darthcabs/tiny-tools:1
+          image: "{{ .Values.initImage.repository }}:{{ .Values.initImage.tag }}"
           args:
             - /bin/bash
             - -c
@@ -35,7 +35,7 @@ spec:
         # App has to wait for elasticsearch to be online "depends_on" workaround
         {{- if eq .Values.search.engine "elasticsearch" }}
         - name: wait-for-search
-          image: darthcabs/tiny-tools:1
+          image: "{{ .Values.initImage.repository }}:{{ .Values.initImage.tag }}"
           args:
             - /bin/bash
             - -c
