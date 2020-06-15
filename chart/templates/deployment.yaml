@@ -23,6 +23,8 @@ spec:
         - name: wait-for-db
           image: "{{ .Values.initImage.repository }}:{{ .Values.initImage.tag }}"
           args:
+            - /bin/sh
+            - -c
             - >
               set -x;
               while [[ "$(nc -zv '{{- .Values.database.host -}}' {{ .Values.database.port }} &> /dev/null; echo $?)" != 0 ]]; do
@@ -33,6 +35,8 @@ spec:
         - name: wait-for-search
           image: "{{ .Values.initImage.repository }}:{{ .Values.initImage.tag }}"
           args:
+            - /bin/sh
+            - -c
             - >
               set -x;
               while [[ "$(nc -zv '{{- .Values.search.host -}}' {{ .Values.search.port }} &> /dev/null; echo $?)" != 0 ]]; do
