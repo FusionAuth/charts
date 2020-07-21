@@ -5,7 +5,7 @@
 replicaCount: 1
 image:
   repository: fusionauth/fusionauth-app
-  tag: 1.16.1
+  tag: 1.17.5
   pullPolicy: IfNotPresent
 
 # This image should contain `nc` and a shell of some kind to do a simple loop.
