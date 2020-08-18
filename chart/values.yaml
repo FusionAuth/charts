@@ -5,7 +5,7 @@
 replicaCount: 1
 image:
   repository: fusionauth/fusionauth-app
-  tag: 1.18.5
+  tag: 1.18.7
   pullPolicy: IfNotPresent
 
 # This image should contain `nc` and a shell of some kind to do a simple loop.
@@ -126,6 +126,10 @@ nodeSelector: {}
 tolerations: []
 
 affinity: {}
+
+annotations: {}
+podAnnotations:
+  test: test
 
 livenessProbe:
   httpGet:
