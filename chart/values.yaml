@@ -128,8 +128,7 @@ tolerations: []
 affinity: {}
 
 annotations: {}
-podAnnotations:
-  test: test
+podAnnotations: {}
 
 livenessProbe:
   httpGet:
