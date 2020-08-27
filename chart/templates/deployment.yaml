@@ -104,6 +104,11 @@ spec:
             - name: {{ template "fusionauth.fullname" . }}-config-volume
               mountPath: /kickstart
           {{- end }}
+      {{- if .Values.dnsConfig }}
+      dnsConfig:
+      {{- toYaml .Values.dnsConfig |nindent 8 }}
+      {{- end }}
+      dnsPolicy: {{ .Values.dnsPolicy }}
       {{- if .Values.kickstart.enabled }}
       volumes:
         - name: {{ template "fusionauth.fullname" . }}-config-volume
