@@ -130,7 +130,6 @@ tolerations: []
 affinity: {}
 
 dnsConfig: {}
-dnsPolicy: {}
 dnsPolicy: ClusterFirst
 
 annotations: {}
