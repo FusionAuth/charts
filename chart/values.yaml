@@ -50,9 +50,13 @@ search:
   # user: ""
   # password: ""
 
+app:
+  memory: 256M
+  # 'development' or 'production'
+  runtimeMode: development
+
+# Certain settings are explicitly added via other values. environment section should only be used for things that aren't directly exposed.
 environment:
-  # Database env DATABASE_USER, DATABASE_PASSWORD, DATABASE_ROOT_USER, DATABASE_ROOT_PASSWORD, DATABASE_URL will be defined in database
-  FUSIONAUTH_MEMORY: 256M
   # FUSIONAUTH_API_KEY: test
   # Its important to add /kickstart/<file> as prefix to your kickstart file else it won't work! All other files will be mounted below /kickstart/
   # FUSIONAUTH_KICKSTART: /kickstart/kickstart.json
