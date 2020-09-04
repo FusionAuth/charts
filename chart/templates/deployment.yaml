@@ -83,7 +83,7 @@ spec:
                 secretKeyRef:
                   name: {{ include "fusionauth.database.secretName" . }}
                   key: rootpassword
-            - name: DATABASE_ROOT_USER
+            - name: {{ if semverCompare ">=1.19.0" .Values.fusionauthVersion }}DATABASE_ROOT_USERNAME{{ else }}DATABASE_ROOT_USER{{ end }}
               value: {{ .Values.database.root.user }}
             - name: DATABASE_URL
               value: "jdbc:{{ .Values.database.protocol }}://{{- required "A valid database host is required!" .Values.database.host -}}:{{ .Values.database.port }}/{{ .Values.database.name }}{{ include "fusionauth.databaseTLS" . }}"
