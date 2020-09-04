@@ -71,7 +71,7 @@ spec:
           startupProbe:
             {{- toYaml .Values.startupProbe | nindent 12 }}
           env:
-            - name: {{ if semverCompare ">=1.19.0" .Values.image.tag }}DATABASE_USERNAME{{ else }}DATABASE_USER{{ end }}
+            - name: {{ if semverCompare ">=1.19.0" .Values.fusionauthVersion }}DATABASE_USERNAME{{ else }}DATABASE_USER{{ end }}
               value: {{ .Values.database.user }}
             - name: DATABASE_PASSWORD
               valueFrom:
@@ -87,15 +87,15 @@ spec:
               value: {{ .Values.database.root.user }}
             - name: DATABASE_URL
               value: "jdbc:{{ .Values.database.protocol }}://{{- required "A valid database host is required!" .Values.database.host -}}:{{ .Values.database.port }}/{{ .Values.database.name }}{{ include "fusionauth.databaseTLS" . }}"
-            - name: {{ if semverCompare ">=1.19.0" .Values.image.tag }}SEARCH_TYPE{{ else }}FUSIONAUTH_SEARCH_ENGINE_TYPE{{ end }}
+            - name: {{ if semverCompare ">=1.19.0" .Values.fusionauthVersion }}SEARCH_TYPE{{ else }}FUSIONAUTH_SEARCH_ENGINE_TYPE{{ end }}
               value: {{ .Values.search.engine }}
               {{- if eq .Values.search.engine "elasticsearch" }}
-            - name: {{ if semverCompare ">=1.19.0" .Values.image.tag }}SEARCH_SERVERS{{ else }}FUSIONAUTH_SEARCH_SERVERS{{ end }}
+            - name: {{ if semverCompare ">=1.19.0" .Values.fusionauthVersion }}SEARCH_SERVERS{{ else }}FUSIONAUTH_SEARCH_SERVERS{{ end }}
               value: "{{ .Values.search.protocol }}://{{ include "fusionauth.searchLogin" . }}{{- required "A valid elasticsearch host is required!" .Values.search.host -}}:{{ .Values.search.port }}"
               {{- end }}
-            - name: {{ if semverCompare ">=1.19.0" .Values.image.tag }}FUSIONAUTH_APP_MEMORY{{ else }}FUSIONAUTH_MEMORY{{ end }}
+            - name: {{ if semverCompare ">=1.19.0" .Values.fusionauthVersion }}FUSIONAUTH_APP_MEMORY{{ else }}FUSIONAUTH_MEMORY{{ end }}
               value: {{ .Values.app.memory }}
-            - name: {{ if semverCompare ">=1.19.0" .Values.image.tag }}FUSIONAUTH_APP_RUNTIME_MODE{{ else }}FUSIONAUTH_RUNTIME_MODE{{ end }}
+            - name: {{ if semverCompare ">=1.19.0" .Values.fusionauthVersion }}FUSIONAUTH_APP_RUNTIME_MODE{{ else }}FUSIONAUTH_RUNTIME_MODE{{ end }}
               value: {{ .Values.app.runtimeMode }}
             {{- range $key, $value := .Values.environment }}
             - name: {{ $key }}
