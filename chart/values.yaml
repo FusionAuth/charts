@@ -2,64 +2,95 @@
 # This is a YAML-formatted file.
 # Declare variables to be passed into your templates.
 
+# replicaCount -- The number of fusionauth-app instances to run
 replicaCount: 1
 image:
+  # image.repository -- The name of the docker repository for fusionauth-app
   repository: fusionauth/fusionauth-app
+  # image.repository -- The docker tag to pull for fusionauth-app
   tag: 1.19.6
+  # image.pullPolicy -- Kubernetes image pullPolicy to use for fusionauth-app
   pullPolicy: IfNotPresent
 
+# imagePullSecrets -- Configures kubernetes secrets to use for pulling private images
 imagePullSecrets: []
 
 # This image should contain `nc` and a shell of some kind to do a simple loop.
 initImage:
+  # initImage.repository -- Docker image to use for initContainers
   repository: busybox
+  # initImage.repository -- Tag to use for initContainers docker image
   tag: latest
 
+# nameOverride -- Overrides resource names
 nameOverride: ""
+# fullnameOverride -- Overrides full resource names
 fullnameOverride: ""
 
 service:
+  # service.type -- Type of Kubernetes service to create
   type: ClusterIP
+  # service.port -- Port for the Kubernetes service to expose
   port: 9011
+  # service.annotations -- Extra annotations to add to service object
   annotations: {}
+  # service.spec -- Any extra fields to add to the service object spec
   spec: {}
 
 database:
+  # database.protocol -- Should either be postgresql or mysql. Protocol for jdbc connection to database
   protocol: postgresql
+  # database.host -- Hostname or ip of the database instance
   host: ""
+  # database.host -- Port of the database instance
   port: 5432
+  # database.tls -- Configures whether or not to use tls when connecting to the database
   tls: false
+  # database.tlsMode -- If tls is enabled, this configures the mode
   tlsMode: require
+  # database.name -- Name of the fusionauth database
   name: fusionauth
 
   # To use an existing secret, set `existingSecret` to the name of the secret. We expect two keys: `password` and `rootpassword`
+  # database.existingSecret -- The name of an existing secret that contains the database passwords
   existingSecret: ""
+  # database.user -- Database username for fusionauth to use in normal operation
   user: ""
+  # database.password -- Database password for fusionauth to use in normal operation - not required if database.existingSecret is configured
   password: ""
   # These credentials are used for bootstrapping the database
   root:
+    # database.root.user -- Database username for fusionauth to use during initial bootstrap
     user: ""
+    # database.root.password -- Database password for fusionauth to use during initial bootstrap - not required if database.existingSecret is configured
     password: ""
 
 search:
-  # Valid values for engine are 'elasticsearch' or (if you are using fusionauth >= 1.16.0-rc.1) 'database'.
+  # search.engine -- Defines backend for fusionauth search capabilities. Valid values for engine are 'elasticsearch' or 'database'.
   engine: elasticsearch
+  # search.engine -- Protocol to use when connecting to elasticsearch. Ignored when search.engine is NOT elasticsearch
   protocol: http
+  # search.host -- Hostname or ip to use when connecting to elasticsearch. Ignored when search.engine is NOT elasticsearch
   host: ""
+  # search.port -- Port to use when connecting to elasticsearch. Ignored when search.engine is NOT elasticsearch
   port: 9200
+  # search.user -- Username to use with basic auth when connecting to elasticsearch. Ignored when search.engine is NOT elasticsearch
   # user: ""
+  # search.password -- Password to use with basic auth when connecting to elasticsearch. Ignored when search.engine is NOT elasticsearch
   # password: ""
 
 app:
+  # app.memory -- Configures the amount of memory Java can use
   memory: 256M
-  # 'development' or 'production'
+  # app.memory -- Configures runtime mode for fusionauth. Should be 'development' or 'production'
   runtimeMode: development
 
-# Certain settings are explicitly added via other values. environment section should only be used for things that aren't directly exposed.
+# environment - Configure additional environment variables. Should only be used for things that are not explicitly set elsewhere in the chart.
 environment:
   # FUSIONAUTH_API_KEY: test
   # Its important to add /kickstart/<file> as prefix to your kickstart file else it won't work! All other files will be mounted below /kickstart/
   # FUSIONAUTH_KICKSTART: /kickstart/kickstart.json
+
 kickstart:
   enabled: false
   data: {}
@@ -101,20 +132,25 @@ kickstart:
     #    Hallo
 
 ingress:
+# ingress.enabled -- Enables ingress creation for fusionauth.
   enabled: false
+  # ingress.annotations -- Configure annotations to add to the ingress object
   annotations: {}
     # kubernetes.io/ingress.class: nginx
     # kubernetes.io/tls-acme: "true"
   paths: []
-  # Define complete path objects, will be inserted before regular paths. Can be useful for things like ALB Ingress Controller actions
+  # ingress.extraPaths -- Define complete path objects, will be inserted before regular paths. Can be useful for things like ALB Ingress Controller actions
   extraPaths: []
+  # ingress.hosts -- List of hostnames to configure the ingress with
   hosts: []
     # - chart-example.local
+  # ingress.tls -- List of secrets used to configure TLS for the ingress.
   tls: []
   #  - secretName: chart-example-tls
   #    hosts:
   #      - chart-example.local
 
+# resources -- Define resource requests and limits for fusionauth-app.
 resources: {}
   # We usually recommend not to specify default resources and to leave this as a conscious
   # choice for the user. This also increases chances charts run on environments with little
@@ -127,27 +163,37 @@ resources: {}
   #  cpu: 100m
   #  memory: 128Mi
 
+# nodeSelector -- Define nodeSelector for kubernetes to use when scheduling fusionauth pods.
 nodeSelector: {}
 
+# tolerations -- Define tolerations for kubernetes to use when scheduling fusionauth pods.
 tolerations: []
 
+# affinty -- Define affinity for kubernetes to use when scheduling fusionauth pods.
 affinity: {}
 
+# dnsConfig -- Define dnsConfig for fusionauth pods.
 dnsConfig: {}
+# dnsPolicy -- Define dnsPolicy for fusionauth pods.
 dnsPolicy: ClusterFirst
 
+# annotations -- Define annotations for fusionauth deployment.
 annotations: {}
+# podAnnotations -- Define annotations for fusionauth pods.
 podAnnotations: {}
 
+# livenessProbe -- Configures a livenessProbe to ensure fusionauth is running
 livenessProbe:
   httpGet:
     path: /
     port: http
   periodSeconds: 30
+# readinessProbe -- Configures a readinessProbe to ensure fusionauth is ready for requests
 readinessProbe:
   httpGet:
     path: /
     port: http
+# startupProbe -- Configures a startupProbe to ensure fusionauth has finished starting up
 startupProbe:
   httpGet:
     path: /
