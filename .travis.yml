@@ -21,6 +21,7 @@ jobs:
         provider: releases
         api_key: ${GITHUB_TOKEN}
         file: "fusionauth-${TRAVIS_TAG}.tgz"
-        cleanup: false
+        skip_cleanup: true
         on:
           tags: true
+          repo: fusionauth/charts
