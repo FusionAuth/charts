@@ -14,7 +14,7 @@ To install the chart with the release name `my-release`:
 
 ```console
 $ helm repo add fusionauth https://fusionauth.github.io/charts
-$ helm install fusionauth/fusionauth  --name my-release
+$ helm install my-release fusionauth/fusionauth
 ```
 
 The command deploys FusionAuth.
