@@ -2,13 +2,15 @@
 language: minimal
 jobs:
   include:
-    - before_install:
-        - curl -L https://raw.githubusercontent.com/helm/helm/master/scripts/get-helm-3 | bash
     - stage: lint
+      install:
+        - curl -L https://raw.githubusercontent.com/helm/helm/master/scripts/get-helm-3 | bash
       script:
         - helm lint ./chart --set database.host=foo.bar --set search.host=foo.bar
     - stage: release
       if: tag IS present
+      install:
+        - curl -L https://raw.githubusercontent.com/helm/helm/master/scripts/get-helm-3 | bash
       script:
         - 'sed -i "s|version: 0.0.0+dev|version: ${TRAVIS_TAG}|" chart/Chart.yaml'
         - helm package ./chart --destination ./
