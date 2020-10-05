@@ -86,7 +86,7 @@ app:
   runtimeMode: development
 
 # environment - Configure additional environment variables. Should only be used for things that are not explicitly set elsewhere in the chart.
-environment:
+environment: {}
   # FUSIONAUTH_API_KEY: test
   # Its important to add /kickstart/<file> as prefix to your kickstart file else it won't work! All other files will be mounted below /kickstart/
   # FUSIONAUTH_KICKSTART: /kickstart/kickstart.json
