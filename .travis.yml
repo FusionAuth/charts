@@ -1,4 +1,4 @@
-# borrowed from https://github.com/goreleaser/homebrew-tap
+#  borrowed from https://github.com/goreleaser/homebrew-tap
 language: minimal
 jobs:
   include:
