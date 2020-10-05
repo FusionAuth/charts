@@ -1,18 +1,26 @@
 # borrowed from https://github.com/goreleaser/homebrew-tap
 language: minimal
-if: tag IS present
-before_install:
-  - curl -L https://raw.githubusercontent.com/helm/helm/master/scripts/get-helm-3 | bash
-script:
-  - 'sed -i "s|version: 0.0.0+dev|version: ${TRAVIS_TAG}|" chart/Chart.yaml'
-  - helm package ./chart --destination ./
-  - helm repo index ./ --url https://github.com/FusionAuth/charts/releases/download/${TRAVIS_TAG}/ --merge ./index.yaml
-after_success:
-  - .ci/push.sh
-deploy:
-  provider: releases
-  api_key: ${GITHUB_TOKEN}
-  file: "fusionauth-${TRAVIS_TAG}.tgz"
-  skip_cleanup: true
-  on:
-    tags: true
+jobs:
+  include:
+    - stage: lint
+      install:
+        - curl -L https://raw.githubusercontent.com/helm/helm/master/scripts/get-helm-3 | bash
+      script:
+        - helm lint ./chart --set database.host=foo.bar --set search.host=foo.bar
+    - stage: release
+      if: tag IS present
+      install:
+        - curl -L https://raw.githubusercontent.com/helm/helm/master/scripts/get-helm-3 | bash
+      script:
+        - 'sed -i "s|version: 0.0.0+dev|version: ${TRAVIS_TAG}|" chart/Chart.yaml'
+        - helm package ./chart --destination ./
+        - helm repo index ./ --url https://github.com/FusionAuth/charts/releases/download/${TRAVIS_TAG}/ --merge ./index.yaml
+      after_success:
+        - .ci/push.sh
+      deploy:
+        provider: releases
+        api_key: ${GITHUB_TOKEN}
+        file: "fusionauth-${TRAVIS_TAG}.tgz"
+        cleanup: false
+        on:
+          tags: true
