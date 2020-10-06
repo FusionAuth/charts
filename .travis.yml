@@ -24,4 +24,4 @@ jobs:
         skip_cleanup: true
         on:
           tags: true
-          repo: fusionauth/charts
+          repo: FusionAuth/charts
