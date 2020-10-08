@@ -108,6 +108,7 @@
         "app",
         "environment",
         "kickstart",
+        "podDisruptionBudget",
         "ingress",
         "resources",
         "nodeSelector",
@@ -652,6 +653,33 @@
                 }
             },
             "additionalProperties": true
+        },
+        "podDisruptionBudget": {
+            "$id": "#/properties/podDisruptionBudget",
+            "type": "object",
+            "title": "The podDisruptionBudget schema",
+            "description": "An explanation about the purpose of this instance.",
+            "default": {},
+            "examples": [
+                {
+                    "enabled": false
+                }
+            ],
+            "required": [
+                "enabled"
+            ],
+            "properties": {
+                "enabled": {
+                    "$id": "#/properties/podDisruptionBudget/properties/enabled",
+                    "type": "boolean",
+                    "title": "The enabled schema",
+                    "description": "An explanation about the purpose of this instance.",
+                    "default": false,
+                    "examples": [
+                        false
+                    ]
+                }
+            }
         },
         "ingress": {
             "$id": "#/properties/ingress",
