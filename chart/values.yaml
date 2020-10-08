@@ -131,6 +131,10 @@ kickstart:
     # setup-password.txt: |
     #    Hallo
 
+podDisruptionBudget:
+  # podDisruptionBudget.enabled -- Enables creation of a PodDisruptionBudget
+  enabled: false
+
 ingress:
 # ingress.enabled -- Enables ingress creation for fusionauth.
   enabled: false
