@@ -131,6 +131,16 @@ kickstart:
     # setup-password.txt: |
     #    Hallo
 
+lifecycle: {}
+  # # lifecycle.postStart -- postStart lifecycle command for fusionauth container
+  # postStart:
+  #   exec:
+  #     command: ["/bin/sh", "-c", "echo Hello from the postStart handler > /usr/share/message"]
+  # # lifecycle.preStop -- preStop lifecycle command for fusionauth container
+  # preStop:
+  #   exec:
+  #     command: ["/bin/bash","-c","kill -3 1"]
+
 podDisruptionBudget:
   # podDisruptionBudget.enabled -- Enables creation of a PodDisruptionBudget
   enabled: false
@@ -193,12 +203,14 @@ livenessProbe:
     port: http
   failureThreshold: 3
   periodSeconds: 30
+  timeoutSeconds: 5
 # readinessProbe -- Configures a readinessProbe to ensure fusionauth is ready for requests
 readinessProbe:
   httpGet:
     path: /api/status
     port: http
   failureThreshold: 3
+  timeoutSeconds: 5
 # startupProbe -- Configures a startupProbe to ensure fusionauth has finished starting up
 startupProbe:
   httpGet:
@@ -206,3 +218,4 @@ startupProbe:
     port: http
   failureThreshold: 20
   periodSeconds: 10
+  timeoutSeconds: 5
