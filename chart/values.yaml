@@ -199,7 +199,7 @@ podAnnotations: {}
 # livenessProbe -- Configures a livenessProbe to ensure fusionauth is running
 livenessProbe:
   httpGet:
-    path: /api/status
+    path: /
     port: http
   failureThreshold: 3
   periodSeconds: 30
@@ -207,14 +207,14 @@ livenessProbe:
 # readinessProbe -- Configures a readinessProbe to ensure fusionauth is ready for requests
 readinessProbe:
   httpGet:
-    path: /api/status
+    path: /
     port: http
-  failureThreshold: 3
+  failureThreshold: 5
   timeoutSeconds: 5
 # startupProbe -- Configures a startupProbe to ensure fusionauth has finished starting up
 startupProbe:
   httpGet:
-    path: /api/status
+    path: /
     port: http
   failureThreshold: 20
   periodSeconds: 10
