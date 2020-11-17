@@ -10,7 +10,7 @@
             "replicaCount": 1,
             "image": {
                 "repository": "fusionauth/fusionauth-app",
-                "tag": "1.19.7",
+                "tag": "1.21.0",
                 "pullPolicy": "IfNotPresent"
             },
             "imagePullSecrets": [],
@@ -142,7 +142,7 @@
             "examples": [
                 {
                     "repository": "fusionauth/fusionauth-app",
-                    "tag": "1.19.7",
+                    "tag": "1.21.0",
                     "pullPolicy": "IfNotPresent"
                 }
             ],
@@ -169,7 +169,7 @@
                     "description": "An explanation about the purpose of this instance.",
                     "default": "",
                     "examples": [
-                        "1.19.7"
+                        "1.21.0"
                     ]
                 },
                 "pullPolicy": {
