@@ -101,9 +101,8 @@ spec:
               value: {{ .Values.app.memory }}
             - name: FUSIONAUTH_APP_RUNTIME_MODE
               value: {{ .Values.app.runtimeMode }}
-            {{- range $key, $value := .Values.environment }}
-            - name: {{ $key }}
-              value: "{{ $value }}"
+            {{- if .Values.environment }}
+            {{- toYaml .Values.environment |nindent 12 }}
             {{- end }}
           resources:
               {{- toYaml .Values.resources | nindent 12 }}

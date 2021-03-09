@@ -51,7 +51,7 @@
                 "memory": "256M",
                 "runtimeMode": "development"
             },
-            "environment": {},
+            "environment": [],
             "kickstart": {
                 "enabled": false,
                 "data": {}
@@ -602,7 +602,7 @@
         },
         "environment": {
             "$id": "#/properties/environment",
-            "type": "object",
+            "type": "array",
             "title": "The environment schema",
             "description": "An explanation about the purpose of this instance.",
             "default": {},
