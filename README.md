@@ -8,6 +8,9 @@ This repository is community maintained; and is provided to assist in your deplo
 ## Installing the Chart
 
 ### Important upgrade info:
+
+In `0.8.0` the `environment` value is now an array instead of an object. Make sure to reformat your values when you update.
+
 In `0.4.0`, the external postgresql and elasticsearch charts were dropped. You will need to maintain those dependencies on your own.
 
 To install the chart with the release name `my-release`:
@@ -50,7 +53,7 @@ The command removes all the Kubernetes components associated with the chart and 
 | database.user               | string | `""`                                                                                                 | Database username for fusionauth to use in normal operation                                                                       |
 | dnsConfig                   | object | `{}`                                                                                                 | Define dnsConfig for fusionauth pods.                                                                                             |
 | dnsPolicy                   | string | `"ClusterFirst"`                                                                                     | Define dnsPolicy for fusionauth pods.                                                                                             |
-| environment                 | object | `{}`                                                                                                 |                                                                                                                                   |
+| environment                 | array | `[]`                                                                                                 |                                                                                                                                   |
 | fullnameOverride            | string | `""`                                                                                                 | Overrides full resource names                                                                                                     |
 | image.pullPolicy            | string | `"IfNotPresent"`                                                                                     | Kubernetes image pullPolicy to use for fusionauth-app                                                                             |
 | image.repository            | string | `"fusionauth/fusionauth-app"`                                                                        | The docker tag to pull for fusionauth-app                                                                                         |
