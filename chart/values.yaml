@@ -50,6 +50,8 @@ database:
   tlsMode: require
   # database.name -- Name of the fusionauth database
   name: fusionauth
+  # for Managed cloud instances, it is not expected to pass the root credentials of the database.
+  isManagedDB: false
 
   # To use an existing secret, set `existingSecret` to the name of the secret. We expect two keys: `password` and `rootpassword`
   # database.existingSecret -- The name of an existing secret that contains the database passwords

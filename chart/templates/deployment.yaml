@@ -82,11 +82,13 @@ spec:
                 secretKeyRef:
                   name: {{ include "fusionauth.database.secretName" . }}
                   key: password
+            {{- if eq .Values.database.isManagedDB false }}
             - name: DATABASE_ROOT_PASSWORD
               valueFrom:
                 secretKeyRef:
                   name: {{ include "fusionauth.database.secretName" . }}
                   key: rootpassword
+            {{- end }}
             - name: DATABASE_ROOT_USERNAME
               value: {{ .Values.database.root.user }}
             - name: DATABASE_URL
