@@ -142,7 +142,7 @@
             "examples": [
                 {
                     "repository": "fusionauth/fusionauth-app",
-                    "tag": "1.22.2",
+                    "tag": "1.26.1",
                     "pullPolicy": "IfNotPresent"
                 }
             ],
