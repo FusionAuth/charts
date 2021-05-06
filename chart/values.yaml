@@ -51,7 +51,7 @@ database:
   # database.name -- Name of the fusionauth database
   name: fusionauth
 
-  # To use an existing secret, set `existingSecret` to the name of the secret. We expect two keys: `password` and `rootpassword`
+  # To use an existing secret, set `existingSecret` to the name of the secret. We expect at most two keys: `password` is required. `rootpassword` is only required if `database.root.user` is set.
   # database.existingSecret -- The name of an existing secret that contains the database passwords
   existingSecret: ""
   # database.user -- Database username for fusionauth to use in normal operation
@@ -60,7 +60,7 @@ database:
   password: ""
   # These credentials are used for bootstrapping the database
   root:
-    # database.root.user -- Database username for fusionauth to use during initial bootstrap
+    # database.root.user -- Database username for fusionauth to use during initial bootstrap - not required if you have manually bootstrapped your database
     user: ""
     # database.root.password -- Database password for fusionauth to use during initial bootstrap - not required if database.existingSecret is configured
     password: ""
