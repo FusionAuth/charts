@@ -76,21 +76,21 @@ spec:
           {{- end }}
           env:
             - name: DATABASE_USERNAME
-              value: {{ .Values.database.user }}
+              value: {{ required "A valid username for the database is required!" .Values.database.user }}
             - name: DATABASE_PASSWORD
               valueFrom:
                 secretKeyRef:
                   name: {{ include "fusionauth.database.secretName" . }}
                   key: password
-            {{- if .Values.database.root.password }}
+            {{- if .Values.database.root.user }}
+            - name: DATABASE_ROOT_USERNAME
+              value: {{ .Values.database.root.user }}
             - name: DATABASE_ROOT_PASSWORD
               valueFrom:
                 secretKeyRef:
                   name: {{ include "fusionauth.database.secretName" . }}
                   key: rootpassword
             {{- end }}
-            - name: DATABASE_ROOT_USERNAME
-              value: {{ .Values.database.root.user }}
             - name: DATABASE_URL
               value: "jdbc:{{ .Values.database.protocol }}://{{- required "A valid database host is required!" .Values.database.host -}}:{{ .Values.database.port }}/{{ .Values.database.name }}{{ include "fusionauth.databaseTLS" . }}"
             - name: SEARCH_TYPE
