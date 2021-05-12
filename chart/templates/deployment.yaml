@@ -75,37 +75,24 @@ spec:
             {{- toYaml . | nindent 12 }}
           {{- end }}
           env:
-            - name: DATABASE_USERNAME
-              value: {{ required "A valid username for the database is required!" .Values.database.user }}
             - name: DATABASE_PASSWORD
               valueFrom:
                 secretKeyRef:
                   name: {{ include "fusionauth.database.secretName" . }}
                   key: password
             {{- if .Values.database.root.user }}
-            - name: DATABASE_ROOT_USERNAME
-              value: {{ .Values.database.root.user }}
             - name: DATABASE_ROOT_PASSWORD
               valueFrom:
                 secretKeyRef:
                   name: {{ include "fusionauth.database.secretName" . }}
                   key: rootpassword
             {{- end }}
-            - name: DATABASE_URL
-              value: "jdbc:{{ .Values.database.protocol }}://{{- required "A valid database host is required!" .Values.database.host -}}:{{ .Values.database.port }}/{{ .Values.database.name }}{{ include "fusionauth.databaseTLS" . }}"
-            - name: SEARCH_TYPE
-              value: {{ .Values.search.engine }}
-              {{- if eq .Values.search.engine "elasticsearch" }}
-            - name: SEARCH_SERVERS
-              value: "{{ .Values.search.protocol }}://{{ include "fusionauth.searchLogin" . }}{{- required "A valid elasticsearch host is required!" .Values.search.host -}}:{{ .Values.search.port }}"
-              {{- end }}
-            - name: FUSIONAUTH_APP_MEMORY
-              value: {{ .Values.app.memory }}
-            - name: FUSIONAUTH_APP_RUNTIME_MODE
-              value: {{ .Values.app.runtimeMode }}
-            {{- if .Values.environment }}
-            {{- toYaml .Values.environment |nindent 12 }}
+            {{- with .Values.advancedEnvironment }}
+            {{- toYaml . | nindent 12 }}
             {{- end }}
+          envFrom:
+            - configMapRef:
+              name: {{ template "fusionauth.fullname" . }}-env
           resources:
               {{- toYaml .Values.resources | nindent 12 }}
 

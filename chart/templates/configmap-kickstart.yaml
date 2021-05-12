@@ -14,5 +14,5 @@ data:
   {{ $key }}: |
 {{ $value | indent 4 }}
   {{- end -}}
-{{- end -}}
+  {{- end -}}
 {{- end -}}

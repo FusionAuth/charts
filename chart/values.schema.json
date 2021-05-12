@@ -602,6 +602,18 @@
         },
         "environment": {
             "$id": "#/properties/environment",
+            "type": "object",
+            "title": "The environment schema",
+            "description": "An explanation about the purpose of this instance.",
+            "default": {},
+            "examples": [
+                {}
+            ],
+            "required": [],
+            "additionalProperties": true
+        },
+        "advancedEnvironment": {
+            "$id": "#/properties/advancedEnvironment",
             "type": "array",
             "title": "The environment schema",
             "description": "An explanation about the purpose of this instance.",
