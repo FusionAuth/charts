@@ -108,22 +108,43 @@ spec:
             {{- end }}
           resources:
               {{- toYaml .Values.resources | nindent 12 }}
-          {{- if .Values.kickstart.enabled }}
+
+          {{- if or .Values.kickstart.enabled .Values.extraVolumeMounts }}
           volumeMounts:
+          {{- end }}
+
+          {{- if .Values.kickstart.enabled }}
             - name: {{ template "fusionauth.fullname" . }}-config-volume
               mountPath: /kickstart
           {{- end }}
+
+          {{- if .Values.extraVolumeMounts }}
+          {{- toYaml .Values.extraVolumeMounts | nindent 12 }}
+          {{- end }}
+
+
       {{- if .Values.dnsConfig }}
       dnsConfig:
       {{- toYaml .Values.dnsConfig |nindent 8 }}
       {{- end }}
       dnsPolicy: {{ .Values.dnsPolicy }}
-      {{- if .Values.kickstart.enabled }}
+
+      {{- if or .Values.kickstart.enabled .Values.extraVolumes  }}
       volumes:
+      {{- end }}
+
+      {{- if .Values.extraVolumes }}
+      {{- toYaml .Values.extraVolumes | nindent 8 }}
+      {{- end }}
+
+      {{- if .Values.kickstart.enabled }}
         - name: {{ template "fusionauth.fullname" . }}-config-volume
           configMap:
             name: {{ template "fusionauth.fullname" . }}-kickstart-config
       {{- end }}
+
+
+
       {{- with .Values.nodeSelector }}
       nodeSelector:
           {{- toYaml . | nindent 8 }}

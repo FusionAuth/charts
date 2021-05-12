@@ -8,7 +8,7 @@ image:
   # image.repository -- The name of the docker repository for fusionauth-app
   repository: fusionauth/fusionauth-app
   # image.repository -- The docker tag to pull for fusionauth-app
-  tag: 1.26.1
+  tag: 1.27.2
   # image.pullPolicy -- Kubernetes image pullPolicy to use for fusionauth-app
   pullPolicy: IfNotPresent
 
@@ -78,6 +78,7 @@ search:
   # user: ""
   # search.password -- Password to use with basic auth when connecting to elasticsearch. Ignored when search.engine is NOT elasticsearch
   # password: ""
+
 
 app:
   # app.memory -- Configures the amount of memory Java can use
@@ -225,3 +226,14 @@ startupProbe:
   failureThreshold: 20
   periodSeconds: 10
   timeoutSeconds: 5
+
+
+
+extraVolumes: []
+##  - name: custom-css-data
+##    persistentVolumeClaim:
+##      claimName: custom-css-data
+
+extraVolumeMounts: []
+##   - name: custom-css-data
+##     mountPath: /usr/local/fusionauth/fusionauth-app/web/custom
