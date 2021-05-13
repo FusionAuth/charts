@@ -122,7 +122,6 @@ spec:
           {{- toYaml .Values.extraVolumeMounts | nindent 12 }}
           {{- end }}
 
-
       {{- if .Values.dnsConfig }}
       dnsConfig:
       {{- toYaml .Values.dnsConfig |nindent 8 }}
@@ -142,8 +141,6 @@ spec:
           configMap:
             name: {{ template "fusionauth.fullname" . }}-kickstart-config
       {{- end }}
-
-
 
       {{- with .Values.nodeSelector }}
       nodeSelector:

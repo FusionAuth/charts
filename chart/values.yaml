@@ -227,13 +227,13 @@ startupProbe:
   periodSeconds: 10
   timeoutSeconds: 5
 
-
-
+# extraVolumes -- Define extra Volumes. Allow to add existing claimName
 extraVolumes: []
 ##  - name: custom-css-data
 ##    persistentVolumeClaim:
 ##      claimName: custom-css-data
 
+# extraVolumes -- Associate mountPath for each  extraVolumes
 extraVolumeMounts: []
 ##   - name: custom-css-data
 ##     mountPath: /usr/local/fusionauth/fusionauth-app/web/custom
