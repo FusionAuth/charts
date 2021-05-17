@@ -12,7 +12,7 @@ metadata:
 spec:
   containers:
     - name: wget
-      image: busybox
+      image: "{{ .Values.initImage.repository }}:{{ .Values.initImage.tag }}"
       command: ['wget']
       args:  ['{{ include "fusionauth.fullname" . }}:{{ .Values.service.port }}']
   restartPolicy: Never

@@ -15,7 +15,7 @@ image:
 # imagePullSecrets -- Configures kubernetes secrets to use for pulling private images
 imagePullSecrets: []
 
-# This image should contain `nc` and a shell of some kind to do a simple loop.
+# This image should contain `nc`, `wget` and a shell of some kind to do a simple loop.
 initImage:
   # initImage.repository -- Docker image to use for initContainers
   repository: busybox
