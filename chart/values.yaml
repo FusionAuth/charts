@@ -42,7 +42,7 @@ database:
   protocol: postgresql
   # database.host -- Hostname or ip of the database instance
   host: ""
-  # database.host -- Port of the database instance
+  # database.port -- Port of the database instance
   port: 5432
   # database.tls -- Configures whether or not to use tls when connecting to the database
   tls: false
@@ -51,49 +51,41 @@ database:
   # database.name -- Name of the fusionauth database
   name: fusionauth
 
-  # To use an existing secret, set `existingSecret` to the name of the secret. We expect at most two keys: `password` is required. `rootpassword` is only required if `database.root.user` is set.
+  # To use an existing secret, set `existingSecret` to the name of the secret. We expect at most two keys: `password` is required. `rootpassword` is only required if `env.DATABASE_ROOT_USERNAME` is set.
   # database.existingSecret -- The name of an existing secret that contains the database passwords
   existingSecret: ""
-  # database.user -- Database username for fusionauth to use in normal operation
-  user: ""
   # database.password -- Database password for fusionauth to use in normal operation - not required if database.existingSecret is configured
   password: ""
   # These credentials are used for bootstrapping the database
   root:
-    # database.root.user -- Database username for fusionauth to use during initial bootstrap - not required if you have manually bootstrapped your database
-    user: ""
     # database.root.password -- Database password for fusionauth to use during initial bootstrap - not required if database.existingSecret is configured
     password: ""
 
 search:
-  # search.engine -- Defines backend for fusionauth search capabilities. Valid values for engine are 'elasticsearch' or 'database'.
-  engine: elasticsearch
-  # search.engine -- Protocol to use when connecting to elasticsearch. Ignored when search.engine is NOT elasticsearch
+  # search.protocol -- Protocol to use when connecting to elasticsearch. Ignored when env.SEARCH_TYPE is NOT elasticsearch
   protocol: http
-  # search.host -- Hostname or ip to use when connecting to elasticsearch. Ignored when search.engine is NOT elasticsearch
+  # search.host -- Hostname or ip to use when connecting to elasticsearch. Ignored when env.SEARCH_TYPE is NOT elasticsearch
   host: ""
-  # search.port -- Port to use when connecting to elasticsearch. Ignored when search.engine is NOT elasticsearch
+  # search.port -- Port to use when connecting to elasticsearch. Ignored when env.SEARCH_TYPE is NOT elasticsearch
   port: 9200
-  # search.user -- Username to use with basic auth when connecting to elasticsearch. Ignored when search.engine is NOT elasticsearch
+  # search.user -- Username to use with basic auth when connecting to elasticsearch. Ignored when env.SEARCH_TYPE is NOT elasticsearch
   # user: ""
-  # search.password -- Password to use with basic auth when connecting to elasticsearch. Ignored when search.engine is NOT elasticsearch
+  # search.password -- Password to use with basic auth when connecting to elasticsearch. Ignored when env.SEARCH_TYPE is NOT elasticsearch
   # password: ""
 
-
-app:
-  # app.memory -- Configures the amount of memory Java can use
-  memory: 256M
-  # app.memory -- Configures runtime mode for fusionauth. Should be 'development' or 'production'
-  runtimeMode: development
-
-# environment - Configure additional environment variables. Should only be used for things that are not explicitly set elsewhere in the chart.
-environment: {}
+# env - Configure additional environment variables. Should only be used for things that are not explicitly set elsewhere in the chart.
+env:
+  FUSIONAUTH_APP_MEMORY: 256M
+  FUSIONAUTH_APP_RUNTIME_MODE: development
+  SEARCH_TYPE: elasticsearch
+  DATABASE_USERNAME: ""
+  DATABASE_ROOT_USERNAME: ""
   # FUSIONAUTH_API_KEY: test
   # Its important to add /kickstart/<file> as prefix to your kickstart file else it won't work! All other files will be mounted below /kickstart/
   # FUSIONAUTH_KICKSTART: /kickstart/kickstart.json
 
-# advancedEnvironment - Configure additional environment variables that rely on secrets, downward api, etc. Should only be used for things that are not explicitly set elsewhere in the chart.
-advancedEnvironment: []
+# extraEnv - Configure additional environment variables that rely on secrets, downward api, etc. Should only be used for things that are not explicitly set elsewhere in the chart.
+extraEnv: []
   # - name: POD_IP
   #   valueFrom:
   #     fieldRef:

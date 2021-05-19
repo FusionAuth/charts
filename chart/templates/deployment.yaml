@@ -43,7 +43,7 @@ spec:
                 echo '.'
                 sleep 15;
               done
-        {{- if eq .Values.search.engine "elasticsearch" }}
+        {{- if eq .Values.env.SEARCH_TYPE "elasticsearch" }}
         - name: wait-for-search
           image: "{{ .Values.initImage.repository }}:{{ .Values.initImage.tag }}"
           args:
@@ -80,14 +80,14 @@ spec:
                 secretKeyRef:
                   name: {{ include "fusionauth.database.secretName" . }}
                   key: password
-            {{- if .Values.database.root.user }}
+            {{- if .Values.env.DATABASE_ROOT_USERNAME }}
             - name: DATABASE_ROOT_PASSWORD
               valueFrom:
                 secretKeyRef:
                   name: {{ include "fusionauth.database.secretName" . }}
                   key: rootpassword
             {{- end }}
-            {{- with .Values.advancedEnvironment }}
+            {{- with .Values.extraEnv }}
             {{- toYaml . | nindent 12 }}
             {{- end }}
           envFrom:

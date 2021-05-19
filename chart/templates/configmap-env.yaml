@@ -1,3 +1,4 @@
+# "{{ required "A valid username for the database is required!" .Values.env.DATABASE_USERNAME }}"
 apiVersion: v1
 kind: ConfigMap
 metadata:
@@ -8,19 +9,12 @@ metadata:
     chart: {{ .Chart.Name }}-{{ .Chart.Version }}
     app: {{ template "fusionauth.name" . }}
 data:
-  FUSIONAUTH_APP_MEMORY: "{{ .Values.app.memory }}"
-  FUSIONAUTH_APP_RUNTIME_MODE: "{{ .Values.app.runtimeMode }}"
-  SEARCH_TYPE: "{{ .Values.search.engine }}"
-  {{- if eq .Values.search.engine "elasticsearch" }}
+  {{- if eq .Values.env.SEARCH_TYPE "elasticsearch" }}
   SEARCH_SERVERS: "{{ .Values.search.protocol }}://{{ include "fusionauth.searchLogin" . }}{{- required "A valid elasticsearch host is required!" .Values.search.host -}}:{{ .Values.search.port }}"
   {{- end }}
   DATABASE_URL: "jdbc:{{ .Values.database.protocol }}://{{- required "A valid database host is required!" .Values.database.host -}}:{{ .Values.database.port }}/{{ .Values.database.name }}{{ include "fusionauth.databaseTLS" . }}"
-  {{- if .Values.database.root.user }}
-  DATABASE_ROOT_USERNAME: "{{ .Values.database.root.user }}"
-  {{- end }}
-  DATABASE_USERNAME: "{{ required "A valid username for the database is required!" .Values.database.user }}"
-  {{- if .Values.environment }}
-  {{- range $key, $value := .Values.environment }}
+  {{- if .Values.env }}
+  {{- range $key, $value := .Values.env }}
   {{ $key }}: "{{ $value }}"
   {{- end -}}
   {{- end -}}
