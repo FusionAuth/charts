@@ -9,8 +9,7 @@ manifests:
     path: ./chart
     valuesFile: ./chart/values.yaml
     values:
-      database:
-        password: password
+      - database.password: "password"
 
 #exemptions:
 #  - filename: deployment/helm/templates/agent.yaml
