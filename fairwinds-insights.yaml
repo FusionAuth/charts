@@ -1,0 +1,41 @@
+options:
+  organization: drivenrole
+
+  # You may need to set this to 'main'
+  baseBranch: main
+
+# These images will be scanned for vulnerabilities.
+images:
+  docker:
+  - amd64/debian:buster-slim
+  - mcr.microsoft.com/dotnet/core/sdk:3.1-buster
+
+manifests:
+  helm:
+  - name: fusionauth-chart 
+    path: ./chart
+    valuesFile: ./chart/values.yaml
+
+#exemptions:
+#  - filename: deployment/helm/templates/agent.yaml
+#    report: polaris
+#    checks:
+#      - hostNetworkSet
+#      - livenessProbeMissing
+#      - pullPolicyNotAlways
+#      - notReadOnlyRootFilesystem
+#      - readinessProbeMissing
+#      - runAsRootAllowed
+#  - filename: deployment/helm/templates/controller.yaml
+#    report: polaris
+#    checks:
+#      - runAsRootAllowed
+#      - livenessProbeMissing
+#      - pullPolicyNotAlways
+#      - notReadOnlyRootFilesystem
+#      - readinessProbeMissing
+#  - filename: deployment/helm/templates/agent.yaml
+#    report: trivy
+#  - filename: deployment/helm/templates/controller.yaml
+#    report: trivy
+#
