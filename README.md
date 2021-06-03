@@ -1,4 +1,4 @@
-# FusionAuth Helm Chart 
+# FusionAuth Helm Chart [![K8s Best Practices](https://insights.fairwinds.com/v0/gh/drivenrole/charts/badge.svg)](https://insights.fairwinds.com/gh/drivenrole/charts)
 
 [FusionAuth](https://fusionauth.io/) is a modern platform for Customer Identity and Access Management (CIAM). FusionAuth provides APIs and a responsive web user interface to support login, registration, localized email, multi-factor authentication, reporting and much more.
 
