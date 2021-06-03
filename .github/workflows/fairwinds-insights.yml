@@ -43,4 +43,8 @@ jobs:
           git fetch origin
           cp chart/values.yaml /tmp/
           yq e '.database.password = "password"' -i /tmp/values.yaml
+
+          ls -l /tmp/
+          cat /tmp/values.yaml
+
           curl -L https://insights.fairwinds.com/v0/insights-ci.sh | bash
