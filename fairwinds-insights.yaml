@@ -8,8 +8,6 @@ manifests:
   - name: fusionauth-chart 
     path: ./chart
     valuesFile: ./chart/values.yaml
-    values:
-      database.password: "password"
 
 #exemptions:
 #  - filename: deployment/helm/templates/agent.yaml
