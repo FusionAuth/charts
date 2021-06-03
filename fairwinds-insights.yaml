@@ -7,7 +7,7 @@ manifests:
   helm:
   - name: fusionauth-chart 
     path: ./chart
-    valuesFile: ./chart/values.yaml
+    valuesFile: /tmp/values.yaml
 
 #exemptions:
 #  - filename: deployment/helm/templates/agent.yaml

@@ -41,8 +41,6 @@ jobs:
       - name: scan repo with insights
         run: |
           git fetch origin
-          cat << EOF >> ./chart/values.yaml
-          database.password: password
-          EOF
-          cat ./chart/values.yaml
+          cp charts/values.yaml /tmp/
+          yq e '.database.password = "password"' -i /tmp/values.yaml
           curl -L https://insights.fairwinds.com/v0/insights-ci.sh | bash
