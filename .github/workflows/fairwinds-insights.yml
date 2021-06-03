@@ -40,7 +40,7 @@ jobs:
           fetch-depth: 0
       - name: scan repo with insights
         run: |
-          git fetch origin
+          git fetch origin master:master
           yq e '.database.host = "host"' -i chart/values.yaml
           yq e '.database.user = "user"' -i chart/values.yaml
           yq e '.database.password = "password"' -i chart/values.yaml
