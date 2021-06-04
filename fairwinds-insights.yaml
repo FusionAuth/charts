@@ -12,11 +12,8 @@ manifests:
 exemptions:
   - filename: chart/templates/tests/test-connection.yaml
     report: polaris
-#  - filename: deployment/helm/templates/controller.yaml
-#    report: polaris
-#    checks:
-#      - runAsRootAllowed
-#      - livenessProbeMissing
-#      - pullPolicyNotAlways
-#      - notReadOnlyRootFilesystem
-#      - readinessProbeMissing
+  - filename: 
+    report: polaris
+    checks:
+      - runAsRootAllowed
+      - notReadOnlyRootFilesystem
