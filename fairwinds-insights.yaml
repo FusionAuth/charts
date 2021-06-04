@@ -17,3 +17,4 @@ exemptions:
     checks:
       - runAsRootAllowed
       - notReadOnlyRootFilesystem
+      - tagNotSpecified
