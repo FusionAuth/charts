@@ -20,8 +20,9 @@ initImage:
   # initImage.repository -- Docker image to use for initContainers
   repository: busybox
   # initImage.repository -- Tag to use for initContainers docker image
+  tag: latest
   # initImage.pullPolicy -- Kubernetes image pullPolicy to use for fusionauth-app
-  pullPolicy: Always 
+  pullPolicy: Always
 
 
   # initImage
