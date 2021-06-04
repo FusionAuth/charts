@@ -1,0 +1,34 @@
+name: k8s best practices
+
+on:
+  release:
+    types:
+      - published
+
+jobs:
+  helm-index:
+    if: github.event_name == 'release'
+    runs-on: ubuntu-latest
+    container:
+      image: alpine/helm
+      env:
+        TAG:    
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          ref: ${{ github.event.pull_request.head.ref }}
+          fetch-depth: 0
+      - name: index helm repo
+        run: |
+          sed -i "s|version: 0.0.0+dev|version ${TAG}" chart/Chart.yml
+          helm package ./chart --destination ./
+          helm repo index --url https://github.com/FusionAuth/charts/releases/download/${TAG}/ --merge ./index.yaml
+
+          git config --local user.name "github-actions[bot]"
+          git config --local user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+          git add ./index.yaml
+          git commit -m "Updating helm repo index for version ${TAG}"
+          git push
+
