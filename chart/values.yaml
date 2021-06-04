@@ -10,7 +10,7 @@ image:
   # image.repository -- The docker tag to pull for fusionauth-app
   tag: 1.27.2
   # image.pullPolicy -- Kubernetes image pullPolicy to use for fusionauth-app
-  pullPolicy: IfNotPresent
+  pullPolicy: Always 
 
 # imagePullSecrets -- Configures kubernetes secrets to use for pulling private images
 imagePullSecrets: []

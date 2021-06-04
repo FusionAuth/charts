@@ -9,16 +9,9 @@ manifests:
     path: ./chart
     valuesFile: chart/values.yaml
 
-#exemptions:
-#  - filename: deployment/helm/templates/agent.yaml
-#    report: polaris
-#    checks:
-#      - hostNetworkSet
-#      - livenessProbeMissing
-#      - pullPolicyNotAlways
-#      - notReadOnlyRootFilesystem
-#      - readinessProbeMissing
-#      - runAsRootAllowed
+exemptions:
+  - filename: chart/templates/tests/test-connection.yaml
+    report: polaris
 #  - filename: deployment/helm/templates/controller.yaml
 #    report: polaris
 #    checks:
@@ -27,8 +20,3 @@ manifests:
 #      - pullPolicyNotAlways
 #      - notReadOnlyRootFilesystem
 #      - readinessProbeMissing
-#  - filename: deployment/helm/templates/agent.yaml
-#    report: trivy
-#  - filename: deployment/helm/templates/controller.yaml
-#    report: trivy
-#
