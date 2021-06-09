@@ -88,3 +88,52 @@ The command removes all the Kubernetes components associated with the chart and 
 | service.type                | string | `"ClusterIP"`                                                                                        | Type of Kubernetes service to create                                                                                                                                        |
 | startupProbe                | object | `{"failureThreshold":20,"httpGet":{"path":"/","port":"http"},"periodSeconds":10,"timeoutSeconds":5}` | Configures a startupProbe to ensure fusionauth has finished starting up                                                                                                     |
 | tolerations                 | list   | `[]`                                                                                                 | Define tolerations for kubernetes to use when scheduling fusionauth pods.                                                                                                   |
+
+
+## How to Contribute to fustionauth/charts 
+
+1. Fork this repository, develop and test your Chart changes. Remember to sign off your commits as described in the "Sign Your Work" chapter.
+1. Ensure your Chart changes follow the [technical](#technical-requirements) and [documentation](#documentation-requirements) guidelines, described below.
+1. Submit a pull request.
+
+***NOTE***: In order to make testing and merging of PRs easier, please submit changes to multiple charts in separate PRs.
+
+### Technical Requirements
+
+* All Chart dependencies should also be submitted independently
+* Must pass the linter (`helm lint`)
+* Must successfully launch with default values (`helm install .`)
+    * All pods go to the running state (or NOTES.txt provides further instructions if a required value is missing e.g. [minecraft](https://github.com/helm/charts/blob/master/stable/minecraft/templates/NOTES.txt#L3))
+    * All services have at least one endpoint
+* Must include source GitHub repositories for images used in the Chart
+* Images should not have any major security vulnerabilities
+* Must be up-to-date with the latest stable Helm/Kubernetes features
+* Should follow Kubernetes best practices
+    * Include Health Checks wherever practical
+    * Allow configurable [resource requests and limits](http://kubernetes.io/docs/user-guide/compute-resources/#resource-requests-and-limits-of-pod-and-container)
+* Provide a method for data persistence (if applicable)
+* Support application upgrades
+* Allow customization of the application configuration
+* Provide a secure default configuration
+* Do not leverage alpha features of Kubernetes
+* Includes a [NOTES.txt](https://helm.sh/docs/topics/charts/#chart-license-readme-and-notes) explaining how to use the application after install
+* Follows [best practices](https://helm.sh/docs/chart_best_practices/)
+  (especially for [labels](https://helm.sh/docs/chart_best_practices/labels/)
+  and [values](https://helm.sh/docs/chart_best_practices/values/))
+
+### Documentation Requirements
+
+* Must include an in-depth `README.md`, including:
+    * Short description of the Chart
+    * Any prerequisites or requirements
+    * Customization: explaining options in `values.yaml` and their defaults
+* Must include a short `NOTES.txt`, including:
+    * Any relevant post-installation information for the Chart
+    * Instructions on how to access the application or service provided by the Chart
+
+### Merge Approval and Release Process
+
+A fusionauth charts maintainer will review the Chart change submission, and start a validation job in the CI to verify the technical requirements of the Chart. A maintainer may add "LGTM" (Looks Good To Me) or an equivalent comment to indicate that a PR is acceptable. Any change requires at least one LGTM. No pull requests can be merged until at least one maintainer signs off with an LGTM.
+
+### License
+FusionAuth [license](https://fusionauth.io/license/).
