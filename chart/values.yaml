@@ -184,6 +184,14 @@ resources: {}
   #  cpu: 100m
   #  memory: 128Mi
 
+## Autoscaling parameters
+autoscaling:
+  enabled: false
+  # minReplicas: 1
+  # maxReplicas: 10
+  # targetCPU: 50
+  # targetMemory: 50
+
 # nodeSelector -- Define nodeSelector for kubernetes to use when scheduling fusionauth pods.
 nodeSelector: {}
 
