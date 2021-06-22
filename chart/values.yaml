@@ -24,9 +24,6 @@ initImage:
   # initImage.pullPolicy -- Kubernetes image pullPolicy to use for fusionauth-app
   pullPolicy: Always
 
-
-  # initImage
-
 # nameOverride -- Overrides resource names
 nameOverride: ""
 # fullnameOverride -- Overrides full resource names
