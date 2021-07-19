@@ -1,0 +1,39 @@
+name: helm repo index
+
+on:
+  push:
+    tags:
+    - '**'
+
+jobs:
+  helm-index:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          ref: ${{ github.event.push.head.ref }}
+          fetch-depth: 0
+      - name: index helm repo
+        run: |
+          sed -i "s|version: 0.0.0+dev|version: ${GITHUB_REF##*/}|" chart/Chart.yaml
+          echo ""
+          cat chart/Chart.yaml
+          echo ""
+
+          curl -fsSL -o get_helm.sh https://raw.githubusercontent.com/helm/helm/master/scripts/get-helm-3
+          chmod 700 get_helm.sh
+          ./get_helm.sh
+
+          helm package ./chart --destination ./
+          helm repo index ./ --url https://github.com/FusionAuth/charts/releases/download/${GITHUB_REF##*/}/ --merge ./index.yaml
+
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git remote set-url origin https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/$GITHUB_REPOSITORY
+
+          git checkout master
+          git add ./index.yaml
+          git commit -m "Updating helm repo index for version ${GITHUB_REF##*/}"
+          git remote add remote https://${GITHUB_TOKEN}@github.com/${GITHUB_REPOSITORY}.git
+          git push --quiet --set-upstream remote master
