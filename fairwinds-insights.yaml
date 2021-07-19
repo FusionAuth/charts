@@ -1,0 +1,20 @@
+options:
+  organization: drivenrole
+
+  baseBranch: master
+
+manifests:
+  helm:
+  - name: fusionauth-chart 
+    path: ./chart
+    valuesFile: chart/values.yaml
+
+exemptions:
+  - filename: chart/templates/tests/test-connection.yaml
+    report: polaris
+  - filename: 
+    report: polaris
+    checks:
+      - runAsRootAllowed
+      - notReadOnlyRootFilesystem
+      - tagNotSpecified

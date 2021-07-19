@@ -34,6 +34,7 @@ spec:
       initContainers:
         - name: wait-for-db
           image: "{{ .Values.initImage.repository }}:{{ .Values.initImage.tag }}"
+          imagePullPolicy: {{ .Values.initImage.pullPolicy }}
           args:
             - /bin/sh
             - -c
@@ -46,6 +47,7 @@ spec:
         {{- if eq .Values.search.engine "elasticsearch" }}
         - name: wait-for-search
           image: "{{ .Values.initImage.repository }}:{{ .Values.initImage.tag }}"
+          imagePullPolicy: {{ .Values.initImage.pullPolicy }}
           args:
             - /bin/sh
             - -c
