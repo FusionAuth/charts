@@ -22,7 +22,7 @@ jobs:
       - id: update-chart-version
         run: |
           sed -i "s|version: 0.0.0+dev|version: ${GITHUB_REF##*/}|" chart/Chart.yaml
-    
+
       - id: configure-git
         run: |
           git config user.name "$GITHUB_ACTOR"
@@ -31,10 +31,10 @@ jobs:
       - id: release
         env:
           CR_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
-          CR_OWNER: drivenrole
+          CR_OWNER: fusionauth
           CR_GIT_REPO: charts
           CR_PACKAGE_PATH: .deploy
-          CR_CHARTS_REPO: https://drivenrole.github.io/charts
+          CR_CHARTS_REPO: https://fusionauth.github.io/charts
           CR_INDEX_PATH: index.yaml
         run: |
           cr package chart
@@ -50,10 +50,10 @@ jobs:
       - uses: engineerd/setup-kind@v0.5.0
       - id: install
         env:
-          CHARTS_REPO: https://drivenrole.github.io/charts 
+          CHARTS_REPO: https://fusionauth.github.io/charts 
         run: |
-          helm repo add drivenrole ${CHARTS_REPO}
-          helm install fusionauth drivenrole/fusionauth \
+          helm repo add fusionauth ${CHARTS_REPO}
+          helm install fusionauth fusionauth/fusionauth \
             --set database.host=host \
             --set database.user=user \
             --set database.password=password \
