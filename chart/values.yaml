@@ -8,7 +8,7 @@ image:
   # image.repository -- The name of the docker repository for fusionauth-app
   repository: fusionauth/fusionauth-app
   # image.repository -- The docker tag to pull for fusionauth-app
-  tag: 1.27.2
+  tag: 1.30.0
   # image.pullPolicy -- Kubernetes image pullPolicy to use for fusionauth-app
   pullPolicy: IfNotPresent
 
@@ -79,7 +79,6 @@ search:
   # search.password -- Password to use with basic auth when connecting to elasticsearch. Ignored when search.engine is NOT elasticsearch
   # password: ""
 
-
 app:
   # app.memory -- Configures the amount of memory Java can use
   memory: 256M
@@ -87,7 +86,8 @@ app:
   runtimeMode: development
 
 # environment - Configure additional environment variables. Should only be used for things that are not explicitly set elsewhere in the chart.
-environment: []
+environment:
+  []
   # - name: POD_IP
   #   valueFrom:
   #     fieldRef:
@@ -100,7 +100,8 @@ environment: []
 
 kickstart:
   enabled: false
-  data: {}
+  data:
+    {}
     # kickstart.json: |
     #    {
     #      "variables": {
@@ -138,7 +139,8 @@ kickstart:
     # setup-password.txt: |
     #    Hallo
 
-lifecycle: {}
+lifecycle:
+  {}
   # # lifecycle.postStart -- postStart lifecycle command for fusionauth container
   # postStart:
   #   exec:
@@ -153,17 +155,19 @@ podDisruptionBudget:
   enabled: false
 
 ingress:
-# ingress.enabled -- Enables ingress creation for fusionauth.
+  # ingress.enabled -- Enables ingress creation for fusionauth.
   enabled: false
   # ingress.annotations -- Configure annotations to add to the ingress object
-  annotations: {}
+  annotations:
+    {}
     # kubernetes.io/ingress.class: nginx
     # kubernetes.io/tls-acme: "true"
   paths: []
   # ingress.extraPaths -- Define complete path objects, will be inserted before regular paths. Can be useful for things like ALB Ingress Controller actions
   extraPaths: []
   # ingress.hosts -- List of hostnames to configure the ingress with
-  hosts: []
+  hosts:
+    []
     # - chart-example.local
   # ingress.tls -- List of secrets used to configure TLS for the ingress.
   tls: []
@@ -172,7 +176,8 @@ ingress:
   #      - chart-example.local
 
 # resources -- Define resource requests and limits for fusionauth-app.
-resources: {}
+resources:
+  {}
   # We usually recommend not to specify default resources and to leave this as a conscious
   # choice for the user. This also increases chances charts run on environments with little
   # resources, such as Minikube. If you do want to specify resources, uncomment the following
@@ -236,12 +241,14 @@ startupProbe:
   timeoutSeconds: 5
 
 # extraVolumes -- Define extra Volumes. Allow to add existing claimName
-extraVolumes: []
+extraVolumes:
+  []
   # - name: custom-css-data
   #   persistentVolumeClaim:
   #     claimName: custom-css-data
 
 # extraVolumes -- Associate mountPath for each  extraVolumes
-extraVolumeMounts: []
+extraVolumeMounts:
+  []
   # - name: custom-css-data
   #   mountPath: /usr/local/fusionauth/fusionauth-app/web/custom
