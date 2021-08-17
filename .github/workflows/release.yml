@@ -37,6 +37,7 @@ jobs:
           CR_CHARTS_REPO: https://fusionauth.github.io/charts
           CR_INDEX_PATH: index.yaml
           CR_PAGES_BRANCH: master
+          CR_RELEASE_NAME_TEMPLATE: "{{ .Version }}"
         run: |
           cr package chart
           cr upload
