@@ -12,7 +12,7 @@ metadata:
 spec:
   containers:
     - name: wget
-      image: "{{ .Values.initImage.repository }}:{{ .Values.initImage.tag }}"
+      image: "{{ .Values.initContainers.image.repository }}:{{ .Values.initContainers.image.tag }}"
       command: ['wget']
       args:  ['{{ include "fusionauth.fullname" . }}:{{ .Values.service.port }}']
   restartPolicy: Never

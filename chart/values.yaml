@@ -15,12 +15,26 @@ image:
 # imagePullSecrets -- Configures kubernetes secrets to use for pulling private images
 imagePullSecrets: []
 
-# This image should contain `nc`, `wget` and a shell of some kind to do a simple loop.
-initImage:
-  # initImage.repository -- Docker image to use for initContainers
-  repository: busybox
-  # initImage.repository -- Tag to use for initContainers docker image
-  tag: latest
+initContainers:
+  # This image should contain `nc`, `wget` and a shell of some kind to do a simple loop.
+  image:
+    # initContainers.image.repository -- Docker image to use for initContainers
+    repository: busybox
+    # initContainers.image.repository -- Tag to use for initContainers docker image
+    tag: latest
+  # initContainers.resources -- Resource requests and limits to use for initContainers
+  resources:
+    {}
+    # We usually recommend not to specify default resources and to leave this as a conscious
+    # choice for the user. This also increases chances charts run on environments with little
+    # resources, such as Minikube. If you do want to specify resources, uncomment the following
+    # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
+    # limits:
+    #  cpu: 100m
+    #  memory: 128Mi
+    # requests:
+    #  cpu: 100m
+    #  memory: 128Mi
 
 # nameOverride -- Overrides resource names
 nameOverride: ""
