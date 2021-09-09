@@ -28,7 +28,9 @@ If release name contains chart name it will be used as a full name.
 Set apiVersion for ingress
 */}}
 {{- define "fusionauth.ingressApiVersion" -}}
-{{- if .Capabilities.APIVersions.Has "networking.k8s.io/v1beta1" -}}
+{{- if .Capabilities.APIVersions.Has "networking.k8s.io/v1" -}}
+networking.k8s.io/v1
+{{- else if .Capabilities.APIVersions.Has "networking.k8s.io/v1beta1" -}}
 networking.k8s.io/v1beta1
 {{- else -}}
 extensions/v1beta1
