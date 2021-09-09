@@ -28,17 +28,27 @@ spec:
 {{- end }}
   rules:
   {{- range .Values.ingress.hosts }}
-    - host: {{ . | quote }}
+    - host: {{ or .host . | quote }}
       http:
         paths:
         {{- if $extraPaths }}
 {{ $extraPaths | toYaml | indent 10 }}
         {{- end }}
         {{- range $ingressPaths }}
-          - path: {{ . }}
+          - path: {{ or .path . }}
+            {{- if and .pathType (semverCompare ">=1.18-0" $.Capabilities.KubeVersion.GitVersion) }}
+            pathType: {{ .pathType }}
+            {{- end }}
             backend:
+              {{- if semverCompare ">=1.19-0" $.Capabilities.KubeVersion.GitVersion }}
+              service:
+                name: {{ $fullName }}
+                port:
+                  name: http
+              {{- else }}
               serviceName: {{ $fullName }}
               servicePort: http
+              {{- end }}
         {{- end }}
   {{- end }}
 {{- end }}
