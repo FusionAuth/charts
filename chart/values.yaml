@@ -109,7 +109,8 @@ environment:
   # - name: FUSIONAUTH_API_KEY
   #   value: test
   # Its important to add /kickstart/<file> as prefix to your kickstart file else it won't work! All other files will be mounted below /kickstart/
-  # - name: FUSIONAUTH_KICKSTART
+  # => Use this environment variable to override the default location '/kickstart/kickstart.json' which is autom. set when kickstart.enabled is set
+  # - name: FUSIONAUTH_APP_KICKSTART_FILE
   #   value: /kickstart/kickstart.json
 
 kickstart:
@@ -121,7 +122,7 @@ kickstart:
     #      "variables": {
     #        "defaultTenantId": "d7d09513-a3f5-401c-9685-34ab6c552453",
     #        "adminEmail": "admin@fusionauth.io",
-    #        "adminPassword": "password",
+    #        "adminPassword": "password"
     #      },
     #      "apiKeys": [
     #        {
