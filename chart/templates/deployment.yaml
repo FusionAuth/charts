@@ -107,6 +107,10 @@ spec:
               value: {{ .Values.app.memory }}
             - name: FUSIONAUTH_APP_RUNTIME_MODE
               value: {{ .Values.app.runtimeMode }}
+            {{- if .Values.kickstart.enabled }}
+            - name: FUSIONAUTH_APP_KICKSTART_FILE
+              value: "/kickstart/kickstart.json"
+            {{- end }}
             {{- if .Values.environment }}
             {{- toYaml .Values.environment |nindent 12 }}
             {{- end }}
