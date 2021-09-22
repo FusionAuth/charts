@@ -28,16 +28,16 @@ spec:
 {{- end }}
   rules:
   {{- range .Values.ingress.hosts }}
-    - host: {{ or .host . | quote }}
+    - host: {{ . | quote }}
       http:
         paths:
         {{- if $extraPaths }}
 {{ $extraPaths | toYaml | indent 10 }}
         {{- end }}
         {{- range $ingressPaths }}
-          - path: {{ or .path . }}
+          - path: {{ or .path . | quote }}
             {{- if and .pathType (semverCompare ">=1.18-0" $.Capabilities.KubeVersion.GitVersion) }}
-            pathType: {{ .pathType }}
+            pathType: {{ .pathType | quote }}
             {{- end }}
             backend:
               {{- if semverCompare ">=1.19-0" $.Capabilities.KubeVersion.GitVersion }}
