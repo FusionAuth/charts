@@ -3,7 +3,7 @@
 # Declare variables to be passed into your templates.
 
 # replicaCount -- The number of fusionauth-app instances to run
-replicaCount: 2
+replicaCount: 1
 image:
   # image.repository -- The name of the docker repository for fusionauth-app
   repository: fusionauth/fusionauth-app
@@ -55,7 +55,7 @@ database:
   # database.protocol -- Should either be postgresql or mysql. Protocol for jdbc connection to database
   protocol: postgresql
   # database.host -- Hostname or ip of the database instance
-  host: fusionauth-test.postgres.database.azure.com
+  host: fusionauth-eks-example.ceeh9yeyi3hf.us-west-1.rds.amazonaws.com
   # database.host -- Port of the database instance
   port: 5432
   # database.tls -- Configures whether or not to use tls when connecting to the database
@@ -74,10 +74,10 @@ database:
   password: "hkaLBM3RVnyYeYeqE3WI1w2e4Avpy0Wd5O3s3"
   # These credentials are used for bootstrapping the database
   root:
-    # database.root.username -- Database username for fusionauth to use during initial bootstrap - not required if you have manually bootstrapped your database
-    usernme: "postgres"
+    # database.root.user -- Database username for fusionauth to use during initial bootstrap - not required if you have manually bootstrapped your database
+    user: "postgres"
     # database.root.password -- Database password for fusionauth to use during initial bootstrap - not required if database.existingSecret is configured
-    password: "fooBarBaz2021"
+    password: "foobarbaz"
 
 search:
   # search.engine -- Defines backend for fusionauth search capabilities. Valid values for engine are 'elasticsearch' or 'database'.
@@ -189,7 +189,7 @@ ingress:
           port:
             number: 9011
   # ingress.hosts -- List of hostnames to configure the ingress with
-  hosts: [localhost, fusionauth-test.postgres.database.azure.com]
+  hosts: [localhost, a088927fde7fb48ffaa4b38b92e653a0-d4fd8399009e2ff6.elb.us-west-1.amazonaws.com]
     # - chart-example.local
   # ingress.tls -- List of secrets used to configure TLS for the ingress.
   tls: []
@@ -208,7 +208,7 @@ resources:
 
 ## Autoscaling parameters
 autoscaling:
-  enabled: false
+  enabled: true
   minReplicas: 1
   maxReplicas: 15
   targetCPU: 65
@@ -234,31 +234,31 @@ annotations: {}
 podAnnotations: {}
 
 # livenessProbe -- Configures a livenessProbe to ensure fusionauth is running
-#livenessProbe:
-#  httpGet:
-#    path: /
-#    port: http
-#  failureThreshold: 3
-#  initialDelaySeconds: 15
-#  periodSeconds: 30
-#  timeoutSeconds: 5
+livenessProbe:
+  httpGet:
+    path: /
+    port: http
+  failureThreshold: 3
+  initialDelaySeconds: 60
+  periodSeconds: 30
+  timeoutSeconds: 5
 # readinessProbe -- Configures a readinessProbe to ensure fusionauth is ready for requests
-#readinessProbe:
-#  httpGet:
-#    path: /
-#    port: http
-#  initialDelaySeconds: 15
-#  failureThreshold: 5
-#  timeoutSeconds: 5
+readinessProbe:
+  httpGet:
+    path: /
+    port: http
+  initialDelaySeconds: 60
+  failureThreshold: 5
+  timeoutSeconds: 5
 # startupProbe -- Configures a startupProbe to ensure fusionauth has finished starting up
-#startupProbe:
-#  httpGet:
-#    path: /
-#    port: http
-#  initialDelaySeconds: 15
-#  failureThreshold: 20
-#  periodSeconds: 10
-#  timeoutSeconds: 5
+startupProbe:
+  httpGet:
+    path: /
+    port: http
+  initialDelaySeconds: 60
+  failureThreshold: 20
+  periodSeconds: 10
+  timeoutSeconds: 5
 
 # extraVolumes -- Define extra Volumes. Allow to add existing claimName
 extraVolumes:

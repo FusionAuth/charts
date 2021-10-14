@@ -30,6 +30,6 @@ spec:
         name: memory
         target:
           type: Utilization
-          averageUtilization: {{ .Values.autoscaling.targetMemory }}
+          averageUtilization: {{ .Values.autoscaling.targetMemory  }}
     {{- end }}
 {{- end }}
