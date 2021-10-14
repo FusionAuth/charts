@@ -86,9 +86,9 @@ spec:
                 secretKeyRef:
                   name: {{ include "fusionauth.database.secretName" . }}
                   key: password
-            {{- if .Values.database.root.user }}
+            {{- if .Values.database.root.username }}
             - name: DATABASE_ROOT_USERNAME
-              value: {{ .Values.database.root.user }}
+              value: {{ .Values.database.root.username }}
             - name: DATABASE_ROOT_PASSWORD
               valueFrom:
                 secretKeyRef:

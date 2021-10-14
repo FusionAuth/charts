@@ -24,6 +24,9 @@
             "properties": {
                 "enabled": {
                     "type": "boolean"
+                },
+                "minReplicas": {
+                    "type": "integer"
                 }
             }
         },

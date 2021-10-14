@@ -55,7 +55,7 @@ database:
   # database.protocol -- Should either be postgresql or mysql. Protocol for jdbc connection to database
   protocol: postgresql
   # database.host -- Hostname or ip of the database instance
-  host: fusionauth-test.postgres.database.azure.com
+  host: 10.50.144.5
   # database.host -- Port of the database instance
   port: 5432
   # database.tls -- Configures whether or not to use tls when connecting to the database
@@ -189,7 +189,7 @@ ingress:
           port:
             number: 9011
   # ingress.hosts -- List of hostnames to configure the ingress with
-  hosts: [localhost, fusionauth-test.postgres.database.azure.com]
+  hosts: [localhost]
     # - chart-example.local
   # ingress.tls -- List of secrets used to configure TLS for the ingress.
   tls: []
@@ -201,10 +201,10 @@ ingress:
 resources:
   requests:
     memory: 1G
-    cpu: 1000m
+    cpu: 200m
   limits:
     memory: 2G
-    cpu: 4000m
+    cpu: 600m
 
 ## Autoscaling parameters
 autoscaling:

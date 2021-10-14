@@ -3,7 +3,7 @@
 # Declare variables to be passed into your templates.
 
 # replicaCount -- The number of fusionauth-app instances to run
-replicaCount: 1
+replicaCount: 2
 image:
   # image.repository -- The name of the docker repository for fusionauth-app
   repository: fusionauth/fusionauth-app
@@ -55,7 +55,7 @@ database:
   # database.protocol -- Should either be postgresql or mysql. Protocol for jdbc connection to database
   protocol: postgresql
   # database.host -- Hostname or ip of the database instance
-  host: ""
+  host: fusionauth-eks-example.ceeh9yeyi3hf.us-west-1.rds.amazonaws.com
   # database.host -- Port of the database instance
   port: 5432
   # database.tls -- Configures whether or not to use tls when connecting to the database
@@ -69,15 +69,15 @@ database:
   # database.existingSecret -- The name of an existing secret that contains the database passwords
   existingSecret: ""
   # database.user -- Database username for fusionauth to use in normal operation
-  user: ""
+  user: "fusionauth"
   # database.password -- Database password for fusionauth to use in normal operation - not required if database.existingSecret is configured
-  password: ""
+  password: "hkaLBM3RVnyYeYeqE3WI1w2e4Avpy0Wd5O3s3"
   # These credentials are used for bootstrapping the database
   root:
     # database.root.user -- Database username for fusionauth to use during initial bootstrap - not required if you have manually bootstrapped your database
-    user: ""
+    username: "postgres"
     # database.root.password -- Database password for fusionauth to use during initial bootstrap - not required if database.existingSecret is configured
-    password: ""
+    password: "foobarbaz"
 
 search:
   # search.engine -- Defines backend for fusionauth search capabilities. Valid values for engine are 'elasticsearch' or 'database'.
@@ -171,20 +171,27 @@ podDisruptionBudget:
 
 ingress:
   # ingress.enabled -- Enables ingress creation for fusionauth.
-  enabled: false
+  enabled: true
   # ingress.annotations -- Configure annotations to add to the ingress object
   annotations:
-    {}
-    # kubernetes.io/ingress.class: nginx
+    {
+      kubernetes.io/ingress.class: nginx
+    }
     # kubernetes.io/tls-acme: "true"
   paths: []
   # - path: /*
   #   pathType: Prefix
   # ingress.extraPaths -- Define complete path objects, will be inserted before regular paths. Can be useful for things like ALB Ingress Controller actions
-  extraPaths: []
+  extraPaths:
+    - path: /
+      pathType: Prefix
+      backend:
+        service:
+          name: fa-minikube-fusionauth
+          port:
+            number: 9011
   # ingress.hosts -- List of hostnames to configure the ingress with
-  hosts:
-    []
+  hosts: [localhost]
     # - chart-example.local
   # ingress.tls -- List of secrets used to configure TLS for the ingress.
   tls: []
@@ -194,25 +201,20 @@ ingress:
 
 # resources -- Define resource requests and limits for fusionauth-app.
 resources:
-  {}
-  # We usually recommend not to specify default resources and to leave this as a conscious
-  # choice for the user. This also increases chances charts run on environments with little
-  # resources, such as Minikube. If you do want to specify resources, uncomment the following
-  # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
-  # limits:
-  #  cpu: 100m
-  #  memory: 128Mi
-  # requests:
-  #  cpu: 100m
-  #  memory: 128Mi
+  requests:
+    memory: 1G
+    cpu: 1000m
+  limits:
+    memory: 2G
+    cpu: 4000m
 
 ## Autoscaling parameters
 autoscaling:
-  enabled: false
-  # minReplicas: 1
-  # maxReplicas: 10
-  # targetCPU: 50
-  # targetMemory: 50
+  enabled: true
+  minReplicas: 1
+  maxReplicas: 15
+  targetCPU: 65
+  targetMemory: 65
 
 # nodeSelector -- Define nodeSelector for kubernetes to use when scheduling fusionauth pods.
 nodeSelector: {}
@@ -239,6 +241,7 @@ livenessProbe:
     path: /
     port: http
   failureThreshold: 3
+  initialDelaySeconds: 60
   periodSeconds: 30
   timeoutSeconds: 5
 # readinessProbe -- Configures a readinessProbe to ensure fusionauth is ready for requests
@@ -246,6 +249,7 @@ readinessProbe:
   httpGet:
     path: /
     port: http
+  initialDelaySeconds: 60
   failureThreshold: 5
   timeoutSeconds: 5
 # startupProbe -- Configures a startupProbe to ensure fusionauth has finished starting up
@@ -253,6 +257,7 @@ startupProbe:
   httpGet:
     path: /
     port: http
+  initialDelaySeconds: 60
   failureThreshold: 20
   periodSeconds: 10
   timeoutSeconds: 5
