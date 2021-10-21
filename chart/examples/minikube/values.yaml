@@ -55,7 +55,7 @@ database:
   # database.protocol -- Should either be postgresql or mysql. Protocol for jdbc connection to database
   protocol: postgresql
   # database.host -- Hostname or ip of the database instance
-  host: fusionauth-minikube-postgresql.default.svc.cluster.local
+  host: pg-minikube-postgresql.default.svc.cluster.local
   # database.host -- Port of the database instance
   port: 5432
   # database.tls -- Configures whether or not to use tls when connecting to the database
@@ -77,7 +77,7 @@ database:
     # database.root.user -- Database username for fusionauth to use during initial bootstrap - not required if you have manually bootstrapped your database
     username: "postgres"
     # database.root.password -- Database password for fusionauth to use during initial bootstrap - not required if database.existingSecret is configured
-    password: "fooBarBaz"
+    password: ""
 
 search:
   # search.engine -- Defines backend for fusionauth search capabilities. Valid values for engine are 'elasticsearch' or 'database'.
@@ -85,7 +85,7 @@ search:
   # search.engine -- Protocol to use when connecting to elasticsearch. Ignored when search.engine is NOT elasticsearch
   protocol: http
   # search.host -- Hostname or ip to use when connecting to elasticsearch. Ignored when search.engine is NOT elasticsearch
-  host: ""
+  host: elasticsearch-master.default.svc.cluster.local
   # search.port -- Port to use when connecting to elasticsearch. Ignored when search.engine is NOT elasticsearch
   port: 9200
   # search.user -- Username to use with basic auth when connecting to elasticsearch. Ignored when search.engine is NOT elasticsearch
@@ -170,6 +170,7 @@ podDisruptionBudget:
   enabled: false
 
 ingress:
+
   # ingress.enabled -- Enables ingress creation for fusionauth.
   enabled: true
   # ingress.annotations -- Configure annotations to add to the ingress object
@@ -189,13 +190,14 @@ ingress:
   # ingress.extraPaths -- Define complete path objects, will be inserted before regular paths. Can be useful for things like ALB Ingress Controller actions
   extraPaths: []
   # ingress.hosts -- List of hostnames to configure the ingress with
-  hosts: [localhost]
+  hosts: ["localhost","local.fusionauth.io"]
     # - chart-example.local
   # ingress.tls -- List of secrets used to configure TLS for the ingress.
-  tls: []
-  #  - secretName: chart-example-tls
-  #    hosts:
-  #      - chart-example.local
+  tls:
+    - secretName: localhost-tls
+      hosts:
+        - localhost
+        - local.fusionauth.io
 
 # resources -- Define resource requests and limits for fusionauth-app.
 resources:
