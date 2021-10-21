@@ -190,14 +190,13 @@ ingress:
   # ingress.extraPaths -- Define complete path objects, will be inserted before regular paths. Can be useful for things like ALB Ingress Controller actions
   extraPaths: []
   # ingress.hosts -- List of hostnames to configure the ingress with
-  hosts: ["localhost","local.fusionauth.io"]
+  hosts: ["localhost"]
     # - chart-example.local
   # ingress.tls -- List of secrets used to configure TLS for the ingress.
-  tls:
-    - secretName: localhost-tls
-      hosts:
-        - localhost
-        - local.fusionauth.io
+  tls: []
+  #  - secretName: chart-example-tls
+  #    hosts:
+  #      - chart-example.local
 
 # resources -- Define resource requests and limits for fusionauth-app.
 resources:
