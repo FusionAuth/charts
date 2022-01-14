@@ -41,7 +41,7 @@ spec:
             - -c
             - >
               set -x;
-              while [[ "$(nc -zv '{{- .Values.database.host -}}' {{ .Values.database.port }} &> /dev/null; echo $?)" != 0 ]]; do
+              while [[ "$(nc -zv '{{- include "fusionauth.tpl" (dict "value" .Values.database.host "context" $ ) -}}' {{ include "fusionauth.tpl" (dict "value" .Values.database.port "context" $ ) }} &> /dev/null; echo $?)" != 0 ]]; do
                 echo '.'
                 sleep 15;
               done
@@ -55,7 +55,7 @@ spec:
             - -c
             - >
               set -x;
-              while [[ "$(nc -zv '{{- .Values.search.host -}}' {{ .Values.search.port }} &> /dev/null; echo $?)" != 0 ]]; do
+              while [[ "$(nc -zv '{{- include "fusionauth.tpl" (dict "value" .Values.search.host "context" $ ) -}}' {{ include "fusionauth.tpl" (dict "value" .Values.search.port "context" $ ) }} &> /dev/null; echo $?)" != 0 ]]; do
                 echo '.'
                 sleep 15;
               done
@@ -82,15 +82,15 @@ spec:
           {{- end }}
           env:
             - name: DATABASE_USERNAME
-              value: {{ required "A valid username for the database is required!" .Values.database.user }}
+              value: {{ required "A valid username for the database is required!" (include "fusionauth.tpl" (dict "value" .Values.database.user "context" $)) }}
             - name: DATABASE_PASSWORD
               valueFrom:
                 secretKeyRef:
                   name: {{ include "fusionauth.database.secretName" . }}
                   key: password
-            {{- if .Values.database.root.user }}
+            {{- if (include "fusionauth.tpl" (dict "value" .Values.database.root.user "context" $)) }}
             - name: DATABASE_ROOT_USERNAME
-              value: {{ .Values.database.root.user }}
+              value: {{ include "fusionauth.tpl" (dict "value" .Values.database.root.user "context" $) }}
             - name: DATABASE_ROOT_PASSWORD
               valueFrom:
                 secretKeyRef:
@@ -98,17 +98,17 @@ spec:
                   key: rootpassword
             {{- end }}
             - name: DATABASE_URL
-              value: "jdbc:{{ .Values.database.protocol }}://{{- required "A valid database host is required!" .Values.database.host -}}:{{ .Values.database.port }}/{{ .Values.database.name }}{{ include "fusionauth.databaseTLS" . }}"
+              value: "jdbc:{{ include "fusionauth.tpl" (dict "value" .Values.database.protocol "context" $) }}://{{- required "A valid database host is required!" (include "fusionauth.tpl" (dict "value" .Values.database.host "context" $)) -}}:{{ include "fusionauth.tpl" (dict "value" .Values.database.port "context" $) }}/{{ include "fusionauth.tpl" (dict "value" .Values.database.name "context" $) }}{{ include "fusionauth.databaseTLS" . }}"
             - name: SEARCH_TYPE
-              value: {{ .Values.search.engine }}
-              {{- if eq .Values.search.engine "elasticsearch" }}
+              value: {{ include "fusionauth.tpl" (dict "value" .Values.search.engine "context" $) }}
+              {{- if eq (include "fusionauth.tpl" (dict "value" .Values.search.engine "context" $)) "elasticsearch" }}
             - name: SEARCH_SERVERS
-              value: "{{ .Values.search.protocol }}://{{ include "fusionauth.searchLogin" . }}{{- required "A valid elasticsearch host is required!" .Values.search.host -}}:{{ .Values.search.port }}"
+              value: "{{ include "fusionauth.tpl" (dict "value" .Values.search.protocol "context" $) }}://{{ include "fusionauth.searchLogin" . }}{{- required "A valid elasticsearch host is required!" (include "fusionauth.tpl" (dict "value" .Values.search.host "context" $)) -}}:{{ include "fusionauth.tpl" (dict "value" .Values.search.port "context" $) }}"
               {{- end }}
             - name: FUSIONAUTH_APP_MEMORY
-              value: {{ .Values.app.memory }}
+              value: {{ include "fusionauth.tpl" (dict "value" .Values.app.memory "context" $) }}
             - name: FUSIONAUTH_APP_RUNTIME_MODE
-              value: {{ .Values.app.runtimeMode }}
+              value: {{ include "fusionauth.tpl" (dict "value" .Values.app.runtimeMode "context" $) }}
             {{- if .Values.kickstart.enabled }}
             - name: FUSIONAUTH_APP_KICKSTART_FILE
               value: "/kickstart/kickstart.json"

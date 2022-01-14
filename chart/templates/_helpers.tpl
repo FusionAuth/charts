@@ -71,3 +71,16 @@ Set name of secret to use for credentials
 {{ .Release.Name }}-credentials
 {{- end -}}
 {{- end -}}
+
+{{/*
+Renders a value that contains a template.
+Usage:
+{{ include "fusionauth.tpl" ( dict "value" .Values.path.to.the.Value "context" $) }}
+*/}}
+{{- define "fusionauth.tpl" -}}
+    {{- if typeIs "string" .value }}
+        {{- tpl .value .context }}
+    {{- else }}
+        {{- tpl (.value | toYaml) .context }}
+    {{- end }}
+{{- end -}}
