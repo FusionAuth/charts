@@ -71,3 +71,14 @@ Set name of secret to use for credentials
 {{ .Release.Name }}-credentials
 {{- end -}}
 {{- end -}}
+
+{{/*
+Create the name of the service account to use
+*/}}
+{{- define "fusionauth.serviceAccountName" -}}
+{{- if .Values.serviceAccount.create }}
+{{- default (include "fusionauth.fullname" .) .Values.serviceAccount.name }}
+{{- else }}
+{{- default "default" .Values.serviceAccount.name }}
+{{- end }}
+{{- end }}
