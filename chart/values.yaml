@@ -269,3 +269,9 @@ extraVolumeMounts:
   []
   # - name: custom-css-data
   #   mountPath: /usr/local/fusionauth/fusionauth-app/web/custom
+
+serviceAccount:
+  # serviceAccount.create -- If set to true service account will be created. Otherwise, the default service account will be used
+  create: false
+  # serviceAccount.name -- Service account name to use. If not set the "default" service account will be used
+  name: ""
