@@ -4,7 +4,7 @@
 
 ## Installing the Chart
 
-You can read the official instructions, including install steps for AWS, GCP and Azure, in the [FusionAuth Kubernetes installation guide](https://fusionauth.io/docs/v1/tech/installation-guide/kubernetes/)
+You can read the official instructions, including install steps for AWS, GCP and Azure, in the [FusionAuth Kubernetes installation guide](https://fusionauth.io/docs/v1/tech/installation-guide/kubernetes/).
 
 ### Important upgrade info:
 
