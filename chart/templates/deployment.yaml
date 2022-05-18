@@ -63,6 +63,9 @@ spec:
           resources:
             {{- toYaml .Values.initContainers.resources | nindent 12 }}
         {{- end }}
+        {{- if .Values.extraInitContainers }}
+        {{- toYaml .Values.extraInitContainers | nindent 8 }}
+        {{- end }}
       containers:
         - name: {{ .Chart.Name }}
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
@@ -132,7 +135,9 @@ spec:
           {{- if .Values.extraVolumeMounts }}
           {{- toYaml .Values.extraVolumeMounts | nindent 12 }}
           {{- end }}
-
+        {{- if .Values.extraContainers }}
+        {{- toYaml .Values.extraContainers | nindent 8 }}
+        {{- end }}
       {{- if .Values.dnsConfig }}
       dnsConfig:
       {{- toYaml .Values.dnsConfig |nindent 8 }}
