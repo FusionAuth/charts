@@ -107,7 +107,7 @@ git tag 0.10.6
 git push origin master --tags
 ```
 
-To release to a new version of FusionAuth, update these 4 files:
+To default to a new version of FusionAuth, update these 4 files:
 
 ```
 README.md
@@ -117,3 +117,5 @@ chart/values.yaml
 ```
 
 with the new version number.
+
+However, the user can always override these by changing the `values.yaml` file to specify a certain FusionAuth release.
