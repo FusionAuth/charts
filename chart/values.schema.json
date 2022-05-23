@@ -1,5 +1,5 @@
 {
-    "$schema": "http://json-schema.org/schema#",
+    "$schema": "https://json-schema.org/schema#",
     "type": "object",
     "properties": {
         "affinity": {
@@ -77,6 +77,12 @@
             "type": "string"
         },
         "environment": {
+            "type": "array"
+        },
+        "extraContainers": {
+            "type": "array"
+        },
+        "extraInitContainers": {
             "type": "array"
         },
         "extraVolumeMounts": {

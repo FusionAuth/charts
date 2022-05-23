@@ -15,6 +15,11 @@ image:
 # imagePullSecrets -- Configures kubernetes secrets to use for pulling private images
 imagePullSecrets: []
 
+# - spec for Container:
+# kubectl explain pod.spec.initContainers
+# kubectl explain pod.spec.initContainers --recursive
+extraInitContainers: []
+
 initContainers:
   # This image should contain `nc`, `wget` and a shell of some kind to do a simple loop.
   image:
@@ -35,6 +40,11 @@ initContainers:
     # requests:
     #  cpu: 100m
     #  memory: 128Mi
+
+# - spec for Container:
+# kubectl explain pod.spec.containers
+# kubectl explain pod.spec.containers --recursive
+extraContainers: []
 
 # nameOverride -- Overrides resource names
 nameOverride: ""
