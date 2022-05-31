@@ -234,6 +234,10 @@ tolerations: []
 # affinty -- Define affinity for kubernetes to use when scheduling fusionauth pods.
 affinity: {}
 
+# topologySpreadConstraints -- Define topologySpreadConstraints for kubernetes to use
+# when scheduling fusionauth pods.
+topologySpreadConstraints: []
+
 # dnsConfig -- Define dnsConfig for fusionauth pods.
 dnsConfig: {}
 # dnsPolicy -- Define dnsPolicy for fusionauth pods.
