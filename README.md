@@ -95,6 +95,7 @@ The command removes all the Kubernetes components associated with the chart and 
 | serviceAccount.name             | string | `""`                                                                                                 | Service account name to use. If not set the "default" service account will be used                                                |
 | startupProbe                    | object | `{"failureThreshold":20,"httpGet":{"path":"/","port":"http"},"periodSeconds":10,"timeoutSeconds":5}` | Configures a startupProbe to ensure fusionauth has finished starting up                                                           |
 | tolerations                     | list   | `[]`                                                                                                 | Define tolerations for kubernetes to use when scheduling fusionauth pods.                                                         |
+| topologySpreadConstraints                     | list   | `[]`                                                                                                 | Define topologySpreadConstraints for kubernetes to use when scheduling fusionauth pods.                                                         |
 
 
 ## Releasing the Chart
