@@ -21,6 +21,8 @@ imagePullSecrets: []
 extraInitContainers: []
 
 initContainers:
+  waitForDb: true
+  waitForEs: true
   # This image should contain `nc`, `wget` and a shell of some kind to do a simple loop.
   image:
     # initContainers.image.repository -- Docker image to use for initContainers

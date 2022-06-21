@@ -150,6 +150,12 @@
                 },
                 "resources": {
                     "type": "object"
+                },
+                "waitForDb": {
+                    "type": "boolean"
+                },
+                "waitForEs": {
+                    "type": "boolean"
                 }
             }
         },

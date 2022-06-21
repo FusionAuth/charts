@@ -34,7 +34,10 @@ spec:
       imagePullSecrets:
       {{- toYaml .Values.imagePullSecrets | nindent 8 }}
       {{- end }}
+      {{- if or (.Values.extraInitContainers) (or (.Values.initContainers.waitForDb) (and (eq .Values.search.engine "elasticsearch") (.Values.initContainers.waitForEs))) }}
       initContainers:
+      {{- end }}
+        {{- if .Values.initContainers.waitForDb }}
         - name: wait-for-db
           image: "{{ .Values.initContainers.image.repository }}:{{ .Values.initContainers.image.tag }}"
           args:
@@ -48,7 +51,8 @@ spec:
               done
           resources:
             {{- toYaml .Values.initContainers.resources | nindent 12 }}
-        {{- if eq .Values.search.engine "elasticsearch" }}
+        {{- end }}
+        {{- if and (eq .Values.search.engine "elasticsearch") (.Values.initContainers.waitForEs) }}
         - name: wait-for-search
           image: "{{ .Values.initContainers.image.repository }}:{{ .Values.initContainers.image.tag }}"
           args:
