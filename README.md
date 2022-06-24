@@ -122,3 +122,9 @@ chart/values.yaml
 with the new version number.
 
 However, the user can always override these by changing the `values.yaml` file to specify a certain FusionAuth release.
+
+### Versions
+
+The helm chart version will not directly track the version of FusionAuth.
+
+You can and should override the `image.tag` field in `values.yaml` to run your desired version of the FusionAuth application.
