@@ -190,6 +190,9 @@ ingress:
     {}
     # kubernetes.io/ingress.class: nginx
     # kubernetes.io/tls-acme: "true"
+  # ingress.ingressClassName since the kubernetes.io/ingress.class annotation
+  # is deprecated as of networking.k8s.io/v1 or kubernetes 1.22+
+  ingressClassName: ~
   paths: []
   # - path: /*
   #   pathType: Prefix
