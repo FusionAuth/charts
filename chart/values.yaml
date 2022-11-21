@@ -296,3 +296,25 @@ serviceAccount:
   create: false
   # serviceAccount.name -- Service account name to use. If not set the "default" service account will be used
   name: ""
+
+# serviceMonitor -- Configures a Prometheus operator ServiceMonitor custom resource
+# Ref: https://fusionauth.io/docs/v1/tech/tutorials/prometheus
+serviceMonitor:
+  # serviceMonitor.enabled -- Enables creation of a ServiceMonitor
+  enabled: false
+  # serviceMonitor.basicAuth -- Configures basic auth for prometheus, this is required for the serviceMonitor to work with FusionAuth because metrics sit behind an authenticated endpoint
+  basicAuth: {}
+  #  password:
+  #    name: myBasicAuthSecret
+  #    key: password
+  #  username:
+  #    name: myBasicAuthSecret
+  #    key: user
+  # serviceMonitor.path -- Configures path to metrics, defaults to FusionAuth's prometheus metrics API endpoint
+  path: api/prometheus/metrics
+  namespaceSelector: {}
+  annotations: {}
+  labels: {}
+  interval: null
+  scrapeTimeout: null
+  relabelings: []
