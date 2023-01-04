@@ -61,7 +61,7 @@ The command removes all the Kubernetes components associated with the chart and 
 | fullnameOverride                | string | `""`                                                                                                 | Overrides full resource names                                                                                                     |
 | image.pullPolicy                | string | `"IfNotPresent"`                                                                                     | Kubernetes image pullPolicy to use for fusionauth-app                                                                             |
 | image.repository                | string | `"fusionauth/fusionauth-app"`                                                                        | The docker tag to pull for fusionauth-app                                                                                         |
-| image.tag                       | string | `"1.36.4"`                                                                                           |                                                                                                                                   |
+| image.tag                       | string | `"1.42.0"`                                                                                           |                                                                                                                                   |
 | imagePullSecrets                | list   | `[]`                                                                                                 | Configures kubernetes secrets to use for pulling private images                                                                   |
 | ingress.annotations             | object | `{}`                                                                                                 | Configure annotations to add to the ingress object                                                                                |
 | ingress.enabled                 | bool   | `false`                                                                                              | Enables ingress creation for fusionauth.                                                                                          |
@@ -107,7 +107,7 @@ You can release the chart by bumping the git tag:
 
 ```
 cd <charts directory>
-git tag 0.10.6
+git tag 0.11.0
 git push origin master --tags
 ```
 
