@@ -3,4 +3,4 @@ appVersion: "1.42.0"
 description: Helm chart for FusionAuth
 type: application
 name: fusionauth
-version: 0.11.0
+version: 0.0.0+dev
