@@ -11,12 +11,12 @@ jobs:
     outputs:
       version: ${{ steps.release.outputs.version }}
     steps:
-      - name: checkout
+      - name: Checkout
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
-      - name: update version
+      - name: Update version in Chart.yaml
         run: |
           sed -i "s|version: 0.0.0+dev|version: ${GITHUB_REF##*/}|" chart/Chart.yaml
 
@@ -25,7 +25,7 @@ jobs:
           git config user.name "$GITHUB_ACTOR"
           git config user.email "$GITHUB_ACTOR@users.noreply.github.com"
 
-      - name: release
+      - name: Release
         env:
           CR_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
           CR_OWNER: fusionauth
@@ -46,10 +46,10 @@ jobs:
     runs-on: ubuntu-22.04
     needs: release
     steps:
-      - name: install kind
+      - name: Install kind
         uses: helm/kind-action@v1.5.0
 
-      - name: install the chart
+      - name: Install the chart in kind
         env:
           CHARTS_REPO: https://fusionauth.github.io/charts 
         run: |
@@ -60,7 +60,7 @@ jobs:
             --set database.password=password \
             --set search.host=host
 
-      - name: verify the chart version
+      - name: Verify the chart version
         env:
           RELEASED_VERSION: ${{ needs.release.outputs.version }}
         run: |
