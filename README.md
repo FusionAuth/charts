@@ -1,12 +1,14 @@
-# FusionAuth Helm Chart [![Build Status](https://travis-ci.org/FusionAuth/charts.svg?branch=master)](https://travis-ci.org/FusionAuth/charts)
+# FusionAuth Helm Chart
+
+![Build Status](https://github.com/FusionAuth/charts/actions/workflows/release.yml/badge.svg)
 
 [FusionAuth](https://fusionauth.io/) is a modern platform for Customer Identity and Access Management (CIAM). FusionAuth provides APIs and a responsive web user interface to support login, registration, localized email, multi-factor authentication, reporting and much more.
 
 ## Installing the Chart
 
-You can read the official instructions, including install steps for AWS, GCP and Azure, in the [FusionAuth Kubernetes installation guide](https://fusionauth.io/docs/v1/tech/installation-guide/kubernetes/).
+You can read the official instructions, including install steps for AWS, GCP, and Azure, in the [FusionAuth Kubernetes installation guide](https://fusionauth.io/docs/get-started/download-and-install/kubernetes/fusionauth-deployment).
 
-### Important upgrade info:
+### Important Upgrade Info
 
 In `0.8.0` the `environment` value is now an array instead of an object. Make sure to reformat your values when you update.
 
