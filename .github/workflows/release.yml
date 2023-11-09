@@ -24,6 +24,7 @@ jobs:
         run: |
           git config --global user.name "$GITHUB_ACTOR"
           git config --global user.email "$GITHUB_ACTOR@users.noreply.github.com"
+          git config --global --add safe.directory /__w/charts/charts
 
       - name: Release
         env:
@@ -31,7 +32,6 @@ jobs:
           CR_OWNER: fusionauth
           CR_GIT_REPO: charts
           CR_PACKAGE_PATH: .deploy
-          CR_CHARTS_REPO: https://fusionauth.github.io/charts
           CR_INDEX_PATH: index.yaml
           CR_PAGES_BRANCH: main
           CR_RELEASE_NAME_TEMPLATE: "{{ .Version }}"
