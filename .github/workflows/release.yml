@@ -22,8 +22,8 @@ jobs:
 
       - name: configure git
         run: |
-          git config user.name "$GITHUB_ACTOR"
-          git config user.email "$GITHUB_ACTOR@users.noreply.github.com"
+          git config --global user.name "$GITHUB_ACTOR"
+          git config --global user.email "$GITHUB_ACTOR@users.noreply.github.com"
 
       - name: Release
         env:
@@ -46,7 +46,11 @@ jobs:
     runs-on: ubuntu-22.04
     needs: release
     steps:
-      - name: Install kind
+
+      - name: Set up helm
+        uses: azure/setup-helm@v3
+
+      - name: Set up kind
         uses: helm/kind-action@v1.5.0
 
       - name: Install the chart in kind
