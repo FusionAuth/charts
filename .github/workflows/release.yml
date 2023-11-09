@@ -40,7 +40,7 @@ jobs:
           cr upload
           cr index --push
           ARCHIVE=$(ls ${CR_PACKAGE_PATH})
-          echo "::set-output name=version::${ARCHIVE%.*}"
+          echo "RELEASED_VERSION=${ARCHIVE%.*}" >> $GITHUB_ENV
 
   install:
     runs-on: ubuntu-22.04
@@ -69,9 +69,9 @@ jobs:
           RELEASED_VERSION: ${{ needs.release.outputs.version }}
         run: |
           INSTALLED_VERSION=$(helm list -m1 -f 'fusionauth*' -o json | jq -r '.[0].chart' )
-          if [[ "${RELEASED_VERSION}" != "${INSTALLED_VERSION}" ]]; then
+          if [[ "${{ env.RELEASED_VERSION }}" != "${INSTALLED_VERSION}" ]]; then
             echo "Incorrect Version Installed ..."
-            echo "Released Version: $RELEASED_VERSION"
+            echo "Released Version: ${{ env.RELEASED_VERSION }}"
             echo "Installed Version: $INSTALLED_VERSION"
             exit 1
           else
