@@ -28,7 +28,7 @@ initContainers:
     # initContainers.image.repository -- Docker image to use for initContainers
     repository: busybox
     # initContainers.image.repository -- Tag to use for initContainers docker image
-    tag: latest
+    tag: 1.36.1
   # initContainers.resources -- Resource requests and limits to use for initContainers
   resources:
     {}
