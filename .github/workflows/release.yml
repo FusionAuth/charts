@@ -27,6 +27,7 @@ jobs:
           git config --global --add safe.directory /__w/charts/charts
 
       - name: Release
+        id: release
         env:
           CR_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
           CR_OWNER: fusionauth
@@ -40,7 +41,7 @@ jobs:
           cr upload
           cr index --push
           ARCHIVE=$(ls ${CR_PACKAGE_PATH})
-          echo "RELEASED_VERSION=${ARCHIVE%.*}" >> $GITHUB_ENV
+          echo "version=${ARCHIVE%.*}" >> "$GITHUB_OUTPUT"
 
   install:
     runs-on: ubuntu-22.04
@@ -69,11 +70,11 @@ jobs:
           RELEASED_VERSION: ${{ needs.release.outputs.version }}
         run: |
           INSTALLED_VERSION=$(helm list -m1 -f 'fusionauth*' -o json | jq -r '.[0].chart' )
-          if [[ "${{ env.RELEASED_VERSION }}" != "${INSTALLED_VERSION}" ]]; then
+          if [[ "${RELEASED_VERSION}" != "${INSTALLED_VERSION}" ]]; then
             echo "Incorrect Version Installed ..."
-            echo "Released Version: ${{ env.RELEASED_VERSION }}"
-            echo "Installed Version: $INSTALLED_VERSION"
+            echo "Released Version: ${RELEASED_VERSION}"
+            echo "Installed Version: ${INSTALLED_VERSION}"
             exit 1
           else
-            echo "Installed $INSTALLED_VERSION as expected."
+            echo "Installed ${INSTALLED_VERSION} as expected."
           fi
