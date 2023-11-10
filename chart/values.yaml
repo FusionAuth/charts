@@ -294,8 +294,10 @@ extraVolumeMounts:
 serviceAccount:
   # serviceAccount.create -- If set to true service account will be created. Otherwise, the default service account will be used
   create: false
-  # serviceAccount.name -- Service account name to use. If not set the "default" service account will be used
+  # serviceAccount.name -- Service account name to use. Defaults to "fusionauth".
   name: ""
+  # serviceAccount.annotations -- Extra annotations to add to the serviceAccount object
+  annotations: {}
 
 # serviceMonitor -- Configures a Prometheus operator ServiceMonitor custom resource
 # Ref: https://fusionauth.io/docs/v1/tech/tutorials/prometheus
