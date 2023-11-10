@@ -294,7 +294,7 @@ extraVolumeMounts:
 serviceAccount:
   # serviceAccount.create -- If set to true service account will be created. Otherwise, the default service account will be used
   create: false
-  # serviceAccount.name -- Service account name to use. Defaults to "fusionauth".
+  # serviceAccount.name -- Service account name to use. If not specified, defaults to the helm installation name
   name: ""
   # serviceAccount.annotations -- Extra annotations to add to the serviceAccount object
   annotations: {}
