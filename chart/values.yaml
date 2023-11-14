@@ -4,16 +4,21 @@
 
 # replicaCount -- The number of fusionauth-app instances to run
 replicaCount: 1
+
 image:
   # image.repository -- The name of the docker repository for fusionauth-app
   repository: fusionauth/fusionauth-app
   # image.repository -- The docker tag to pull for fusionauth-app
-  tag: 1.42.0
+  tag: 1.48.1
   # image.pullPolicy -- Kubernetes image pullPolicy to use for fusionauth-app
   pullPolicy: IfNotPresent
 
 # imagePullSecrets -- Configures kubernetes secrets to use for pulling private images
 imagePullSecrets: []
+# nameOverride -- Overrides resource names
+nameOverride: ""
+# fullnameOverride -- Overrides full resource names
+fullnameOverride: ""
 
 # - spec for Container:
 # kubectl explain pod.spec.initContainers
@@ -30,28 +35,22 @@ initContainers:
     # initContainers.image.repository -- Tag to use for initContainers docker image
     tag: 1.36.1
   # initContainers.resources -- Resource requests and limits to use for initContainers
-  resources:
-    {}
+  resources: {}
     # We usually recommend not to specify default resources and to leave this as a conscious
     # choice for the user. This also increases chances charts run on environments with little
     # resources, such as Minikube. If you do want to specify resources, uncomment the following
     # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
     # limits:
-    #  cpu: 100m
-    #  memory: 128Mi
+    #   cpu: 100m
+    #   memory: 128Mi
     # requests:
-    #  cpu: 100m
-    #  memory: 128Mi
+    #   cpu: 100m
+    #   memory: 128Mi
 
 # - spec for Container:
 # kubectl explain pod.spec.containers
 # kubectl explain pod.spec.containers --recursive
 extraContainers: []
-
-# nameOverride -- Overrides resource names
-nameOverride: ""
-# fullnameOverride -- Overrides full resource names
-fullnameOverride: ""
 
 service:
   # service.type -- Type of Kubernetes service to create
@@ -113,8 +112,7 @@ app:
   runtimeMode: development
 
 # environment - Configure additional environment variables. Should only be used for things that are not explicitly set elsewhere in the chart.
-environment:
-  []
+environment: []
   # - name: POD_IP
   #   valueFrom:
   #     fieldRef:
@@ -167,8 +165,7 @@ kickstart:
     # setup-password.txt: |
     #    Hallo
 
-lifecycle:
-  {}
+lifecycle: {}
   # # lifecycle.postStart -- postStart lifecycle command for fusionauth container
   # postStart:
   #   exec:
@@ -186,8 +183,7 @@ ingress:
   # ingress.enabled -- Enables ingress creation for fusionauth.
   enabled: false
   # ingress.annotations -- Configure annotations to add to the ingress object
-  annotations:
-    {}
+  annotations: {}
     # kubernetes.io/ingress.class: nginx
     # kubernetes.io/tls-acme: "true"
   # ingress.ingressClassName since the kubernetes.io/ingress.class annotation
@@ -200,8 +196,7 @@ ingress:
   # ingress.extraPaths -- Define complete path objects, will be inserted before regular paths. Can be useful for things like ALB Ingress Controller actions
   extraPaths: []
   # ingress.hosts -- List of hostnames to configure the ingress with
-  hosts:
-    []
+  hosts: []
     # - chart-example.local
   # ingress.tls -- List of secrets used to configure TLS for the ingress.
   tls: []
@@ -210,18 +205,17 @@ ingress:
   #      - chart-example.local
 
 # resources -- Define resource requests and limits for fusionauth-app.
-resources:
-  {}
+resources: {}
   # We usually recommend not to specify default resources and to leave this as a conscious
   # choice for the user. This also increases chances charts run on environments with little
   # resources, such as Minikube. If you do want to specify resources, uncomment the following
   # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
   # limits:
-  #  cpu: 100m
-  #  memory: 128Mi
+  #   cpu: 100m
+  #   memory: 128Mi
   # requests:
-  #  cpu: 100m
-  #  memory: 128Mi
+  #   cpu: 100m
+  #   memory: 128Mi
 
 ## Autoscaling parameters
 autoscaling:
@@ -279,25 +273,26 @@ startupProbe:
   timeoutSeconds: 5
 
 # extraVolumes -- Define extra Volumes. Allow to add existing claimName
-extraVolumes:
-  []
+extraVolumes: []
   # - name: custom-css-data
   #   persistentVolumeClaim:
   #     claimName: custom-css-data
 
 # extraVolumes -- Associate mountPath for each  extraVolumes
-extraVolumeMounts:
-  []
+extraVolumeMounts: []
   # - name: custom-css-data
   #   mountPath: /usr/local/fusionauth/fusionauth-app/web/custom
 
 serviceAccount:
-  # serviceAccount.create -- If set to true service account will be created. Otherwise, the default service account will be used
-  create: false
-  # serviceAccount.name -- Service account name to use. If not specified, defaults to the helm installation name
-  name: ""
-  # serviceAccount.annotations -- Extra annotations to add to the serviceAccount object
+  # serviceAccount.create - Specifies whether a service account should be created
+  create: true
+  # serviceAccount.automount - Automatically mount a ServiceAccount's API credentials?
+  automount: true
+  # serviceAccount.annotation - Annotations to add to the service account
   annotations: {}
+  # serviceAccount.name - The name of the service account to use.
+  # If not set and create is true, a name is generated using the fullname template
+  name: ""
 
 # serviceMonitor -- Configures a Prometheus operator ServiceMonitor custom resource
 # Ref: https://fusionauth.io/docs/v1/tech/tutorials/prometheus

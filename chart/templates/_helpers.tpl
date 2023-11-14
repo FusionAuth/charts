@@ -25,6 +25,18 @@ If release name contains chart name it will be used as a full name.
 {{- end -}}
 
 {{/*
+Set apiVersion for HPA
+*/}}
+{{- define "fusionauth.HpaApiVersion" -}}
+{{- if .Capabilities.APIVersions.Has "autoscaling/v2" -}}
+autoscaling/v2
+{{- else -}}
+autoscaling/v2beta2
+{{- end -}}
+{{- end -}}
+
+
+{{/*
 Set apiVersion for ingress
 */}}
 {{- define "fusionauth.ingressApiVersion" -}}
