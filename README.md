@@ -10,10 +10,9 @@ See the [chart README](chart/README.md) for detailed information.
 
 ## Releasing the Chart
 
-You can release the chart by bumping the git tag:
+Release the chart by pushing a new tag.
 
 ```
-cd <charts directory>
 git tag 1.0.0
 git push origin master --tags
 ```
@@ -27,4 +26,4 @@ chart/examples/minikube/values.yaml
 chart/values.yaml
 ```
 
-⚠️ Users must always be able to override the default version in the chart by overriding `image.tag`.
+⚠️ Users must always be able to override the default version in the chart by setting `image.tag`.

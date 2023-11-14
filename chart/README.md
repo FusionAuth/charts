@@ -8,14 +8,35 @@
 
 You can read the official instructions, including install steps for AWS, GCP, and Azure, in the [FusionAuth Kubernetes installation guide](https://fusionauth.io/docs/get-started/download-and-install/kubernetes/fusionauth-deployment).
 
-To install the chart with the release name `my-release`:
+### Prerequisites
+
+* PostgreSQL or MySQL database
+* ElasticSearch or OpenSearch instance (optional)
+
+⚠️ Though an ElasticSearch or OpenSearch instance is optional, it is strongly recommended for most use cases.
+
+### Installation
+
+To install the chart with the release name `my-fusionauth`:
 
 ```console
 $ helm repo add fusionauth https://fusionauth.github.io/charts
-$ helm install my-release fusionauth/fusionauth
+$ helm install my-fusionauth fusionauth/fusionauth \
+  --set database.host=[database host] \
+  --set database.user=[database username] \
+  --set database.password=[database password] \
+  --set search.host=[elasticsearch host]
 ```
 
-The command deploys FusionAuth.
+📝 For test deployments, you can remove `--set search.host` and add `--set search.engine=database` to configure FusionAuth to use the database for search instead of a dedicated search host. This is **not recommended** for real-world use, as search performance will be greatly reduced.
+
+### Uninstallation
+
+To uninstall/delete the `my-fusionauth` release:
+
+```console
+$ helm delete my-fusionauth
+```
 
 ## Versions
 
@@ -23,23 +44,13 @@ The helm chart is versioned independently from FusionAuth app releases. However,
 
 📝 You can and probably should override the `image.tag` field in `values.yaml` to run your desired version of the FusionAuth application.
 
-### Important Upgrade Info
+## Important Upgrade Info
 
-⚠️ **In `1.0.0` and later, the FusionAuth app version will now default to the latest available.** Release notes will indicate if the chart includes a newer version of FusionAuth. If you wish to override this behavior, set `image.tag` when deploying.
+* **In `1.0.0` and later, the FusionAuth app version will now default to the latest available.** Release notes will indicate if the chart includes a newer version of FusionAuth. If you wish to override this behavior, set `image.tag` when deploying.
 
-⚠️ **In `0.8.0`, the `environment` value is now an array instead of an object.** Make sure to reformat your values when you update.
+* **In `0.8.0`, the `environment` value is now an array instead of an object.** Make sure to reformat your values when you update.
 
-⚠️ **In `0.4.0`, the external postgresql and elasticsearch charts were dropped.** You will need to maintain those dependencies on your own.
-
-## Uninstalling the Chart
-
-To uninstall/delete the `my-release` deployment:
-
-```console
-$ helm delete my-release
-```
-
-The command removes all the Kubernetes components associated with the chart and deletes the release.
+* **In `0.4.0`, the external postgresql and elasticsearch charts were dropped.** You will need to maintain those dependencies on your own.
 
 ## Chart Values
 
@@ -47,9 +58,12 @@ The command removes all the Kubernetes components associated with the chart and 
 | ------------------------------- | ------ | ---------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------- |
 | affinity                        | object | `{}`                                                                                                 | Configure affinity rules for the fusionauth Deployment.                                                                          |
 | annotations                     | object | `{}`                                                                                                 | Define annotations for fusionauth Deployment.                                                                                    |
-| app.memory                      | string | `"256M"`                                                                                             | Configures the amount of memory Java can use (sets `FUSIONAUTH_APP_MEMORY`).                                                     |
-| app.runtimeMode                 | string | `"development"`                                                                                      | Configures runtime mode for fusionauth (sets `FUSIONAUTH_APP_RUNTIME_MODE`). Should be `development` or `production`.            |
+| app.memory                      | string | `"256M"`                                                                                             | Configures the amount of memory to allocate to the Java VM (sets `FUSIONAUTH_APP_MEMORY`).                                       |
+| app.runtimeMode                 | string | `"development"`                                                                                      | Configures runtime mode (sets `FUSIONAUTH_APP_RUNTIME_MODE`). Must be `development` or `production`.                             |
 | autoscaling.enabled             | bool   | `false`                                                                                              | Enable Horizontal Pod Autoscaling. See the values file for more HPA parameters.                                                  |
+| autoscaling.minReplicas         | int    | `2`                                                                                                  | Minimum number of running instances when HPA is enabled. Ignored when `autoscaling.enabled` is `false`.                          |
+| autoscaling.maxReplicas         | int    | `5`                                                                                                  | Maximum number of running instances when HPA is enabled. Ignored when `autoscaling.enabled` is `false`.                          |
+| autoscaling.targetCPU           | int    | `50`                                                                                                 | CPU use % threshold to trigger a HPA scale up. Ignored when `autoscaling.enabled` is `false`.                                    |
 | database.existingSecret         | string | `""`                                                                                                 | The name of an existing Kubernetes Secret that contains the database passwords.                                                  |
 | database.host                   | string | `""`                                                                                                 | Hostname or IP address of the fusionauth database.                                                                               |
 | database.name                   | string | `"fusionauth"`                                                                                       | Name of the fusionauth database.                                                                                                 |
