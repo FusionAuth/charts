@@ -20,7 +20,7 @@ git push origin master --tags
 To default to a new version of FusionAuth, update these 4 files with the new version number:
 
 ```
-README.md
+chart/README.md
 chart/Chart.yaml
 chart/examples/minikube/values.yaml
 chart/values.yaml
