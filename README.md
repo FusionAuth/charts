@@ -14,7 +14,7 @@ Release the chart by pushing a new tag.
 
 ```
 git tag 1.0.0
-git push origin master --tags
+git push origin main --tags
 ```
 
 To default to a new version of FusionAuth, update these 4 files with the new version number:
