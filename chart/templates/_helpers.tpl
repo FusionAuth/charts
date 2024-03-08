@@ -50,6 +50,18 @@ extensions/v1beta1
 {{- end -}}
 
 {{/*
+Set apiVersion for PodDisruptionBudget
+*/}}
+{{- define "fusionauth.PodDisruptionBudget" -}}
+{{- if .Capabilities.APIVersions.Has "policy/v1" -}}
+policy/v1
+{{- else -}}
+policy/v1beta1
+{{- end -}}
+{{- end -}}
+
+
+{{/*
 Configure TLS if enabled
 */}}
 {{- define "fusionauth.databaseTLS" -}}
