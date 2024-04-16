@@ -117,6 +117,10 @@ spec:
               value: {{ .Values.app.memory }}
             - name: FUSIONAUTH_APP_RUNTIME_MODE
               value: {{ .Values.app.runtimeMode }}
+            {{- if not (regexMatch "name:FUSIONAUTH_APP_SILENT_MODE(\\s|\\])" (toString .Values.environment)) }}
+            - name: FUSIONAUTH_APP_SILENT_MODE
+              value: {{ .Values.app.silentMode }}
+            {{- end }}
             {{- if .Values.kickstart.enabled }}
             - name: FUSIONAUTH_APP_KICKSTART_FILE
               value: "/kickstart/kickstart.json"

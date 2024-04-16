@@ -107,9 +107,13 @@ search:
 app:
   # app.memory -- Configures the amount of memory Java can use
   memory: 256M
-  # app.memory -- Configures runtime mode for fusionauth. Should be 'development' or 'production'
+  # app.runtimeMode -- Configures runtime mode for fusionauth. Should be 'development' or 'production'
   # learn more about the difference here: https://fusionauth.io/docs/v1/tech/reference/configuration
   runtimeMode: development
+  # app.silentMode -- Configures silent mode for fusionauth. Should be 'true' or 'false'
+  # learn more about silent mode here: https://fusionauth.io/docs/get-started/download-and-install/silent-mode
+  # silent-mode minimizes downtime during upgrades: https://fusionauth.io/docs/operate/deploy/upgrade#downtime-and-database-migrations
+  silentMode: false
 
 # environment - Configure additional environment variables. Should only be used for things that are not explicitly set elsewhere in the chart.
 environment: []
