@@ -16,6 +16,9 @@
                 },
                 "runtimeMode": {
                     "type": "string"
+                },
+                "silentMode": {
+                    "type": "boolean"
                 }
             }
         },
