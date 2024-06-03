@@ -13,17 +13,6 @@ See the [chart README](chart/README.md) for detailed information.
 Release the chart by pushing a new tag.
 
 ```
-git tag 1.0.0
+git tag 1.0.0  <-- replace with your actual tag version
 git push origin main --tags
 ```
-
-To default to a new version of FusionAuth, update these 4 files with the new version number:
-
-```
-chart/README.md
-chart/Chart.yaml
-chart/examples/minikube/values.yaml
-chart/values.yaml
-```
-
-⚠️ Users must always be able to override the default version in the chart by setting `image.tag`.

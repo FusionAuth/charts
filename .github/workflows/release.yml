@@ -16,9 +16,20 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Update version in Chart.yaml
+      - name: Update FusionAuth app version in misc files
+        working-directory: ./chart
         run: |
-          sed -i "s|version: 0.0.0+dev|version: ${GITHUB_REF##*/}|" chart/Chart.yaml
+          apk add -q curl jq yq
+          APP_VERSION=$(curl -s https://account.fusionauth.io/api/version | jq -r '.versions[]' | sort -V | tail -n 1)
+
+          echo "Chart: ${GITHUB_REF##*/}"
+          echo "App:   $APP_VERSION"
+
+          yq e -i '.version="'"${GITHUB_REF##*/}"'"' Chart.yaml
+          yq e -i '.appVersion="'"$APP_VERSION"'"' Chart.yaml
+          yq e -i '.image.tag="'"$APP_VERSION"'"' values.yaml
+          yq e -i '.image.tag="'"$APP_VERSION"'"' examples/minikube/values.yaml
+          sed -i '/| image.tag/s/\"\([^]]*\)\"/\"'"$APP_VERSION"'\"/' README.md
 
       - name: configure git
         run: |
