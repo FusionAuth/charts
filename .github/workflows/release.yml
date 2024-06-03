@@ -2,6 +2,7 @@ on:
   push:
     tags:
       - '**'
+  workflow_dispatch:
 
 jobs:
   release:
@@ -16,15 +17,33 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Update version in Chart.yaml
+      - name: update FusionAuth app version in misc files
+        working-directory: ./chart
         run: |
-          sed -i "s|version: 0.0.0+dev|version: ${GITHUB_REF##*/}|" chart/Chart.yaml
+          apk add -q curl jq
+          APP_VERSION=$(curl -s https://account.fusionauth.io/api/version | jq -r '.versions[]' | sort -V | tail -n 1)
+
+          echo "Chart: ${GITHUB_REF##*/}"
+          echo "App:   $APP_VERSION"
+
+          sed -i 's/\(version: \).*/\1'"${GITHUB_REF##*/}"'/' Chart.yaml
+          sed -i 's/\(appVersion: \).*/\1'"$APP_VERSION"'/' Chart.yaml
+          sed -i 's/\(^  tag: \).*/\1'"$APP_VERSION"'/' values.yaml
+          sed -i 's/\(^  tag: \).*/\1'"$APP_VERSION"'/' examples/minikube/values.yaml
+          sed -i '/| image.tag/s/\"\([^]]*\)\"/\"'"$APP_VERSION"'\"/' README.md
+
+          echo "APP_VERSION=$APP_VERSION" >> $GITHUB_ENV
 
       - name: configure git
         run: |
           git config --global user.name "$GITHUB_ACTOR"
           git config --global user.email "$GITHUB_ACTOR@users.noreply.github.com"
           git config --global --add safe.directory /__w/charts/charts
+
+      - name: commit app version
+        run: |
+          git commit -am "Update FusionAuth app version in chart to ${{ env.APP_VERSION }}"
+          git push
 
       - name: Release
         id: release
