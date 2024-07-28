@@ -1,2 +1,3 @@
-# https://help.github.com/en/articles/about-code-owners#codeowners-syntax
-* @FusionAuth/Owners @johnjeffers
+# This is a managed file. Manual changes will be overwritten.
+# https://github.com/FusionAuth/fusionauth-public-repos/
+.github/ @fusionauth/owners
