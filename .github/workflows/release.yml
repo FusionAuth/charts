@@ -45,7 +45,7 @@ jobs:
       - name: Release
         id: release
         env:
-          CR_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
+          CR_TOKEN: "${{ secrets.PAT_ACTIONS_WORKFLOWS }}"
           CR_OWNER: fusionauth
           CR_GIT_REPO: charts
           CR_PACKAGE_PATH: .deploy
