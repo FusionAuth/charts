@@ -16,3 +16,5 @@ Release the chart by pushing a new tag.
 git tag 1.0.0  <-- replace with your actual tag version
 git push origin main --tags
 ```
+
+The Actions workflow triggered by the tag push will automatically get the latest available version of FusionAuth and set that as the default for the chart, as well as updating the various files where the app version is referenced.
