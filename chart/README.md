@@ -16,6 +16,7 @@
 
 * **In `0.4.0`, the external postgresql and elasticsearch charts were dropped.** You will need to maintain those dependencies on your own.
 
+
 ## Installing the Chart
 
 You can read the official instructions, including install steps for AWS, GCP, and Azure, in the [FusionAuth Kubernetes installation guide](https://fusionauth.io/docs/get-started/download-and-install/kubernetes/fusionauth-deployment).
@@ -29,11 +30,11 @@ You can read the official instructions, including install steps for AWS, GCP, an
 
 ### Installation
 
-To install the chart with the release name `my-fusionauth`:
+To install the chart with the release name `fusionauth`:
 
 ```shell
 helm repo add fusionauth https://fusionauth.github.io/charts
-helm install my-fusionauth fusionauth/fusionauth \
+helm install fusionauth fusionauth/fusionauth \
   --set database.host=[database host] \
   --set database.user=[database username] \
   --set database.password=[database password] \
@@ -45,23 +46,15 @@ helm install my-fusionauth fusionauth/fusionauth \
 
 This will install FusionAuth and its prerequisites in a single kubernetes namespace, with a configuration suitable for evaluation and testing. **This configuration is not suitable for production.**
 
-Set a few environment variables.
-```
-export FA_NS=fusionauth-test    # Namespace we will deploy everything to
-export FA_APP_HELM=fusionauth   # Name of the FusionAuth helm installation
-export FA_PSQL_HELM=postgres    # Name of the Postgres helm installation
-export FA_SRCH_HELM=opensearch  # Name of the Opensearch helm installation
-```
-
 Create and switch to the test namespace.
 ```shell
-kubectl create namespace $FA_NS
-kubectl config set-context --current --namespace=$FA_NS
+kubectl create namespace fusionauth-test
+kubectl config set-context --current --namespace=fusionauth-test
 ```
 
 ### Install PostgreSQL
 ```shell
-helm install -n $FA_NS $FA_PSQL_HELM oci://registry-1.docker.io/bitnamicharts/postgresql
+helm install postgres oci://registry-1.docker.io/bitnamicharts/postgresql
 ```
 
 ### Install Opensearch
@@ -69,7 +62,7 @@ helm install -n $FA_NS $FA_PSQL_HELM oci://registry-1.docker.io/bitnamicharts/po
 Opensearch is optional, but highly recommended. See the note below.
 ```shell
 helm repo add opensearch https://opensearch-project.github.io/helm-charts/
-helm install -n $FA_NS $FA_SRCH_HELM opensearch/opensearch \
+helm install opensearch opensearch/opensearch \
 --set singleNode=true \
 --set-json 'extraEnvs=[{"name":"DISABLE_SECURITY_PLUGIN","value":"true"}]'
 ```
@@ -80,11 +73,11 @@ Wait for the Postgres and Opensearch pods to be ready, then install FusionAuth.
 ```shell
 export FA_PSQL_PASS=$(kubectl get secret postgres-postgresql -o jsonpath="{.data.postgres-password}" | base64 -d)
 helm repo add fusionauth https://fusionauth.github.io/charts
-helm install -n $FA_NS $FA_APP_HELM fusionauth/fusionauth \
---set database.host=$FA_PSQL_HELM-postgresql \
+helm install fusionauth fusionauth/fusionauth \
+--set database.host=postgres-postgresql \
 --set database.user=fusionauth \
 --set database.password=$FA_PSQL_PASS \
---set search.host=$FA_SRCH_HELM-cluster-master
+--set search.host=opensearch-cluster-master
 ```
 
 📝 For test deployments, you can remove `--set search.host` and add `--set search.engine=database` to configure FusionAuth to use the database for search instead of a dedicated search host. This is **not recommended** for real-world use, as search performance will be greatly reduced.
@@ -93,7 +86,7 @@ helm install -n $FA_NS $FA_APP_HELM fusionauth/fusionauth \
 
 Create a port forward to connect to the FusionAuth app.
 ```shell
-kubectl port-forward svc/$FA_APP_HELM-fusionauth 9011:9011
+kubectl port-forward svc/fusionauth 9011:9011
 ```
 
 You should now be able to connect to the FusionAuth application at http://localhost:9011 to start the initial setup.
