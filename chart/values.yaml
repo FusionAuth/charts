@@ -252,6 +252,9 @@ annotations: {}
 # podAnnotations -- Define annotations for fusionauth pods.
 podAnnotations: {}
 
+# podLabels -- Define lables for fusionauth pods.
+podLabels: {}
+
 # livenessProbe -- Configures a livenessProbe to ensure fusionauth is running
 livenessProbe:
   httpGet:
