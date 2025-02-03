@@ -427,6 +427,12 @@ You should now be able to connect to the FusionAuth application at http://localh
             <td>Enables creation of a <code>PodDisruptionBudget</code>.</td>
         </tr>
         <tr>
+            <td><code>podLabels</code></td>
+            <td>object</td>
+            <td><code>{}</code></td>
+            <td>Define labels for fusionauth Deployment.</td>
+        </tr>
+        <tr>
             <td><code>readinessProbe</code></td>
             <td>object</td>
             <td>
