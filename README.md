@@ -8,6 +8,12 @@
 
 See the [chart README](chart/README.md) for detailed information.
 
+## Versioning
+
+Beginning with 1.57.1, the Helm chart version is the same as the FusionAuth app version. This makes it easy to know which version of FusionAuth is set as the default in the chart. If you wish to upgrade the chart, but not the FusionAuth app version, set `image.tag` in the chart's values to the version of FusionAuth that you want to run.
+
+We'll typically release any changes to the chart alongside new FusionAuth app versions. Changes will be called out in the release notes. If changes must be made to the chart outside of the FusionAuth app release cycle, we'll indicate that with a SemVer pre-release tag. For example, `1.57.1-1` would indicate the 1st revision of the chart after the `1.57.1` release, before the next FusionAuth app release.
+
 ## Releasing the Chart
 
 Release the chart by pushing a new tag.
