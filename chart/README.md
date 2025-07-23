@@ -7,9 +7,13 @@
 
 ## Important Upgrade Info
 
+* **In `1.57.1` and later, the chart version now matches the FusionAuth app version.**
+
+    ⚠️ You can (and probably should) override the `image.tag` field in `values.yaml` to pin the desired version of the FusionAuth application. This ensures that upgrading the helm chart doesn't unexpectedly upgrade the FusionAuth version.
+
 * **In `1.0.0` and later, the FusionAuth app version will now default to the latest available at the time of the chart's release.** Release notes will indicate the FusionAuth version included in the chart.
 
-⚠️ You can (and probably should) override the `image.tag` field in `values.yaml` to pin the desired version of the FusionAuth application. This ensures that upgrading the helm chart doesn't unexpectedly upgrade the FusionAuth version.
+    ⚠️ You can (and probably should) override the `image.tag` field in `values.yaml` to pin the desired version of the FusionAuth application. This ensures that upgrading the helm chart doesn't unexpectedly upgrade the FusionAuth version.
 
 
 * **In `0.8.0`, the `environment` value is now an array instead of an object.** Make sure to reformat your values when you update.
