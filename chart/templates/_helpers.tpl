@@ -106,3 +106,27 @@ Create the name of the service account to use
 {{- default "default" .Values.serviceAccount.name }}
 {{- end }}
 {{- end }}
+
+{{/*
+Determine probe path based on image tag and overrides
+*/}}
+{{- define "fusionauth.probePath" -}}
+{{- $probeName := .probeName -}}
+{{- $overridePath := "" -}}
+{{- if eq $probeName "liveness" -}}
+{{- $overridePath = .Values.livenessProbe.httpGet.path -}}
+{{- else if eq $probeName "readiness" -}}
+{{- $overridePath = .Values.readinessProbe.httpGet.path -}}
+{{- else if eq $probeName "startup" -}}
+{{- $overridePath = .Values.startupProbe.httpGet.path -}}
+{{- end -}}
+{{- if $overridePath -}}
+{{- $overridePath -}}
+{{- else -}}
+{{- if semverCompare ">=1.52.0" .Values.image.tag -}}
+/api/health
+{{- else -}}
+/
+{{- end -}}
+{{- end -}}
+{{- end -}}

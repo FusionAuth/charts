@@ -82,10 +82,13 @@ spec:
               containerPort: 9011
               protocol: TCP
           livenessProbe:
+            {{- $_ := set .Values.livenessProbe "path" (include "fusionauth.probePath" (dict "Values" .Values "probeName" "liveness")) }}
             {{- toYaml .Values.livenessProbe | nindent 12 }}
           readinessProbe:
+            {{- $_ := set .Values.readinessProbe "path" (include "fusionauth.probePath" (dict "Values" .Values "probeName" "readiness")) }}
             {{- toYaml .Values.readinessProbe | nindent 12 }}
           startupProbe:
+            {{- $_ := set .Values.startupProbe "path" (include "fusionauth.probePath" (dict "Values" .Values "probeName" "startup")) }}
             {{- toYaml .Values.startupProbe | nindent 12 }}
           {{- with .Values.lifecycle }}
           lifecycle:
