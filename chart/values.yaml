@@ -258,7 +258,7 @@ podLabels: {}
 # livenessProbe -- Configures a livenessProbe to ensure fusionauth is running
 livenessProbe:
   httpGet:
-    path: /
+    # path: /  # Defaults to / for <1.52.0, /api/health for >=1.52.0 - uncomment to override
     port: http
   failureThreshold: 3
   periodSeconds: 30
@@ -266,14 +266,14 @@ livenessProbe:
 # readinessProbe -- Configures a readinessProbe to ensure fusionauth is ready for requests
 readinessProbe:
   httpGet:
-    path: /
+    # path: /  # Defaults to / for <1.52.0, /api/health for >=1.52.0 - uncomment to override
     port: http
   failureThreshold: 5
   timeoutSeconds: 5
 # startupProbe -- Configures a startupProbe to ensure fusionauth has finished starting up
 startupProbe:
   httpGet:
-    path: /
+    # path: /  # Defaults to / for <1.52.0, /api/health for >=1.52.0 - uncomment to override
     port: http
   failureThreshold: 20
   periodSeconds: 10
