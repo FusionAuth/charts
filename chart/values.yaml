@@ -7,7 +7,7 @@ replicaCount: 1
 
 image:
   # image.repository -- The name of the docker repository for fusionauth-app
-  repository: fusionauth/fusionauth-app
+  repository: docker.io/fusionauth/fusionauth-app
   # image.tag -- The docker tag to pull for fusionauth-app
   tag: ${APP_VERSION}
   # image.pullPolicy -- Kubernetes image pullPolicy to use for fusionauth-app
@@ -31,7 +31,7 @@ initContainers:
   # This image should contain `nc`, `wget` and a shell of some kind to do a simple loop.
   image:
     # initContainers.image.repository -- Docker image to use for initContainers
-    repository: busybox
+    repository: docker.io/library/busybox
     # initContainers.image.tag -- Tag to use for initContainers docker image
     tag: 1.36.1
   # initContainers.resources -- Resource requests and limits to use for initContainers
