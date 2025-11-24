@@ -5,14 +5,14 @@ on:
 
 jobs:
   release:
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     container:
-      image: quay.io/helmpack/chart-releaser:v1.6.1
+      image: quay.io/helmpack/chart-releaser:v1.8.1
     outputs:
       version: ${{ steps.release.outputs.version }}
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           token: "${{ secrets.PAT_ACTIONS_WORKFLOWS }}"
           fetch-depth: 0
@@ -61,7 +61,7 @@ jobs:
           echo "version=${ARCHIVE%.*}" >> "$GITHUB_OUTPUT"
 
   install:
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     needs: release
     steps:
       - name: Set up helm
