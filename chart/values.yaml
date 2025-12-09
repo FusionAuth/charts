@@ -208,6 +208,38 @@ ingress:
   #    hosts:
   #      - chart-example.local
 
+  httpRoute:
+  # httpRoute.enabled -- Enables HTTPRoute creation for fusionauth (requires Gateway API)
+  enabled: false
+  # httpRoute.annotations -- Configure annotations to add to the HTTPRoute object
+  annotations: {}
+  # httpRoute.parentRefs -- List of parent Gateway references
+  parentRefs:
+    - name: gateway
+      namespace: default
+      # Optional: specify a specific listener section
+      # sectionName: https
+  # httpRoute.hostnames -- List of hostnames for the route
+  hostnames:
+    - fusionauth.example.com
+  # httpRoute.matches -- Path matching rules for the route
+  matches:
+    - path:
+        type: PathPrefix
+        value: /
+  # httpRoute.filters -- Optional filters to apply to requests
+  filters: []
+  # - type: RequestHeaderModifier
+  #   requestHeaderModifier:
+  #     set:
+  #       - name: X-Custom-Header
+  #         value: custom-value
+  # httpRoute.backendRefs -- Backend configuration
+  backendRefs:
+    weight: 1
+  # httpRoute.redirect -- Enable HTTP to HTTPS redirect HTTPRoute (creates a separate HTTPRoute for redirection)
+  redirect: false
+
 # resources -- Define resource requests and limits for fusionauth-app.
 resources: {}
   # We usually recommend not to specify default resources and to leave this as a conscious
