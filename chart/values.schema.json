@@ -207,6 +207,9 @@
         "nodeSelector": {
             "type": "object"
         },
+        "podSecurityContext": {
+            "type": "object"
+        },
         "podAnnotations": {
             "type": "object"
         },
@@ -244,6 +247,9 @@
             "type": "integer"
         },
         "resources": {
+            "type": "object"
+        },
+        "securityContext": {
             "type": "object"
         },
         "search": {

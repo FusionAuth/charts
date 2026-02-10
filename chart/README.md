@@ -437,6 +437,12 @@ You should now be able to connect to the FusionAuth application at http://localh
             <td>Define labels for fusionauth Deployment.</td>
         </tr>
         <tr>
+            <td><code>podSecurityContext</code></td>
+            <td>object</td>
+            <td><code>{}</code></td>
+            <td>Security context for the pod. Ref: <a href="https://kubernetes.io/docs/tasks/configure-pod-container/security-context/">Kubernetes docs</a>.</td>
+        </tr>
+        <tr>
             <td><code>readinessProbe</code></td>
             <td>object</td>
             <td>
@@ -484,6 +490,12 @@ You should now be able to connect to the FusionAuth application at http://localh
             <td>string</td>
             <td><code>"http"</code></td>
             <td>Protocol to use when connecting to elasticsearch. Ignored when <code>search.engine</code> is NOT <code>elasticsearch</code>.</td>
+        </tr>
+        <tr>
+            <td><code>securityContext</code></td>
+            <td>object</td>
+            <td><code>{}</code></td>
+            <td>Security context for the fusionauth container. Ref: <a href="https://kubernetes.io/docs/tasks/configure-pod-container/security-context/">Kubernetes docs</a>.</td>
         </tr>
         <tr>
             <td><code>service.annotations</code></td>
