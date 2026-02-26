@@ -229,6 +229,19 @@ autoscaling:
   targetCPU: 50
   # targetMemory: 50
 
+# podSecurityContext -- Security context for the pod. Ref: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/
+podSecurityContext: {}
+  # runAsNonRoot: true
+  # seccompProfile:
+  #   type: RuntimeDefault
+
+# securityContext -- Security context for the fusionauth container. Ref: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/
+securityContext: {}
+  # allowPrivilegeEscalation: false
+  # capabilities:
+  #   drop:
+  #     - ALL
+
 # nodeSelector -- Define nodeSelector for kubernetes to use when scheduling fusionauth pods.
 nodeSelector: {}
 
