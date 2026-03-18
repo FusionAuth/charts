@@ -120,6 +120,8 @@ spec:
               value: {{ .Values.app.memory }}
             - name: FUSIONAUTH_APP_RUNTIME_MODE
               value: {{ .Values.app.runtimeMode }}
+            - name: FUSIONAUTH_APP_INSTALLATION_SOURCE
+              value: fusionauth-public-helm
             {{- if not (contains "FUSIONAUTH_APP_SILENT_MODE" (toString .Values.environment)) }}
             - name: FUSIONAUTH_APP_SILENT_MODE
               value: {{ .Values.app.silentMode | quote }}
