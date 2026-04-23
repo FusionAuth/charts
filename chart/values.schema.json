@@ -137,6 +137,35 @@
                 }
             }
         },
+        "httpRoute": {
+            "type": "object",
+            "properties": {
+                "enabled": {
+                    "type": "boolean"
+                },
+                "annotations": {
+                    "type": "object"
+                },
+                "parentRefs": {
+                    "type": "array"
+                },
+                "hostnames": {
+                    "type": "array"
+                },
+                "matches": {
+                    "type": "array"
+                },
+                "filters": {
+                    "type": "array"
+                },
+                "backendRefs": {
+                    "type": "object"
+                },
+                "redirect": {
+                    "type": "boolean"
+                }
+            }
+        },
         "initContainers": {
             "type": "object",
             "properties": {
