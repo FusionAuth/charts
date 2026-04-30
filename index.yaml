@@ -2,6 +2,16 @@ apiVersion: v1
 entries:
   fusionauth:
   - apiVersion: v2
+    appVersion: 1.65.0
+    created: "2026-04-30T16:04:58.756884512Z"
+    description: Helm chart for FusionAuth
+    digest: 5388238b82d41618f409bd36db6cb8dbde863e6c53a1b6b6c373f46016510d8e
+    name: fusionauth
+    type: application
+    urls:
+    - https://github.com/FusionAuth/charts/releases/download/1.65.0/fusionauth-1.65.0.tgz
+    version: 1.65.0
+  - apiVersion: v2
     appVersion: 1.64.1
     created: "2026-04-20T15:51:45.180778686Z"
     description: Helm chart for FusionAuth
@@ -823,4 +833,4 @@ entries:
     urls:
     - https://github.com/FusionAuth/charts/releases/download/0.1.28/fusionauth-0.1.28.tgz
     version: 0.1.28
-generated: "2026-04-20T15:51:45.181038689Z"
+generated: "2026-04-30T16:04:58.757189507Z"
