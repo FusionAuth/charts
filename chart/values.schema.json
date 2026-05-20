@@ -158,6 +158,28 @@
                 },
                 "required": [
                     "name"
+                ],
+                "oneOf": [
+                    {
+                        "required": [
+                            "value"
+                        ],
+                        "not": {
+                            "required": [
+                                "valueFrom"
+                            ]
+                        }
+                    },
+                    {
+                        "required": [
+                            "valueFrom"
+                        ],
+                        "not": {
+                            "required": [
+                                "value"
+                            ]
+                        }
+                    }
                 ]
             }
         },
