@@ -1,4 +1,7 @@
 {{- if .Values.autoscaling.enabled }}
+{{- if not (or .Values.autoscaling.targetCPU .Values.autoscaling.targetMemory) }}
+{{- fail "autoscaling.enabled requires at least one of autoscaling.targetCPU or autoscaling.targetMemory" }}
+{{- end }}
 apiVersion: autoscaling/v2
 kind: HorizontalPodAutoscaler
 metadata:

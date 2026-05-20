@@ -328,7 +328,7 @@ serviceMonitor:
   #    name: myBasicAuthSecret
   #    key: user
   # serviceMonitor.path -- Configures path to metrics, defaults to FusionAuth's prometheus metrics API endpoint
-  path: api/prometheus/metrics
+  path: /api/prometheus/metrics
   namespaceSelector: {}
   annotations: {}
   labels: {}
