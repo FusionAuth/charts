@@ -118,7 +118,24 @@
             ]
         },
         "environment": {
-            "type": "array"
+            "type": "array",
+            "items": {
+                "type": "object",
+                "properties": {
+                    "name": {
+                        "type": "string"
+                    },
+                    "value": {
+                        "type": "string"
+                    },
+                    "valueFrom": {
+                        "type": "object"
+                    }
+                },
+                "required": [
+                    "name"
+                ]
+            }
         },
         "extraContainers": {
             "type": "array"
@@ -303,7 +320,8 @@
                 },
                 "successThreshold": {
                     "type": "integer",
-                    "minimum": 1
+                    "minimum": 1,
+                    "maximum": 1
                 },
                 "timeoutSeconds": {
                     "type": "integer",
@@ -362,7 +380,21 @@
             }
         },
         "podLabels": {
-            "type": "object"
+            "type": "object",
+            "not": {
+                "anyOf": [
+                    {
+                        "required": [
+                            "app.kubernetes.io/name"
+                        ]
+                    },
+                    {
+                        "required": [
+                            "app.kubernetes.io/instance"
+                        ]
+                    }
+                ]
+            }
         },
         "readinessProbe": {
             "type": "object",
@@ -466,8 +498,7 @@
                     "enum": [
                         "ClusterIP",
                         "NodePort",
-                        "LoadBalancer",
-                        "ExternalName"
+                        "LoadBalancer"
                     ]
                 }
             }
@@ -566,7 +597,8 @@
                 },
                 "successThreshold": {
                     "type": "integer",
-                    "minimum": 1
+                    "minimum": 1,
+                    "maximum": 1
                 },
                 "timeoutSeconds": {
                     "type": "integer",

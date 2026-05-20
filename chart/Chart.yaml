@@ -1,6 +1,7 @@
 apiVersion: v2
 name: fusionauth
 description: Helm chart for FusionAuth
+icon: https://fusionauth.io/img/favicon.png
 type: application
 kubeVersion: ">=1.23.0-0"
 version: 0.0.0-chart-dev

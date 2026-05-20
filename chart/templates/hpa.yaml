@@ -2,6 +2,9 @@
 {{- if not (or .Values.autoscaling.targetCPU .Values.autoscaling.targetMemory) }}
 {{- fail "autoscaling.enabled requires at least one of autoscaling.targetCPU or autoscaling.targetMemory" }}
 {{- end }}
+{{- if gt (int .Values.autoscaling.minReplicas) (int .Values.autoscaling.maxReplicas) }}
+{{- fail "autoscaling.minReplicas cannot be greater than autoscaling.maxReplicas" }}
+{{- end }}
 apiVersion: autoscaling/v2
 kind: HorizontalPodAutoscaler
 metadata:
