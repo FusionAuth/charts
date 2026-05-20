@@ -93,7 +93,7 @@ spec:
           {{- end }}
           env:
             - name: DATABASE_USERNAME
-              value: {{ required "A valid username for the database is required!" .Values.database.user }}
+              value: {{ required "A valid username for the database is required!" .Values.database.user | quote }}
             - name: DATABASE_PASSWORD
               valueFrom:
                 secretKeyRef:
@@ -101,7 +101,7 @@ spec:
                   key: password
             {{- if .Values.database.root.user }}
             - name: DATABASE_ROOT_USERNAME
-              value: {{ .Values.database.root.user }}
+              value: {{ .Values.database.root.user | quote }}
             - name: DATABASE_ROOT_PASSWORD
               valueFrom:
                 secretKeyRef:
@@ -111,15 +111,15 @@ spec:
             - name: DATABASE_URL
               value: "jdbc:{{ .Values.database.protocol }}://{{- required "A valid database host is required!" .Values.database.host -}}:{{ .Values.database.port }}/{{ .Values.database.name }}{{ include "fusionauth.databaseTLS" . }}"
             - name: SEARCH_TYPE
-              value: {{ .Values.search.engine }}
+              value: {{ .Values.search.engine | quote }}
               {{- if eq .Values.search.engine "elasticsearch" }}
             - name: SEARCH_SERVERS
               value: "{{ .Values.search.protocol }}://{{ include "fusionauth.searchLogin" . }}{{- required "A valid elasticsearch host is required!" .Values.search.host -}}:{{ .Values.search.port }}"
               {{- end }}
             - name: FUSIONAUTH_APP_MEMORY
-              value: {{ .Values.app.memory }}
+              value: {{ .Values.app.memory | quote }}
             - name: FUSIONAUTH_APP_RUNTIME_MODE
-              value: {{ .Values.app.runtimeMode }}
+              value: {{ .Values.app.runtimeMode | quote }}
             {{- if not (contains "FUSIONAUTH_APP_SILENT_MODE" (toString .Values.environment)) }}
             - name: FUSIONAUTH_APP_SILENT_MODE
               value: {{ .Values.app.silentMode | quote }}

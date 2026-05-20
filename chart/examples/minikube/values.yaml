@@ -75,7 +75,7 @@ database:
   # These credentials are used for bootstrapping the database
   root:
     # database.root.user -- Database username for fusionauth to use during initial bootstrap - not required if you have manually bootstrapped your database
-    username: "postgres"
+    user: "postgres"
     # database.root.password -- Database password for fusionauth to use during initial bootstrap - not required if database.existingSecret is configured
     password: ""
 
