@@ -63,26 +63,38 @@ database:
   # database.name -- Name of the fusionauth database
   name: fusionauth
 
-  # database.existingSecret -- Configures an existing secret that contains the database passwords.
-  existingSecret:
-    # database.existingSecret.enabled -- Use an existing secret for database passwords.
-    enabled: false
-    # database.existingSecret.name -- The name of an existing secret that contains the database passwords.
-    name: ""
-    # database.existingSecret.passwordKey -- The key in database.existingSecret.name that contains the database password.
-    passwordKey: password
-    # database.existingSecret.rootPasswordKey -- The key in database.existingSecret.name that contains the database root password.
-    rootPasswordKey: rootpassword
-  # database.user -- Database username for fusionauth to use in normal operation
-  user: "fusionauth"
-  # database.password -- Database password for fusionauth to use in normal operation - not required if database.existingSecret.enabled is true
-  password: "minikube-password"
-  # These credentials are used for bootstrapping the database
-  root:
-    # database.root.user -- Database username for fusionauth to use during initial bootstrap - not required if you have manually bootstrapped your database
-    user: "postgres"
-    # database.root.password -- Database password for fusionauth to use during initial bootstrap - not required if database.existingSecret.enabled is true
+  # database.fusionauthUser -- Database credentials for fusionauth to use in normal operation
+  fusionauthUser:
+    # database.fusionauthUser.username -- Database username for fusionauth to use in normal operation
+    username: "fusionauth"
+    # database.fusionauthUser.password -- Database password for fusionauth to use in normal operation - not required if database.fusionauthUser.existingSecret.enabled is true
     password: "minikube-password"
+    # database.fusionauthUser.existingSecret -- Configures an existing secret that contains the normal database user credentials.
+    existingSecret:
+      # database.fusionauthUser.existingSecret.enabled -- Use an existing secret for the normal database user credentials.
+      enabled: false
+      # database.fusionauthUser.existingSecret.name -- The name of an existing secret that contains the normal database user credentials.
+      name: ""
+      # database.fusionauthUser.existingSecret.usernameKey -- The key in database.fusionauthUser.existingSecret.name that contains the database username.
+      usernameKey: username
+      # database.fusionauthUser.existingSecret.passwordKey -- The key in database.fusionauthUser.existingSecret.name that contains the database password.
+      passwordKey: password
+  # database.rootUser -- Database credentials for fusionauth to use during initial bootstrap
+  rootUser:
+    # database.rootUser.username -- Database username for fusionauth to use during initial bootstrap - not required if you have manually bootstrapped your database
+    username: "postgres"
+    # database.rootUser.password -- Database password for fusionauth to use during initial bootstrap - not required if database.rootUser.existingSecret.enabled is true
+    password: "minikube-password"
+    # database.rootUser.existingSecret -- Configures an existing secret that contains the root database user credentials.
+    existingSecret:
+      # database.rootUser.existingSecret.enabled -- Use an existing secret for the root database user credentials.
+      enabled: false
+      # database.rootUser.existingSecret.name -- The name of an existing secret that contains the root database user credentials.
+      name: ""
+      # database.rootUser.existingSecret.usernameKey -- The key in database.rootUser.existingSecret.name that contains the root database username.
+      usernameKey: username
+      # database.rootUser.existingSecret.passwordKey -- The key in database.rootUser.existingSecret.name that contains the root database password.
+      passwordKey: password
 
 search:
   # search.engine -- Defines backend for fusionauth search capabilities. Valid values for engine are 'elasticsearch' or 'database'.

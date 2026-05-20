@@ -17,9 +17,11 @@
 {{- $appRuntimeModeEnv := eq (include "fusionauth.environment.has" (dict "context" . "name" "FUSIONAUTH_APP_RUNTIME_MODE")) "true" }}
 {{- $appSilentModeEnv := eq (include "fusionauth.environment.has" (dict "context" . "name" "FUSIONAUTH_APP_SILENT_MODE")) "true" }}
 {{- $appKickstartFileEnv := eq (include "fusionauth.environment.has" (dict "context" . "name" "FUSIONAUTH_APP_KICKSTART_FILE")) "true" }}
+{{- $databaseFusionAuthUsernameFromExistingSecretEnabled := eq (include "fusionauth.database.fusionauthUser.usernameFromExistingSecret.enabled" .) "true" }}
+{{- $databaseRootUsernameFromExistingSecretEnabled := eq (include "fusionauth.database.rootUser.usernameFromExistingSecret.enabled" .) "true" }}
 {{- $searchExistingSecretEnabled := eq (include "fusionauth.search.existingSecret.enabled" .) "true" }}
 {{- $chartSearchEnabled := and (not $searchTypeEnv) (eq .Values.search.engine "elasticsearch") }}
-{{- $databaseRootUserConfigured := or .Values.database.root.user $databaseRootUsernameEnv }}
+{{- $databaseRootUserConfigured := eq (include "fusionauth.database.rootUser.configured" .) "true" }}
 {{- $kickstartVolumeName := printf "%s-config-volume" (include "fusionauth.fullname" .) }}
 {{- if .Values.kickstart.enabled }}
 {{- range .Values.extraVolumes }}
@@ -143,26 +145,40 @@ spec:
             {{- end }}
             {{- if not $databaseUsernameEnv }}
             - name: DATABASE_USERNAME
-              value: {{ required "A valid username for the database is required!" .Values.database.user | quote }}
+              {{- if $databaseFusionAuthUsernameFromExistingSecretEnabled }}
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "fusionauth.database.fusionauthUser.secretName" . }}
+                  key: {{ include "fusionauth.database.fusionauthUser.usernameKey" . | quote }}
+              {{- else }}
+              value: {{ required "A valid username for the database is required!" (include "fusionauth.database.fusionauthUser.username" .) | quote }}
+              {{- end }}
             {{- end }}
             {{- if not $databasePasswordEnv }}
             - name: DATABASE_PASSWORD
               valueFrom:
                 secretKeyRef:
-                  name: {{ include "fusionauth.database.secretName" . }}
-                  key: {{ include "fusionauth.database.passwordKey" . | quote }}
+                  name: {{ include "fusionauth.database.fusionauthUser.secretName" . }}
+                  key: {{ include "fusionauth.database.fusionauthUser.passwordKey" . | quote }}
             {{- end }}
             {{- if $databaseRootUserConfigured }}
             {{- if not $databaseRootUsernameEnv }}
             - name: DATABASE_ROOT_USERNAME
-              value: {{ .Values.database.root.user | quote }}
+              {{- if $databaseRootUsernameFromExistingSecretEnabled }}
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "fusionauth.database.rootUser.secretName" . }}
+                  key: {{ include "fusionauth.database.rootUser.usernameKey" . | quote }}
+              {{- else }}
+              value: {{ include "fusionauth.database.rootUser.username" . | quote }}
+              {{- end }}
             {{- end }}
             {{- if not $databaseRootPasswordEnv }}
             - name: DATABASE_ROOT_PASSWORD
               valueFrom:
                 secretKeyRef:
-                  name: {{ include "fusionauth.database.secretName" . }}
-                  key: {{ include "fusionauth.database.rootPasswordKey" . | quote }}
+                  name: {{ include "fusionauth.database.rootUser.secretName" . }}
+                  key: {{ include "fusionauth.database.rootUser.passwordKey" . | quote }}
             {{- end }}
             {{- end }}
             {{- if not $databaseUrlEnv }}

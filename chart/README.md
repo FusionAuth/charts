@@ -24,31 +24,46 @@ The following values have been updated, but compatibility shims are in
 place in `_helpers.tpl`. It is recommended to migrate to the new values,
 as the compatibility shims may be removed in a future release.
 
-| Previous value                         | New value                                           |
-| -------------------------------------- | --------------------------------------------------- |
-| `annotations`                          | `deploymentAnnotations`                             |
-| `initContainers.waitForDb`             | `initContainers.waitForDatabase`                    |
-| `initContainers.waitForEs`             | `initContainers.waitForSearch`                      |
-| `database.existingSecret: secret-name` | `database.existingSecret.name: secret-name`         |
-| `search.user`                          | `search.basicAuth.username`                         |
-| `search.password`                      | `search.basicAuth.password`                         |
-| `search.existingSecret: secret-name`   | `search.basicAuth.existingSecret.name: secret-name` |
-| `search.existingSecret.enabled`        | `search.basicAuth.existingSecret.enabled`           |
-| `search.existingSecret.name`           | `search.basicAuth.existingSecret.name`              |
-| `search.existingSecret.userKey`        | `search.basicAuth.existingSecret.userKey`           |
-| `search.existingSecret.passwordKey`    | `search.basicAuth.existingSecret.passwordKey`       |
+| Previous value                         | New value                                                                                           |
+| -------------------------------------- | --------------------------------------------------------------------------------------------------- |
+| `annotations`                          | `deploymentAnnotations`                                                                             |
+| `initContainers.waitForDb`             | `initContainers.waitForDatabase`                                                                    |
+| `initContainers.waitForEs`             | `initContainers.waitForSearch`                                                                      |
+| `database.user`                        | `database.fusionauthUser.username`                                                                  |
+| `database.password`                    | `database.fusionauthUser.password`                                                                  |
+| `database.root.user`                   | `database.rootUser.username`                                                                        |
+| `database.root.password`               | `database.rootUser.password`                                                                        |
+| `database.existingSecret: secret-name` | `database.fusionauthUser.existingSecret.name` and `database.rootUser.existingSecret.name` if needed |
+| `database.existingSecret.enabled`      | `database.fusionauthUser.existingSecret.enabled` and `database.rootUser.existingSecret.enabled`     |
+| `database.existingSecret.name`         | `database.fusionauthUser.existingSecret.name` and `database.rootUser.existingSecret.name` if needed |
+| `database.existingSecret.passwordKey`  | `database.fusionauthUser.existingSecret.passwordKey`                                                |
+| `database.existingSecret.rootPasswordKey` | `database.rootUser.existingSecret.passwordKey`                                                   |
+| `search.user`                          | `search.basicAuth.username`                                                                         |
+| `search.password`                      | `search.basicAuth.password`                                                                         |
+| `search.existingSecret: secret-name`   | `search.basicAuth.existingSecret.name: secret-name`                                                 |
+| `search.existingSecret.enabled`        | `search.basicAuth.existingSecret.enabled`                                                           |
+| `search.existingSecret.name`           | `search.basicAuth.existingSecret.name`                                                              |
+| `search.existingSecret.userKey`        | `search.basicAuth.existingSecret.userKey`                                                           |
+| `search.existingSecret.passwordKey`    | `search.basicAuth.existingSecret.passwordKey`                                                       |
 
-When migrating `database.existingSecret`, set `database.existingSecret.enabled: true`. When migrating inline search credentials, set `search.basicAuth.enabled: true`. When migrating search credentials from an existing Secret, set `search.basicAuth.existingSecret.enabled: true`.
+When migrating existing database Secrets, set `database.fusionauthUser.existingSecret.enabled: true` and, if you use root bootstrap credentials, set `database.rootUser.existingSecret.enabled: true`. When migrating inline search credentials, set `search.basicAuth.enabled: true`. When migrating search credentials from an existing Secret, set `search.basicAuth.existingSecret.enabled: true`.
 
 Prefer the following structure for database credentials:
 
 ```yaml
 database:
-  existingSecret:
-    enabled: true
-    name: secret-name
-    passwordKey: password
-    rootPasswordKey: rootpassword
+  fusionauthUser:
+    existingSecret:
+      enabled: true
+      name: database-user-secret
+      usernameKey: username
+      passwordKey: password
+  rootUser:
+    existingSecret:
+      enabled: true
+      name: database-root-secret
+      usernameKey: username
+      passwordKey: password
 ```
 
 Prefer the following structure for search basic auth credentials:
@@ -102,8 +117,8 @@ To install the chart with the release name `fusionauth`:
 helm repo add fusionauth https://fusionauth.github.io/charts
 helm install fusionauth fusionauth/fusionauth \
   --set database.host=[database host] \
-  --set database.user=[database username] \
-  --set database.password=[database password] \
+  --set database.fusionauthUser.username=[database username] \
+  --set database.fusionauthUser.password=[database password] \
   --set search.host=[elasticsearch host]
 ```
 
@@ -144,8 +159,8 @@ export FA_PSQL_PASS=$(kubectl get secret postgres-postgresql -o jsonpath="{.data
 helm repo add fusionauth https://fusionauth.github.io/charts
 helm install fusionauth fusionauth/fusionauth \
 --set database.host=postgres-postgresql \
---set database.user=fusionauth \
---set database.password=$FA_PSQL_PASS \
+--set database.fusionauthUser.username=fusionauth \
+--set database.fusionauthUser.password=$FA_PSQL_PASS \
 --set search.host=opensearch-cluster-master
 ```
 
@@ -230,12 +245,6 @@ You should now be able to connect to the FusionAuth application at http://localh
             <td>CPU use % threshold to trigger a HPA scale up. Ignored when <code>autoscaling.enabled</code> is <code>false</code>.</td>
         </tr>
         <tr>
-            <td><code>database.existingSecret</code></td>
-            <td>string</td>
-            <td><code>""</code></td>
-            <td>The name of an existing Kubernetes Secret that contains the database passwords.</td>
-        </tr>
-        <tr>
             <td><code>database.host</code></td>
             <td>string</td>
             <td><code>""</code></td>
@@ -246,12 +255,6 @@ You should now be able to connect to the FusionAuth application at http://localh
             <td>string</td>
             <td><code>"fusionauth"</code></td>
             <td>Name of the fusionauth database.</td>
-        </tr>
-        <tr>
-            <td><code>database.password</code></td>
-            <td>string</td>
-            <td><code>""</code></td>
-            <td>Database password for fusionauth to use in normal operation - not required if <code>database.existingSecret</code> is configured.</td>
         </tr>
         <tr>
             <td><code>database.port</code></td>
@@ -266,16 +269,76 @@ You should now be able to connect to the FusionAuth application at http://localh
             <td>Should either be <code>postgresql</code> or <code>mysql</code>. Protocol for jdbc connection to database.</td>
         </tr>
         <tr>
-            <td><code>database.root.password</code></td>
+            <td><code>database.fusionauthUser.username</code></td>
             <td>string</td>
             <td><code>""</code></td>
-            <td>Database password for fusionauth to use during initial bootstrap - not required if <code>database.existingSecret</code> is configured.</td>
+            <td>Database username for fusionauth to use in normal operation.</td>
         </tr>
         <tr>
-            <td><code>database.root.user</code></td>
+            <td><code>database.fusionauthUser.password</code></td>
+            <td>string</td>
+            <td><code>""</code></td>
+            <td>Database password for fusionauth to use in normal operation - not required if <code>database.fusionauthUser.existingSecret.enabled</code> is <code>true</code>.</td>
+        </tr>
+        <tr>
+            <td><code>database.fusionauthUser.existingSecret.enabled</code></td>
+            <td>bool</td>
+            <td><code>false</code></td>
+            <td>Use an existing Secret for the normal database user credentials.</td>
+        </tr>
+        <tr>
+            <td><code>database.fusionauthUser.existingSecret.name</code></td>
+            <td>string</td>
+            <td><code>""</code></td>
+            <td>The name of an existing Secret that contains the normal database user credentials.</td>
+        </tr>
+        <tr>
+            <td><code>database.fusionauthUser.existingSecret.usernameKey</code></td>
+            <td>string</td>
+            <td><code>"username"</code></td>
+            <td>The key in <code>database.fusionauthUser.existingSecret.name</code> that contains the database username.</td>
+        </tr>
+        <tr>
+            <td><code>database.fusionauthUser.existingSecret.passwordKey</code></td>
+            <td>string</td>
+            <td><code>"password"</code></td>
+            <td>The key in <code>database.fusionauthUser.existingSecret.name</code> that contains the database password.</td>
+        </tr>
+        <tr>
+            <td><code>database.rootUser.username</code></td>
             <td>string</td>
             <td><code>""</code></td>
             <td>Database username for fusionauth to use during initial bootstrap - not required if you have manually bootstrapped your database.</td>
+        </tr>
+        <tr>
+            <td><code>database.rootUser.password</code></td>
+            <td>string</td>
+            <td><code>""</code></td>
+            <td>Database password for fusionauth to use during initial bootstrap - not required if <code>database.rootUser.existingSecret.enabled</code> is <code>true</code>.</td>
+        </tr>
+        <tr>
+            <td><code>database.rootUser.existingSecret.enabled</code></td>
+            <td>bool</td>
+            <td><code>false</code></td>
+            <td>Use an existing Secret for the root database user credentials.</td>
+        </tr>
+        <tr>
+            <td><code>database.rootUser.existingSecret.name</code></td>
+            <td>string</td>
+            <td><code>""</code></td>
+            <td>The name of an existing Secret that contains the root database user credentials.</td>
+        </tr>
+        <tr>
+            <td><code>database.rootUser.existingSecret.usernameKey</code></td>
+            <td>string</td>
+            <td><code>"username"</code></td>
+            <td>The key in <code>database.rootUser.existingSecret.name</code> that contains the root database username.</td>
+        </tr>
+        <tr>
+            <td><code>database.rootUser.existingSecret.passwordKey</code></td>
+            <td>string</td>
+            <td><code>"password"</code></td>
+            <td>The key in <code>database.rootUser.existingSecret.name</code> that contains the root database password.</td>
         </tr>
         <tr>
             <td><code>database.tls</code></td>
@@ -288,12 +351,6 @@ You should now be able to connect to the FusionAuth application at http://localh
             <td>string</td>
             <td><code>"require"</code></td>
             <td>If tls is enabled, this configures the mode.</td>
-        </tr>
-        <tr>
-            <td><code>database.user</code></td>
-            <td>string</td>
-            <td><code>""</code></td>
-            <td>Database username for fusionauth to use in normal operation.</td>
         </tr>
         <tr>
             <td><code>dnsConfig</code></td>
