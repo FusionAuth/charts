@@ -10,10 +10,7 @@ kind: HorizontalPodAutoscaler
 metadata:
   name: {{ include "fusionauth.fullname" . }}
   labels:
-    app.kubernetes.io/name: {{ include "fusionauth.name" . }}
-    helm.sh/chart: {{ include "fusionauth.chart" . }}
-    app.kubernetes.io/instance: {{ .Release.Name }}
-    app.kubernetes.io/managed-by: {{ .Release.Service }}
+    {{- include "fusionauth.labels" . | nindent 4 }}
 spec:
   scaleTargetRef:
     apiVersion: apps/v1

@@ -3,10 +3,7 @@ kind: Pod
 metadata:
   name: "{{ include "fusionauth.fullname" . }}-test-connection"
   labels:
-    app.kubernetes.io/name: {{ include "fusionauth.name" . }}
-    helm.sh/chart: {{ include "fusionauth.chart" . }}
-    app.kubernetes.io/instance: {{ .Release.Name }}
-    app.kubernetes.io/managed-by: {{ .Release.Service }}
+    {{- include "fusionauth.labels" . | nindent 4 }}
   annotations:
     "helm.sh/hook": test-success
 spec:

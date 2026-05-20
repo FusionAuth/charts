@@ -8,6 +8,9 @@
         "annotations": {
             "type": "object"
         },
+        "deploymentAnnotations": {
+            "type": "object"
+        },
         "app": {
             "type": "object",
             "properties": {
@@ -60,21 +63,28 @@
             "type": "object",
             "properties": {
                 "existingSecret": {
-                    "type": "object",
-                    "properties": {
-                        "enabled": {
-                            "type": "boolean"
-                        },
-                        "name": {
+                    "oneOf": [
+                        {
                             "type": "string"
                         },
-                        "passwordKey": {
-                            "type": "string"
-                        },
-                        "rootPasswordKey": {
-                            "type": "string"
+                        {
+                            "type": "object",
+                            "properties": {
+                                "enabled": {
+                                    "type": "boolean"
+                                },
+                                "name": {
+                                    "type": "string"
+                                },
+                                "passwordKey": {
+                                    "type": "string"
+                                },
+                                "rootPasswordKey": {
+                                    "type": "string"
+                                }
+                            }
                         }
-                    }
+                    ]
                 },
                 "host": {
                     "type": "string"
@@ -152,16 +162,41 @@
             }
         },
         "extraContainers": {
-            "type": "array"
+            "type": "array",
+            "items": {
+                "type": "object",
+                "required": [
+                    "name"
+                ]
+            }
         },
         "extraInitContainers": {
-            "type": "array"
+            "type": "array",
+            "items": {
+                "type": "object",
+                "required": [
+                    "name"
+                ]
+            }
         },
         "extraVolumeMounts": {
-            "type": "array"
+            "type": "array",
+            "items": {
+                "type": "object",
+                "required": [
+                    "name",
+                    "mountPath"
+                ]
+            }
         },
         "extraVolumes": {
-            "type": "array"
+            "type": "array",
+            "items": {
+                "type": "object",
+                "required": [
+                    "name"
+                ]
+            }
         },
         "fullnameOverride": {
             "type": "string"
@@ -271,10 +306,16 @@
                 "resources": {
                     "type": "object"
                 },
+                "waitForDatabase": {
+                    "type": "boolean"
+                },
                 "waitForDb": {
                     "type": "boolean"
                 },
                 "waitForEs": {
+                    "type": "boolean"
+                },
+                "waitForSearch": {
                     "type": "boolean"
                 }
             }
@@ -290,6 +331,10 @@
                 },
                 "enabled": {
                     "type": "boolean"
+                },
+                "file": {
+                    "type": "string",
+                    "pattern": "^/"
                 }
             }
         },
@@ -468,7 +513,41 @@
         },
         "search": {
             "type": "object",
+            "additionalProperties": false,
             "properties": {
+                "basicAuth": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "properties": {
+                        "enabled": {
+                            "type": "boolean"
+                        },
+                        "existingSecret": {
+                            "type": "object",
+                            "additionalProperties": false,
+                            "properties": {
+                                "enabled": {
+                                    "type": "boolean"
+                                },
+                                "name": {
+                                    "type": "string"
+                                },
+                                "passwordKey": {
+                                    "type": "string"
+                                },
+                                "userKey": {
+                                    "type": "string"
+                                }
+                            }
+                        },
+                        "password": {
+                            "type": "string"
+                        },
+                        "username": {
+                            "type": "string"
+                        }
+                    }
+                },
                 "engine": {
                     "type": "string",
                     "enum": [
@@ -476,25 +555,33 @@
                         "database"
                     ]
                 },
-                "existingSecret": {
-                    "type": "object",
-                    "properties": {
-                        "enabled": {
-                            "type": "boolean"
-                        },
-                        "name": {
-                            "type": "string"
-                        },
-                        "passwordKey": {
-                            "type": "string"
-                        },
-                        "userKey": {
-                            "type": "string"
-                        }
-                    }
-                },
                 "host": {
                     "type": "string"
+                },
+                "existingSecret": {
+                    "oneOf": [
+                        {
+                            "type": "string"
+                        },
+                        {
+                            "type": "object",
+                            "additionalProperties": false,
+                            "properties": {
+                                "enabled": {
+                                    "type": "boolean"
+                                },
+                                "name": {
+                                    "type": "string"
+                                },
+                                "passwordKey": {
+                                    "type": "string"
+                                },
+                                "userKey": {
+                                    "type": "string"
+                                }
+                            }
+                        }
+                    ]
                 },
                 "password": {
                     "type": "string"
@@ -518,6 +605,7 @@
         },
         "service": {
             "type": "object",
+            "additionalProperties": false,
             "properties": {
                 "annotations": {
                     "type": "object"
@@ -526,9 +614,6 @@
                     "type": "integer",
                     "minimum": 1,
                     "maximum": 65535
-                },
-                "spec": {
-                    "type": "object"
                 },
                 "type": {
                     "type": "string",

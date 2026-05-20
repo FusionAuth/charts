@@ -6,6 +6,8 @@ apiVersion: policy/v1
 kind: PodDisruptionBudget
 metadata:
   name: {{ include "fusionauth.fullname" . }}
+  labels:
+    {{- include "fusionauth.labels" . | nindent 4 }}
 spec:
   {{- if ne .Values.podDisruptionBudget.minAvailable nil }}
   {{- $minAvailable := .Values.podDisruptionBudget.minAvailable }}
@@ -18,6 +20,5 @@ spec:
   {{- end }}
   selector:
     matchLabels:
-      app.kubernetes.io/name: {{ include "fusionauth.name" . }}
-      app.kubernetes.io/instance: {{ .Release.Name }}
+      {{- include "fusionauth.selectorLabels" . | nindent 6 }}
 {{- end }}

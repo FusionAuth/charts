@@ -26,8 +26,10 @@ fullnameOverride: ""
 extraInitContainers: []
 
 initContainers:
-  waitForDb: true
-  waitForEs: true
+  # initContainers.waitForDatabase -- Create an init container that waits for the database to be ready.
+  # waitForDatabase: true
+  # initContainers.waitForSearch -- Create an init container that waits for search to be ready.
+  # waitForSearch: true
   # This image should contain `nc`, `wget` and a shell of some kind to do a simple loop.
   image:
     # initContainers.image.repository -- Docker image to use for initContainers
@@ -59,15 +61,13 @@ service:
   port: 9011
   # service.annotations -- Extra annotations to add to service object
   annotations: {}
-  # service.spec -- Any extra fields to add to the service object spec
-  spec: {}
 
 database:
   # database.protocol -- Should either be postgresql or mysql. Protocol for jdbc connection to database
   protocol: postgresql
   # database.host -- Hostname or ip of the database instance
   host: ""
-  # database.host -- Port of the database instance
+  # database.port -- Port of the database instance
   port: 5432
   # database.tls -- Configures whether or not to use tls when connecting to the database
   tls: false
@@ -100,26 +100,30 @@ database:
 search:
   # search.engine -- Defines backend for fusionauth search capabilities. Valid values for engine are 'elasticsearch' or 'database'.
   engine: elasticsearch
-  # search.engine -- Protocol to use when connecting to elasticsearch. Ignored when search.engine is NOT elasticsearch
+  # search.protocol -- Protocol to use when connecting to elasticsearch. Ignored when search.engine is NOT elasticsearch
   protocol: http
   # search.host -- Hostname or ip to use when connecting to elasticsearch. Ignored when search.engine is NOT elasticsearch
   host: ""
   # search.port -- Port to use when connecting to elasticsearch. Ignored when search.engine is NOT elasticsearch
   port: 9200
-  # search.existingSecret -- Configures an existing secret that contains elasticsearch basic auth credentials. Ignored when search.engine is NOT elasticsearch
-  existingSecret:
-    # search.existingSecret.enabled -- Use an existing secret for elasticsearch basic auth credentials.
+  # search.basicAuth -- Configures elasticsearch basic auth credentials. Ignored when search.engine is NOT elasticsearch.
+  basicAuth:
+    # search.basicAuth.enabled -- Enables elasticsearch basic auth using inline username/password. Not required when search.basicAuth.existingSecret.enabled is true.
     enabled: false
-    # search.existingSecret.name -- The name of an existing secret that contains elasticsearch basic auth credentials.
-    name: ""
-    # search.existingSecret.userKey -- The key in search.existingSecret.name that contains the elasticsearch username.
-    userKey: username
-    # search.existingSecret.passwordKey -- The key in search.existingSecret.name that contains the elasticsearch password.
-    passwordKey: password
-  # search.user -- Username to use with basic auth when connecting to elasticsearch. Ignored when search.engine is NOT elasticsearch
-  # user: ""
-  # search.password -- Password to use with basic auth when connecting to elasticsearch. Ignored when search.engine is NOT elasticsearch
-  # password: ""
+    # search.basicAuth.username -- Username to use with elasticsearch basic auth. Ignored when search.basicAuth.existingSecret.enabled is true.
+    username: ""
+    # search.basicAuth.password -- Password to use with elasticsearch basic auth. Ignored when search.basicAuth.existingSecret.enabled is true.
+    password: ""
+    # search.basicAuth.existingSecret -- Configures an existing secret that contains elasticsearch basic auth credentials.
+    existingSecret:
+      # search.basicAuth.existingSecret.enabled -- Use an existing secret for elasticsearch basic auth credentials.
+      enabled: false
+      # search.basicAuth.existingSecret.name -- The name of an existing secret that contains elasticsearch basic auth credentials.
+      name: ""
+      # search.basicAuth.existingSecret.userKey -- The key in search.basicAuth.existingSecret.name that contains the elasticsearch username.
+      userKey: username
+      # search.basicAuth.existingSecret.passwordKey -- The key in search.basicAuth.existingSecret.name that contains the elasticsearch password.
+      passwordKey: password
 
 app:
   # app.memory -- Configures the amount of memory Java can use
@@ -147,6 +151,8 @@ environment: []
 
 kickstart:
   enabled: false
+  # kickstart.file -- File path FusionAuth should use for kickstart configuration.
+  file: /kickstart/kickstart.json
   data: {}
     # kickstart.json: |
     #    {
@@ -268,7 +274,7 @@ nodeSelector: {}
 # tolerations -- Define tolerations for kubernetes to use when scheduling fusionauth pods.
 tolerations: []
 
-# affinty -- Define affinity for kubernetes to use when scheduling fusionauth pods.
+# affinity -- Define affinity for kubernetes to use when scheduling fusionauth pods.
 affinity: {}
 
 # topologySpreadConstraints -- Define topologySpreadConstraints for kubernetes to use
@@ -280,8 +286,8 @@ dnsConfig: {}
 # dnsPolicy -- Define dnsPolicy for fusionauth pods.
 dnsPolicy: ClusterFirst
 
-# annotations -- Define annotations for fusionauth deployment.
-annotations: {}
+# deploymentAnnotations -- Define annotations for fusionauth deployment.
+deploymentAnnotations: {}
 # podAnnotations -- Define annotations for fusionauth pods.
 podAnnotations: {}
 
@@ -318,7 +324,7 @@ extraVolumes: []
   #   persistentVolumeClaim:
   #     claimName: custom-css-data
 
-# extraVolumes -- Associate mountPath for each  extraVolumes
+# extraVolumeMounts -- Associate mountPath for each extraVolumes
 extraVolumeMounts: []
   # - name: custom-css-data
   #   mountPath: /usr/local/fusionauth/fusionauth-app/web/custom
@@ -328,7 +334,7 @@ serviceAccount:
   create: false
   # serviceAccount.automount - Automatically mount a ServiceAccount's API credentials?
   automount: true
-  # serviceAccount.annotation - Annotations to add to the service account
+  # serviceAccount.annotations - Annotations to add to the service account
   annotations: {}
   # serviceAccount.name - The name of the service account to use.
   # If not set and create is true, a name is generated using the fullname template
