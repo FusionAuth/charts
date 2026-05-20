@@ -65,18 +65,25 @@ database:
   # database.name -- Name of the fusionauth database
   name: fusionauth
 
-  # To use an existing secret, set `existingSecret` to the name of the secret. We expect at most two keys: `password` is required. `rootpassword` is only required if `database.root.user` is set.
-  # database.existingSecret -- The name of an existing secret that contains the database passwords
-  existingSecret: ""
+  # database.existingSecret -- Configures an existing secret that contains the database passwords.
+  existingSecret:
+    # database.existingSecret.enabled -- Use an existing secret for database passwords.
+    enabled: false
+    # database.existingSecret.name -- The name of an existing secret that contains the database passwords.
+    name: ""
+    # database.existingSecret.passwordKey -- The key in database.existingSecret.name that contains the database password.
+    passwordKey: password
+    # database.existingSecret.rootPasswordKey -- The key in database.existingSecret.name that contains the database root password.
+    rootPasswordKey: rootpassword
   # database.user -- Database username for fusionauth to use in normal operation
   user: "fusionauth"
-  # database.password -- Database password for fusionauth to use in normal operation - not required if database.existingSecret is configured
+  # database.password -- Database password for fusionauth to use in normal operation - not required if database.existingSecret.enabled is true
   password: "minikube-password"
   # These credentials are used for bootstrapping the database
   root:
     # database.root.user -- Database username for fusionauth to use during initial bootstrap - not required if you have manually bootstrapped your database
     user: "postgres"
-    # database.root.password -- Database password for fusionauth to use during initial bootstrap - not required if database.existingSecret is configured
+    # database.root.password -- Database password for fusionauth to use during initial bootstrap - not required if database.existingSecret.enabled is true
     password: "minikube-password"
 
 search:

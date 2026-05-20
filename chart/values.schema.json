@@ -60,7 +60,21 @@
             "type": "object",
             "properties": {
                 "existingSecret": {
-                    "type": "string"
+                    "type": "object",
+                    "properties": {
+                        "enabled": {
+                            "type": "boolean"
+                        },
+                        "name": {
+                            "type": "string"
+                        },
+                        "passwordKey": {
+                            "type": "string"
+                        },
+                        "rootPasswordKey": {
+                            "type": "string"
+                        }
+                    }
                 },
                 "host": {
                     "type": "string"
@@ -462,7 +476,27 @@
                         "database"
                     ]
                 },
+                "existingSecret": {
+                    "type": "object",
+                    "properties": {
+                        "enabled": {
+                            "type": "boolean"
+                        },
+                        "name": {
+                            "type": "string"
+                        },
+                        "passwordKey": {
+                            "type": "string"
+                        },
+                        "userKey": {
+                            "type": "string"
+                        }
+                    }
+                },
                 "host": {
+                    "type": "string"
+                },
+                "password": {
                     "type": "string"
                 },
                 "port": {
@@ -476,6 +510,9 @@
                         "http",
                         "https"
                     ]
+                },
+                "user": {
+                    "type": "string"
                 }
             }
         },

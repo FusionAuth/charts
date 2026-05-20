@@ -110,7 +110,7 @@ spec:
               valueFrom:
                 secretKeyRef:
                   name: {{ include "fusionauth.database.secretName" . }}
-                  key: password
+                  key: {{ .Values.database.existingSecret.passwordKey | default "password" | quote }}
             {{- if .Values.database.root.user }}
             - name: DATABASE_ROOT_USERNAME
               value: {{ .Values.database.root.user | quote }}
@@ -118,13 +118,25 @@ spec:
               valueFrom:
                 secretKeyRef:
                   name: {{ include "fusionauth.database.secretName" . }}
-                  key: rootpassword
+                  key: {{ .Values.database.existingSecret.rootPasswordKey | default "rootpassword" | quote }}
             {{- end }}
             - name: DATABASE_URL
               value: "jdbc:{{ .Values.database.protocol }}://{{- required "A valid database host is required!" .Values.database.host -}}:{{ .Values.database.port }}/{{ .Values.database.name }}{{ include "fusionauth.databaseTLS" . }}"
             - name: SEARCH_TYPE
               value: {{ .Values.search.engine | quote }}
               {{- if eq .Values.search.engine "elasticsearch" }}
+              {{- if .Values.search.existingSecret.enabled }}
+            - name: SEARCH_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: {{ required "search.existingSecret.name is required when search.existingSecret.enabled is true" .Values.search.existingSecret.name | quote }}
+                  key: {{ .Values.search.existingSecret.userKey | default "username" | quote }}
+            - name: SEARCH_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ required "search.existingSecret.name is required when search.existingSecret.enabled is true" .Values.search.existingSecret.name | quote }}
+                  key: {{ .Values.search.existingSecret.passwordKey | default "password" | quote }}
+              {{- end }}
             - name: SEARCH_SERVERS
               value: "{{ .Values.search.protocol }}://{{ include "fusionauth.searchLogin" . }}{{- required "A valid elasticsearch host is required!" .Values.search.host -}}:{{ .Values.search.port }}"
               {{- end }}

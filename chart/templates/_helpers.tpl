@@ -34,7 +34,9 @@ Configure TLS if enabled
 {{- end -}}
 
 {{- define "fusionauth.searchLogin" -}}
-{{- if .Values.search.user -}}
+{{- if .Values.search.existingSecret.enabled -}}
+$(SEARCH_USERNAME):$(SEARCH_PASSWORD)@
+{{- else if .Values.search.user -}}
 {{- printf "%s:%s@" .Values.search.user .Values.search.password -}}
 {{- else -}}
 {{- printf "" -}}
@@ -52,8 +54,8 @@ Create chart name and version as used by the chart label.
 Set name of secret to use for credentials
 */}}
 {{- define "fusionauth.database.secretName" -}}
-{{- if .Values.database.existingSecret -}}
-{{- .Values.database.existingSecret -}}
+{{- if .Values.database.existingSecret.enabled -}}
+{{- required "database.existingSecret.name is required when database.existingSecret.enabled is true" .Values.database.existingSecret.name -}}
 {{- else -}}
 {{ .Release.Name }}-credentials
 {{- end -}}
