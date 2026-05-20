@@ -4,21 +4,84 @@
 
 [FusionAuth](https://fusionauth.io/) is a modern platform for Customer Identity and Access Management (CIAM). FusionAuth provides APIs and a responsive web user interface to support login, registration, localized email, multi-factor authentication, reporting, and much more.
 
-## Important Upgrade Info
+## Breaking Changes
 
-- **In `1.67.0` and later, the minimum supported Kubernetes version is 1.23.0.**
+### 1.67.0
 
-- **In `1.57.1` and later, the chart version now matches the FusionAuth app version.**
+- **The minimum supported Kubernetes version is now 1.23.0.** This is due
+  to removing support for long-deprecated beta APIs for `HorizontalPodAutoscaler`,
+  `Ingress`, and `PodDisruptionBudget`.
+
+- **`service.spec` has been removed from the chart** to eliminate the risk of
+  overwriting valid service configurations.
+
+- **`service.type` no longer supports `ExternalName`.** `ExternalName` support
+  is not relevant for this chart.
+
+#### Recommended value migrations
+
+The following values have been updated, but compatibility shims are in
+place in `_helpers.tpl`. It is recommended to migrate to the new values,
+as the compatibility shims may be removed in a future release.
+
+| Previous value                         | New value                                           |
+| -------------------------------------- | --------------------------------------------------- |
+| `annotations`                          | `deploymentAnnotations`                             |
+| `initContainers.waitForDb`             | `initContainers.waitForDatabase`                    |
+| `initContainers.waitForEs`             | `initContainers.waitForSearch`                      |
+| `database.existingSecret: secret-name` | `database.existingSecret.name: secret-name`         |
+| `search.user`                          | `search.basicAuth.username`                         |
+| `search.password`                      | `search.basicAuth.password`                         |
+| `search.existingSecret: secret-name`   | `search.basicAuth.existingSecret.name: secret-name` |
+| `search.existingSecret.enabled`        | `search.basicAuth.existingSecret.enabled`           |
+| `search.existingSecret.name`           | `search.basicAuth.existingSecret.name`              |
+| `search.existingSecret.userKey`        | `search.basicAuth.existingSecret.userKey`           |
+| `search.existingSecret.passwordKey`    | `search.basicAuth.existingSecret.passwordKey`       |
+
+When migrating `database.existingSecret`, set `database.existingSecret.enabled: true`. When migrating inline search credentials, set `search.basicAuth.enabled: true`. When migrating search credentials from an existing Secret, set `search.basicAuth.existingSecret.enabled: true`.
+
+Prefer the following structure for database credentials:
+
+```yaml
+database:
+  existingSecret:
+    enabled: true
+    name: secret-name
+    passwordKey: password
+    rootPasswordKey: rootpassword
+```
+
+Prefer the following structure for search basic auth credentials:
+
+```yaml
+search:
+  basicAuth:
+    existingSecret:
+      enabled: true
+      name: secret-name
+      userKey: username
+      passwordKey: password
+```
+
+### 1.57.1
+
+- **The chart version now matches the FusionAuth app version.**
 
   ⚠️ You can (and probably should) override the `image.tag` field in `values.yaml` to pin the desired version of the FusionAuth application. This ensures that upgrading the helm chart doesn't unexpectedly upgrade the FusionAuth version.
 
-- **In `1.0.0` and later, the FusionAuth app version will now default to the latest available at the time of the chart's release.** Release notes will indicate the FusionAuth version included in the chart.
+### 1.0.0
+
+- **The FusionAuth app version will now default to the latest available at the time of the chart's release.** Release notes will indicate the FusionAuth version included in the chart.
 
   ⚠️ You can (and probably should) override the `image.tag` field in `values.yaml` to pin the desired version of the FusionAuth application. This ensures that upgrading the helm chart doesn't unexpectedly upgrade the FusionAuth version.
 
-- **In `0.8.0`, the `environment` value is now an array instead of an object.** Make sure to reformat your values when you update.
+### 0.8.0
 
-- **In `0.4.0`, the external postgresql and elasticsearch charts were dropped.** You will need to maintain those dependencies on your own.
+- **The `environment` value is now an array instead of an object.** Make sure to reformat your values when you update.
+
+### 0.4.0
+
+- **The external postgresql and elasticsearch charts were dropped.** You will need to maintain those dependencies on your own.
 
 ## Installing the Chart
 

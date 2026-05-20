@@ -34,6 +34,22 @@ Configure TLS if enabled
 {{- end -}}
 
 {{/*
+Return true when .Values.environment contains an entry with the given name.
+Used so user-provided environment variables can take precedence over chart
+values without rendering duplicate env names.
+*/}}
+{{- define "fusionauth.environment.has" -}}
+{{- $name := .name -}}
+{{- $found := false -}}
+{{- range .context.Values.environment -}}
+{{- if eq .name $name -}}
+{{- $found = true -}}
+{{- end -}}
+{{- end -}}
+{{- if $found -}}true{{- else -}}false{{- end -}}
+{{- end -}}
+
+{{/*
 Resolve deployment annotations.
 Current value: deploymentAnnotations.
 Backward compatibility: top-level annotations is deprecated but still accepted.
@@ -58,6 +74,25 @@ name. A legacy string value is treated as enabled=true with that secret name.
 {{- if .Values.database.existingSecret -}}true{{- else -}}false{{- end -}}
 {{- else -}}
 {{- .Values.database.existingSecret.enabled | default false -}}
+{{- end -}}
+{{- end -}}
+
+{{/*
+Resolve whether the chart should create its database credentials Secret.
+If DATABASE_PASSWORD or DATABASE_ROOT_PASSWORD are supplied through
+.Values.environment, those env vars take precedence and their corresponding
+generated Secret keys are not needed.
+*/}}
+{{- define "fusionauth.database.generatedSecret.enabled" -}}
+{{- $existingSecret := eq (include "fusionauth.database.existingSecret.enabled" .) "true" -}}
+{{- $databasePasswordEnv := eq (include "fusionauth.environment.has" (dict "context" . "name" "DATABASE_PASSWORD")) "true" -}}
+{{- $databaseRootUsernameEnv := eq (include "fusionauth.environment.has" (dict "context" . "name" "DATABASE_ROOT_USERNAME")) "true" -}}
+{{- $databaseRootPasswordEnv := eq (include "fusionauth.environment.has" (dict "context" . "name" "DATABASE_ROOT_PASSWORD")) "true" -}}
+{{- $rootUserConfigured := or .Values.database.root.user $databaseRootUsernameEnv -}}
+{{- if and (not $existingSecret) (or (not $databasePasswordEnv) (and $rootUserConfigured (not $databaseRootPasswordEnv))) -}}
+true
+{{- else -}}
+false
 {{- end -}}
 {{- end -}}
 
@@ -116,7 +151,7 @@ search.existingSecret still imply that basic auth is enabled.
 {{- define "fusionauth.search.basicAuth.enabled" -}}
 {{- if .Values.search.basicAuth.enabled -}}
 true
-{{- else if or .Values.search.user .Values.search.password (eq (include "fusionauth.search.existingSecret.enabled" .) "true") -}}
+{{- else if or .Values.search.user .Values.search.password (eq (include "fusionauth.search.existingSecret.enabled" .) "true") (eq (include "fusionauth.environment.has" (dict "context" . "name" "SEARCH_USERNAME")) "true") (eq (include "fusionauth.environment.has" (dict "context" . "name" "SEARCH_PASSWORD")) "true") -}}
 true
 {{- else -}}
 false
@@ -204,11 +239,22 @@ render the same URL prefix.
 {{- if eq (include "fusionauth.search.existingSecret.enabled" .) "true" -}}
 $(SEARCH_USERNAME):$(SEARCH_PASSWORD)@
 {{- else if eq (include "fusionauth.search.basicAuth.enabled" .) "true" -}}
+{{- $username := "" -}}
+{{- $password := "" -}}
 {{- if .Values.search.basicAuth.enabled -}}
-{{- printf "%s:%s@" .Values.search.basicAuth.username .Values.search.basicAuth.password -}}
+{{- $username = .Values.search.basicAuth.username -}}
+{{- $password = .Values.search.basicAuth.password -}}
 {{- else -}}
-{{- printf "%s:%s@" .Values.search.user .Values.search.password -}}
+{{- $username = .Values.search.user -}}
+{{- $password = .Values.search.password -}}
 {{- end -}}
+{{- if eq (include "fusionauth.environment.has" (dict "context" . "name" "SEARCH_USERNAME")) "true" -}}
+{{- $username = "$(SEARCH_USERNAME)" -}}
+{{- end -}}
+{{- if eq (include "fusionauth.environment.has" (dict "context" . "name" "SEARCH_PASSWORD")) "true" -}}
+{{- $password = "$(SEARCH_PASSWORD)" -}}
+{{- end -}}
+{{- printf "%s:%s@" $username $password -}}
 {{- else -}}
 {{- printf "" -}}
 {{- end -}}

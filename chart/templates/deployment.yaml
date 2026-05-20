@@ -4,13 +4,22 @@
 {{- if hasKey .Values.podLabels "app.kubernetes.io/instance" }}
 {{- fail "podLabels cannot override reserved selector label app.kubernetes.io/instance" }}
 {{- end }}
-{{- $reservedEnv := list "DATABASE_USERNAME" "DATABASE_PASSWORD" "DATABASE_ROOT_USERNAME" "DATABASE_ROOT_PASSWORD" "DATABASE_URL" "SEARCH_TYPE" "SEARCH_USERNAME" "SEARCH_PASSWORD" "SEARCH_SERVERS" "FUSIONAUTH_APP_MEMORY" "FUSIONAUTH_APP_RUNTIME_MODE" "FUSIONAUTH_APP_SILENT_MODE" "FUSIONAUTH_APP_KICKSTART_FILE" }}
-{{- range .Values.environment }}
-{{- if has .name $reservedEnv }}
-{{- fail (printf "environment cannot override reserved chart-managed variable %s" .name) }}
-{{- end }}
-{{- end }}
+{{- $databaseUsernameEnv := eq (include "fusionauth.environment.has" (dict "context" . "name" "DATABASE_USERNAME")) "true" }}
+{{- $databasePasswordEnv := eq (include "fusionauth.environment.has" (dict "context" . "name" "DATABASE_PASSWORD")) "true" }}
+{{- $databaseRootUsernameEnv := eq (include "fusionauth.environment.has" (dict "context" . "name" "DATABASE_ROOT_USERNAME")) "true" }}
+{{- $databaseRootPasswordEnv := eq (include "fusionauth.environment.has" (dict "context" . "name" "DATABASE_ROOT_PASSWORD")) "true" }}
+{{- $databaseUrlEnv := eq (include "fusionauth.environment.has" (dict "context" . "name" "DATABASE_URL")) "true" }}
+{{- $searchTypeEnv := eq (include "fusionauth.environment.has" (dict "context" . "name" "SEARCH_TYPE")) "true" }}
+{{- $searchUsernameEnv := eq (include "fusionauth.environment.has" (dict "context" . "name" "SEARCH_USERNAME")) "true" }}
+{{- $searchPasswordEnv := eq (include "fusionauth.environment.has" (dict "context" . "name" "SEARCH_PASSWORD")) "true" }}
+{{- $searchServersEnv := eq (include "fusionauth.environment.has" (dict "context" . "name" "SEARCH_SERVERS")) "true" }}
+{{- $appMemoryEnv := eq (include "fusionauth.environment.has" (dict "context" . "name" "FUSIONAUTH_APP_MEMORY")) "true" }}
+{{- $appRuntimeModeEnv := eq (include "fusionauth.environment.has" (dict "context" . "name" "FUSIONAUTH_APP_RUNTIME_MODE")) "true" }}
+{{- $appSilentModeEnv := eq (include "fusionauth.environment.has" (dict "context" . "name" "FUSIONAUTH_APP_SILENT_MODE")) "true" }}
+{{- $appKickstartFileEnv := eq (include "fusionauth.environment.has" (dict "context" . "name" "FUSIONAUTH_APP_KICKSTART_FILE")) "true" }}
 {{- $searchExistingSecretEnabled := eq (include "fusionauth.search.existingSecret.enabled" .) "true" }}
+{{- $chartSearchEnabled := and (not $searchTypeEnv) (eq .Values.search.engine "elasticsearch") }}
+{{- $databaseRootUserConfigured := or .Values.database.root.user $databaseRootUsernameEnv }}
 {{- $kickstartVolumeName := printf "%s-config-volume" (include "fusionauth.fullname" .) }}
 {{- if .Values.kickstart.enabled }}
 {{- range .Values.extraVolumes }}
@@ -37,8 +46,8 @@
 {{- fail (printf "extraContainers cannot use reserved container name %s" $.Chart.Name) }}
 {{- end }}
 {{- end }}
-{{- $waitForDatabase := eq (include "fusionauth.initContainers.waitForDatabase" .) "true" }}
-{{- $waitForSearch := eq (include "fusionauth.initContainers.waitForSearch" .) "true" }}
+{{- $waitForDatabase := and (not $databaseUrlEnv) (eq (include "fusionauth.initContainers.waitForDatabase" .) "true") .Values.database.host }}
+{{- $waitForSearch := and $chartSearchEnabled (eq (include "fusionauth.initContainers.waitForSearch" .) "true") .Values.search.host }}
 {{- $deploymentAnnotations := include "fusionauth.deploymentAnnotations" . }}
 apiVersion: apps/v1
 kind: Deployment
@@ -74,7 +83,7 @@ spec:
       imagePullSecrets:
       {{- toYaml .Values.imagePullSecrets | nindent 8 }}
       {{- end }}
-      {{- if or (.Values.extraInitContainers) (or $waitForDatabase (and (eq .Values.search.engine "elasticsearch") $waitForSearch)) }}
+      {{- if or (.Values.extraInitContainers) (or $waitForDatabase $waitForSearch) }}
       initContainers:
       {{- end }}
         {{- if $waitForDatabase }}
@@ -129,54 +138,76 @@ spec:
             {{- toYaml . | nindent 12 }}
           {{- end }}
           env:
+            {{- if .Values.environment }}
+            {{- toYaml .Values.environment | nindent 12 }}
+            {{- end }}
+            {{- if not $databaseUsernameEnv }}
             - name: DATABASE_USERNAME
               value: {{ required "A valid username for the database is required!" .Values.database.user | quote }}
+            {{- end }}
+            {{- if not $databasePasswordEnv }}
             - name: DATABASE_PASSWORD
               valueFrom:
                 secretKeyRef:
                   name: {{ include "fusionauth.database.secretName" . }}
                   key: {{ include "fusionauth.database.passwordKey" . | quote }}
-            {{- if .Values.database.root.user }}
+            {{- end }}
+            {{- if $databaseRootUserConfigured }}
+            {{- if not $databaseRootUsernameEnv }}
             - name: DATABASE_ROOT_USERNAME
               value: {{ .Values.database.root.user | quote }}
+            {{- end }}
+            {{- if not $databaseRootPasswordEnv }}
             - name: DATABASE_ROOT_PASSWORD
               valueFrom:
                 secretKeyRef:
                   name: {{ include "fusionauth.database.secretName" . }}
                   key: {{ include "fusionauth.database.rootPasswordKey" . | quote }}
             {{- end }}
+            {{- end }}
+            {{- if not $databaseUrlEnv }}
             - name: DATABASE_URL
               value: "jdbc:{{ .Values.database.protocol }}://{{- required "A valid database host is required!" .Values.database.host -}}:{{ .Values.database.port }}/{{ .Values.database.name }}{{ include "fusionauth.databaseTLS" . }}"
+            {{- end }}
+            {{- if not $searchTypeEnv }}
             - name: SEARCH_TYPE
               value: {{ .Values.search.engine | quote }}
-              {{- if eq .Values.search.engine "elasticsearch" }}
-              {{- if $searchExistingSecretEnabled }}
+            {{- end }}
+              {{- if or $chartSearchEnabled $searchServersEnv }}
+              {{- if and $searchExistingSecretEnabled (not $searchUsernameEnv) }}
             - name: SEARCH_USERNAME
               valueFrom:
                 secretKeyRef:
                   name: {{ required "search.basicAuth.existingSecret.name is required when search basic auth uses an existing secret" (include "fusionauth.search.existingSecret.name" .) | quote }}
                   key: {{ include "fusionauth.search.existingSecret.userKey" . | quote }}
+              {{- end }}
+              {{- if and $searchExistingSecretEnabled (not $searchPasswordEnv) }}
             - name: SEARCH_PASSWORD
               valueFrom:
                 secretKeyRef:
                   name: {{ required "search.basicAuth.existingSecret.name is required when search basic auth uses an existing secret" (include "fusionauth.search.existingSecret.name" .) | quote }}
                   key: {{ include "fusionauth.search.existingSecret.passwordKey" . | quote }}
               {{- end }}
+              {{- end }}
+              {{- if and $chartSearchEnabled (not $searchServersEnv) }}
             - name: SEARCH_SERVERS
               value: "{{ .Values.search.protocol }}://{{ include "fusionauth.searchLogin" . }}{{- required "A valid elasticsearch host is required!" .Values.search.host -}}:{{ .Values.search.port }}"
               {{- end }}
+            {{- if not $appMemoryEnv }}
             - name: FUSIONAUTH_APP_MEMORY
               value: {{ .Values.app.memory | quote }}
+            {{- end }}
+            {{- if not $appRuntimeModeEnv }}
             - name: FUSIONAUTH_APP_RUNTIME_MODE
               value: {{ .Values.app.runtimeMode | quote }}
+            {{- end }}
+            {{- if not $appSilentModeEnv }}
             - name: FUSIONAUTH_APP_SILENT_MODE
               value: {{ .Values.app.silentMode | quote }}
-            {{- if .Values.kickstart.enabled }}
+            {{- end }}
+            {{- if and .Values.kickstart.enabled (not $appKickstartFileEnv) }}
             - name: FUSIONAUTH_APP_KICKSTART_FILE
               value: {{ .Values.kickstart.file | quote }}
-            {{- end }}
-            {{- if .Values.environment }}
-            {{- toYaml .Values.environment |nindent 12 }}
             {{- end }}
           resources:
               {{- toYaml .Values.resources | nindent 12 }}
