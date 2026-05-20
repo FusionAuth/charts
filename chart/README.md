@@ -4,22 +4,21 @@
 
 [FusionAuth](https://fusionauth.io/) is a modern platform for Customer Identity and Access Management (CIAM). FusionAuth provides APIs and a responsive web user interface to support login, registration, localized email, multi-factor authentication, reporting, and much more.
 
-
 ## Important Upgrade Info
 
-* **In `1.57.1` and later, the chart version now matches the FusionAuth app version.**
+- **In `1.67.0` and later, the minimum supported Kubernetes version is 1.23.0.**
 
-    ⚠️ You can (and probably should) override the `image.tag` field in `values.yaml` to pin the desired version of the FusionAuth application. This ensures that upgrading the helm chart doesn't unexpectedly upgrade the FusionAuth version.
+- **In `1.57.1` and later, the chart version now matches the FusionAuth app version.**
 
-* **In `1.0.0` and later, the FusionAuth app version will now default to the latest available at the time of the chart's release.** Release notes will indicate the FusionAuth version included in the chart.
+  ⚠️ You can (and probably should) override the `image.tag` field in `values.yaml` to pin the desired version of the FusionAuth application. This ensures that upgrading the helm chart doesn't unexpectedly upgrade the FusionAuth version.
 
-    ⚠️ You can (and probably should) override the `image.tag` field in `values.yaml` to pin the desired version of the FusionAuth application. This ensures that upgrading the helm chart doesn't unexpectedly upgrade the FusionAuth version.
+- **In `1.0.0` and later, the FusionAuth app version will now default to the latest available at the time of the chart's release.** Release notes will indicate the FusionAuth version included in the chart.
 
+  ⚠️ You can (and probably should) override the `image.tag` field in `values.yaml` to pin the desired version of the FusionAuth application. This ensures that upgrading the helm chart doesn't unexpectedly upgrade the FusionAuth version.
 
-* **In `0.8.0`, the `environment` value is now an array instead of an object.** Make sure to reformat your values when you update.
+- **In `0.8.0`, the `environment` value is now an array instead of an object.** Make sure to reformat your values when you update.
 
-* **In `0.4.0`, the external postgresql and elasticsearch charts were dropped.** You will need to maintain those dependencies on your own.
-
+- **In `0.4.0`, the external postgresql and elasticsearch charts were dropped.** You will need to maintain those dependencies on your own.
 
 ## Installing the Chart
 
@@ -27,8 +26,8 @@ You can read the official instructions, including install steps for AWS, GCP, an
 
 ### Prerequisites
 
-* PostgreSQL or MySQL database
-* ElasticSearch or OpenSearch instance (optional)
+- PostgreSQL or MySQL database
+- ElasticSearch or OpenSearch instance (optional)
 
 ⚠️ Though an ElasticSearch or OpenSearch instance is optional, it is strongly recommended for most use cases.
 
@@ -45,18 +44,19 @@ helm install fusionauth fusionauth/fusionauth \
   --set search.host=[elasticsearch host]
 ```
 
-
 ## Setting Up a Test Deployment
 
 This will install FusionAuth and its prerequisites in a single kubernetes namespace, with a configuration suitable for evaluation and testing. **This configuration is not suitable for production.**
 
 Create and switch to the test namespace.
+
 ```shell
 kubectl create namespace fusionauth-test
 kubectl config set-context --current --namespace=fusionauth-test
 ```
 
 ### Install PostgreSQL
+
 ```shell
 helm install postgres oci://registry-1.docker.io/bitnamicharts/postgresql
 ```
@@ -64,6 +64,7 @@ helm install postgres oci://registry-1.docker.io/bitnamicharts/postgresql
 ### Install Opensearch
 
 Opensearch is optional, but highly recommended. See the note below.
+
 ```shell
 helm repo add opensearch https://opensearch-project.github.io/helm-charts/
 helm install opensearch opensearch/opensearch \
@@ -74,6 +75,7 @@ helm install opensearch opensearch/opensearch \
 ### Install FusionAuth
 
 Wait for the Postgres and Opensearch pods to be ready, then install FusionAuth.
+
 ```shell
 export FA_PSQL_PASS=$(kubectl get secret postgres-postgresql -o jsonpath="{.data.postgres-password}" | base64 -d)
 helm repo add fusionauth https://fusionauth.github.io/charts
@@ -89,6 +91,7 @@ helm install fusionauth fusionauth/fusionauth \
 ### Connect to FusionAuth
 
 Create a port forward to connect to the FusionAuth app.
+
 ```shell
 kubectl port-forward svc/fusionauth 9011:9011
 ```
@@ -96,7 +99,6 @@ kubectl port-forward svc/fusionauth 9011:9011
 You should now be able to connect to the FusionAuth application at http://localhost:9011 to start the initial setup.
 
 📝 You may wish to set up an ingress instead of using a port forward. See the table below for how to configure the FusionAuth chart values to add an ingress.
-
 
 ## Chart Values
 

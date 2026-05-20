@@ -46,6 +46,27 @@ jobs:
           echo "CHART_VERSION=$CHART_VERSION" >> $GITHUB_ENV
           echo "RELEASE_CHART=$RELEASE_CHART" >> $GITHUB_ENV
 
+      - name: lint and test the release chart
+        run: |
+          helm lint "$RELEASE_CHART" \
+            --set database.host=postgres \
+            --set database.user=fusionauth \
+            --set database.password=password \
+            --set search.host=opensearch
+
+          helm template test "$RELEASE_CHART" \
+            --set database.host=postgres \
+            --set database.user=fusionauth \
+            --set database.password=password \
+            --set search.engine=database \
+            --set ingress.enabled=true \
+            --set ingress.hosts[0]=example.com \
+            --set ingress.paths[0].path=/ \
+            --set ingress.paths[0].pathType=Prefix \
+            --set autoscaling.enabled=true \
+            --set podDisruptionBudget.enabled=true \
+            --set serviceMonitor.enabled=true
+
       - name: configure git
         run: |
           git config --global user.name "$GITHUB_ACTOR"
