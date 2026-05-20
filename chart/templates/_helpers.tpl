@@ -25,43 +25,6 @@ If release name contains chart name it will be used as a full name.
 {{- end -}}
 
 {{/*
-Set apiVersion for HPA
-*/}}
-{{- define "fusionauth.HpaApiVersion" -}}
-{{- if .Capabilities.APIVersions.Has "autoscaling/v2" -}}
-autoscaling/v2
-{{- else -}}
-autoscaling/v2beta2
-{{- end -}}
-{{- end -}}
-
-
-{{/*
-Set apiVersion for ingress
-*/}}
-{{- define "fusionauth.ingressApiVersion" -}}
-{{- if .Capabilities.APIVersions.Has "networking.k8s.io/v1" -}}
-networking.k8s.io/v1
-{{- else if .Capabilities.APIVersions.Has "networking.k8s.io/v1beta1" -}}
-networking.k8s.io/v1beta1
-{{- else -}}
-extensions/v1beta1
-{{- end -}}
-{{- end -}}
-
-{{/*
-Set apiVersion for PodDisruptionBudget
-*/}}
-{{- define "fusionauth.PodDisruptionBudget" -}}
-{{- if .Capabilities.APIVersions.Has "policy/v1" -}}
-policy/v1
-{{- else -}}
-policy/v1beta1
-{{- end -}}
-{{- end -}}
-
-
-{{/*
 Configure TLS if enabled
 */}}
 {{- define "fusionauth.databaseTLS" -}}

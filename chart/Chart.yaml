@@ -2,5 +2,6 @@ apiVersion: v2
 name: fusionauth
 description: Helm chart for FusionAuth
 type: application
+kubeVersion: ">=1.23.0-0"
 version: 0.0.0-chart-dev
 appVersion: 0.0.0-app-dev
