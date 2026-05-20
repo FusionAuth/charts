@@ -9,7 +9,7 @@ image:
   # image.repository -- The name of the docker repository for fusionauth-app
   repository: docker.io/fusionauth/fusionauth-app
   # image.tag -- The docker tag to pull for fusionauth-app
-  tag: ${APP_VERSION}
+  tag: 0.0.0-app-dev
   # image.pullPolicy -- Kubernetes image pullPolicy to use for fusionauth-app
   pullPolicy: IfNotPresent
 

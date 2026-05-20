@@ -293,7 +293,7 @@ You should now be able to connect to the FusionAuth application at http://localh
         <tr>
             <td><code>image.tag</code></td>
             <td>string</td>
-            <td><code>"${APP_VERSION}"</code></td>
+            <td><code>"0.0.0-app-dev"</code></td>
             <td>The image tag to pull for fusionauth-app (this is the fusionauth-app version).</td>
         </tr>
         <tr>

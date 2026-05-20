@@ -8,4 +8,5 @@ spec:
   selector:
     matchLabels:
       app.kubernetes.io/name: {{ include "fusionauth.name" . }}
+      app.kubernetes.io/instance: {{ .Release.Name }}
 {{- end }}
