@@ -4,9 +4,9 @@ metadata:
   name: {{ include "fusionauth.fullname" . }}
   labels:
     {{- include "fusionauth.labels" . | nindent 4 }}
-  {{- if .Values.service.annotations }}
+  {{- with .Values.service.annotations }}
   annotations:
-{{ .Values.service.annotations | toYaml | indent 4 }}
+    {{- toYaml . | nindent 4 }}
   {{- end }}
 spec:
   type: {{ .Values.service.type }}
