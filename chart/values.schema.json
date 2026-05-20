@@ -15,7 +15,11 @@
                     "type": "string"
                 },
                 "runtimeMode": {
-                    "type": "string"
+                    "type": "string",
+                    "enum": [
+                        "development",
+                        "production"
+                    ]
                 },
                 "silentMode": {
                     "type": "boolean"
@@ -27,6 +31,28 @@
             "properties": {
                 "enabled": {
                     "type": "boolean"
+                },
+                "maxReplicas": {
+                    "type": "integer",
+                    "minimum": 1
+                },
+                "minReplicas": {
+                    "type": "integer",
+                    "minimum": 1
+                },
+                "targetCPU": {
+                    "type": [
+                        "integer",
+                        "null"
+                    ],
+                    "minimum": 1
+                },
+                "targetMemory": {
+                    "type": [
+                        "integer",
+                        "null"
+                    ],
+                    "minimum": 1
                 }
             }
         },
@@ -46,10 +72,16 @@
                     "type": "string"
                 },
                 "port": {
-                    "type": "integer"
+                    "type": "integer",
+                    "minimum": 1,
+                    "maximum": 65535
                 },
                 "protocol": {
-                    "type": "string"
+                    "type": "string",
+                    "enum": [
+                        "postgresql",
+                        "mysql"
+                    ]
                 },
                 "root": {
                     "type": "object",
@@ -77,7 +109,13 @@
             "type": "object"
         },
         "dnsPolicy": {
-            "type": "string"
+            "type": "string",
+            "enum": [
+                "ClusterFirst",
+                "ClusterFirstWithHostNet",
+                "Default",
+                "None"
+            ]
         },
         "environment": {
             "type": "array"
@@ -101,7 +139,12 @@
             "type": "object",
             "properties": {
                 "pullPolicy": {
-                    "type": "string"
+                    "type": "string",
+                    "enum": [
+                        "Always",
+                        "IfNotPresent",
+                        "Never"
+                    ]
                 },
                 "repository": {
                     "type": "string"
@@ -127,13 +170,52 @@
                     "type": "array"
                 },
                 "hosts": {
-                    "type": "array"
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "ingressClassName": {
+                    "type": [
+                        "string",
+                        "null"
+                    ]
                 },
                 "paths": {
-                    "type": "array"
+                    "type": "array",
+                    "items": {
+                        "type": "object",
+                        "properties": {
+                            "path": {
+                                "type": "string"
+                            },
+                            "pathType": {
+                                "type": "string",
+                                "enum": [
+                                    "Exact",
+                                    "ImplementationSpecific",
+                                    "Prefix"
+                                ]
+                            }
+                        }
+                    }
                 },
                 "tls": {
-                    "type": "array"
+                    "type": "array",
+                    "items": {
+                        "type": "object",
+                        "properties": {
+                            "hosts": {
+                                "type": "array",
+                                "items": {
+                                    "type": "string"
+                                }
+                            },
+                            "secretName": {
+                                "type": "string"
+                            }
+                        }
+                    }
                 }
             }
         },
@@ -166,7 +248,10 @@
             "type": "object",
             "properties": {
                 "data": {
-                    "type": "object"
+                    "type": "object",
+                    "additionalProperties": {
+                        "type": "string"
+                    }
                 },
                 "enabled": {
                     "type": "boolean"
@@ -180,7 +265,8 @@
             "type": "object",
             "properties": {
                 "failureThreshold": {
-                    "type": "integer"
+                    "type": "integer",
+                    "minimum": 1
                 },
                 "httpGet": {
                     "type": "object",
@@ -189,15 +275,35 @@
                             "type": "string"
                         },
                         "port": {
-                            "type": "string"
+                            "type": [
+                                "integer",
+                                "string"
+                            ]
+                        },
+                        "scheme": {
+                            "type": "string",
+                            "enum": [
+                                "HTTP",
+                                "HTTPS"
+                            ]
                         }
                     }
                 },
+                "initialDelaySeconds": {
+                    "type": "integer",
+                    "minimum": 0
+                },
                 "periodSeconds": {
-                    "type": "integer"
+                    "type": "integer",
+                    "minimum": 1
+                },
+                "successThreshold": {
+                    "type": "integer",
+                    "minimum": 1
                 },
                 "timeoutSeconds": {
-                    "type": "integer"
+                    "type": "integer",
+                    "minimum": 1
                 }
             }
         },
@@ -221,11 +327,15 @@
                 }
             }
         },
+        "podLabels": {
+            "type": "object"
+        },
         "readinessProbe": {
             "type": "object",
             "properties": {
                 "failureThreshold": {
-                    "type": "integer"
+                    "type": "integer",
+                    "minimum": 1
                 },
                 "httpGet": {
                     "type": "object",
@@ -234,17 +344,41 @@
                             "type": "string"
                         },
                         "port": {
-                            "type": "string"
+                            "type": [
+                                "integer",
+                                "string"
+                            ]
+                        },
+                        "scheme": {
+                            "type": "string",
+                            "enum": [
+                                "HTTP",
+                                "HTTPS"
+                            ]
                         }
                     }
                 },
+                "initialDelaySeconds": {
+                    "type": "integer",
+                    "minimum": 0
+                },
+                "periodSeconds": {
+                    "type": "integer",
+                    "minimum": 1
+                },
+                "successThreshold": {
+                    "type": "integer",
+                    "minimum": 1
+                },
                 "timeoutSeconds": {
-                    "type": "integer"
+                    "type": "integer",
+                    "minimum": 1
                 }
             }
         },
         "replicaCount": {
-            "type": "integer"
+            "type": "integer",
+            "minimum": 0
         },
         "resources": {
             "type": "object"
@@ -256,16 +390,26 @@
             "type": "object",
             "properties": {
                 "engine": {
-                    "type": "string"
+                    "type": "string",
+                    "enum": [
+                        "elasticsearch",
+                        "database"
+                    ]
                 },
                 "host": {
                     "type": "string"
                 },
                 "port": {
-                    "type": "integer"
+                    "type": "integer",
+                    "minimum": 1,
+                    "maximum": 65535
                 },
                 "protocol": {
-                    "type": "string"
+                    "type": "string",
+                    "enum": [
+                        "http",
+                        "https"
+                    ]
                 }
             }
         },
@@ -276,13 +420,77 @@
                     "type": "object"
                 },
                 "port": {
-                    "type": "integer"
+                    "type": "integer",
+                    "minimum": 1,
+                    "maximum": 65535
                 },
                 "spec": {
                     "type": "object"
                 },
                 "type": {
+                    "type": "string",
+                    "enum": [
+                        "ClusterIP",
+                        "NodePort",
+                        "LoadBalancer",
+                        "ExternalName"
+                    ]
+                }
+            }
+        },
+        "serviceAccount": {
+            "type": "object",
+            "properties": {
+                "annotations": {
+                    "type": "object"
+                },
+                "automount": {
+                    "type": "boolean"
+                },
+                "create": {
+                    "type": "boolean"
+                },
+                "name": {
                     "type": "string"
+                }
+            }
+        },
+        "serviceMonitor": {
+            "type": "object",
+            "properties": {
+                "annotations": {
+                    "type": "object"
+                },
+                "basicAuth": {
+                    "type": "object"
+                },
+                "enabled": {
+                    "type": "boolean"
+                },
+                "interval": {
+                    "type": [
+                        "string",
+                        "null"
+                    ]
+                },
+                "labels": {
+                    "type": "object"
+                },
+                "namespaceSelector": {
+                    "type": "object"
+                },
+                "path": {
+                    "type": "string",
+                    "pattern": "^/"
+                },
+                "relabelings": {
+                    "type": "array"
+                },
+                "scrapeTimeout": {
+                    "type": [
+                        "string",
+                        "null"
+                    ]
                 }
             }
         },
@@ -290,7 +498,8 @@
             "type": "object",
             "properties": {
                 "failureThreshold": {
-                    "type": "integer"
+                    "type": "integer",
+                    "minimum": 1
                 },
                 "httpGet": {
                     "type": "object",
@@ -299,15 +508,35 @@
                             "type": "string"
                         },
                         "port": {
-                            "type": "string"
+                            "type": [
+                                "integer",
+                                "string"
+                            ]
+                        },
+                        "scheme": {
+                            "type": "string",
+                            "enum": [
+                                "HTTP",
+                                "HTTPS"
+                            ]
                         }
                     }
                 },
+                "initialDelaySeconds": {
+                    "type": "integer",
+                    "minimum": 0
+                },
                 "periodSeconds": {
-                    "type": "integer"
+                    "type": "integer",
+                    "minimum": 1
+                },
+                "successThreshold": {
+                    "type": "integer",
+                    "minimum": 1
                 },
                 "timeoutSeconds": {
-                    "type": "integer"
+                    "type": "integer",
+                    "minimum": 1
                 }
             }
         },
