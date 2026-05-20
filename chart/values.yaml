@@ -130,8 +130,7 @@ environment: []
 
 kickstart:
   enabled: false
-  data:
-    {}
+  data: {}
     # kickstart.json: |
     #    {
     #      "variables": {
@@ -182,6 +181,10 @@ lifecycle: {}
 podDisruptionBudget:
   # podDisruptionBudget.enabled -- Enables creation of a PodDisruptionBudget
   enabled: false
+  # podDisruptionBudget.minAvailable -- Minimum number of available pods. Cannot be used with maxUnavailable.
+  # minAvailable: 1
+  # podDisruptionBudget.maxUnavailable -- Maximum number of unavailable pods. Cannot be used with minAvailable. Defaults to replicaCount - 1.
+  # maxUnavailable: 1
 
 ingress:
   # ingress.enabled -- Enables ingress creation for fusionauth.

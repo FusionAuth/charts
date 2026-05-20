@@ -1,10 +1,21 @@
 {{- if .Values.podDisruptionBudget.enabled -}}
+{{- if and (ne .Values.podDisruptionBudget.minAvailable nil) (ne .Values.podDisruptionBudget.maxUnavailable nil) }}
+{{- fail "podDisruptionBudget.minAvailable and podDisruptionBudget.maxUnavailable cannot both be set" }}
+{{- end }}
 apiVersion: policy/v1
 kind: PodDisruptionBudget
 metadata:
   name: {{ include "fusionauth.fullname" . }}
 spec:
-  maxUnavailable: {{ sub .Values.replicaCount 1 }}
+  {{- if ne .Values.podDisruptionBudget.minAvailable nil }}
+  {{- $minAvailable := .Values.podDisruptionBudget.minAvailable }}
+  minAvailable: {{ if kindIs "string" $minAvailable }}{{ $minAvailable | quote }}{{ else }}{{ $minAvailable }}{{ end }}
+  {{- else if ne .Values.podDisruptionBudget.maxUnavailable nil }}
+  {{- $maxUnavailable := .Values.podDisruptionBudget.maxUnavailable }}
+  maxUnavailable: {{ if kindIs "string" $maxUnavailable }}{{ $maxUnavailable | quote }}{{ else }}{{ $maxUnavailable }}{{ end }}
+  {{- else }}
+  maxUnavailable: {{ max 0 (sub .Values.replicaCount 1) }}
+  {{- end }}
   selector:
     matchLabels:
       app.kubernetes.io/name: {{ include "fusionauth.name" . }}

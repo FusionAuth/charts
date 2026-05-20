@@ -4,10 +4,10 @@ kind: ConfigMap
 metadata:
   name: {{ template "fusionauth.fullname" . }}-kickstart-config
   labels:
-    heritage: {{ .Release.Name }}
-    release: {{ .Release.Name }}
-    chart: {{ .Chart.Name }}-{{ .Chart.Version }}
-    app: {{ template "fusionauth.name" . }}
+    app.kubernetes.io/name: {{ include "fusionauth.name" . }}
+    helm.sh/chart: {{ include "fusionauth.chart" . }}
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    app.kubernetes.io/managed-by: {{ .Release.Service }}
 data:
   {{- if .Values.kickstart.data }}
   {{- range $key, $value := .Values.kickstart.data }}

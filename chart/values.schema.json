@@ -197,7 +197,11 @@
                                     "Prefix"
                                 ]
                             }
-                        }
+                        },
+                        "required": [
+                            "path",
+                            "pathType"
+                        ]
                     }
                 },
                 "tls": {
@@ -324,6 +328,36 @@
             "properties": {
                 "enabled": {
                     "type": "boolean"
+                },
+                "maxUnavailable": {
+                    "oneOf": [
+                        {
+                            "type": "integer",
+                            "minimum": 0
+                        },
+                        {
+                            "type": "string",
+                            "pattern": "^[0-9]+%$"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ]
+                },
+                "minAvailable": {
+                    "oneOf": [
+                        {
+                            "type": "integer",
+                            "minimum": 0
+                        },
+                        {
+                            "type": "string",
+                            "pattern": "^[0-9]+%$"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ]
                 }
             }
         },

@@ -2,6 +2,12 @@
 {{- $fullName := include "fusionauth.fullname" . -}}
 {{- $ingressPaths := .Values.ingress.paths -}}
 {{- $extraPaths := .Values.ingress.extraPaths -}}
+{{- if not .Values.ingress.hosts -}}
+{{- fail "ingress.enabled requires at least one ingress.hosts entry" -}}
+{{- end -}}
+{{- if not (or $ingressPaths $extraPaths) -}}
+{{- fail "ingress.enabled requires at least one ingress.paths or ingress.extraPaths entry" -}}
+{{- end -}}
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
