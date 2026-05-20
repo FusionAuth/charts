@@ -23,9 +23,7 @@ spec:
   selector:
     matchLabels:
       app.kubernetes.io/name: {{ include "fusionauth.name" . }}
-      helm.sh/chart: {{ include "fusionauth.chart" . }}
       app.kubernetes.io/instance: {{ .Release.Name }}
-      app.kubernetes.io/managed-by: {{ .Release.Service }}
   endpoints:
     - port: http
       {{- with .Values.serviceMonitor.path }}
