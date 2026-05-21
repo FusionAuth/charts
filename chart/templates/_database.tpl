@@ -91,7 +91,7 @@ Resolve the FusionAuth database Secret name.
 {{- required "database.dbUser.existingSecret.name is required when database.dbUser.existingSecret.enabled is true" $dbUserExistingSecret.name -}}
 {{- end -}}
 {{- else -}}
-{{ .Release.Name }}-credentials
+{{ .Release.Name }}-db-credentials
 {{- end -}}
 {{- end -}}
 
@@ -207,7 +207,7 @@ Resolve the root database Secret name.
 {{- required "database.rootUser.existingSecret.name is required when database.rootUser.existingSecret.enabled is true" $rootUserExistingSecret.name -}}
 {{- end -}}
 {{- else -}}
-{{ .Release.Name }}-root-credentials
+{{ .Release.Name }}-db-root-credentials
 {{- end -}}
 {{- end -}}
 

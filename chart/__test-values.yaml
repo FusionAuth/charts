@@ -1,27 +1,27 @@
 search:
   host: localhost
 
-# database:
-#   host: localhost
-#   user: fa-test
-#   password: test123
-#   root:
-#     user: asdfasdfasdfasdfasd
-#     password: asdfasdf
-
 database:
   host: localhost
-  dbUser:
-    username: test
-    password: test123
-  #   existingSecret:
-  #     enabled: false
-  #     name: fa-db-user-creds
-  #     passwordKey: fa-password
-  # rootUser:
-  #   username: testroot
-  #   password: testroot123
-  #   existingSecret:
-  #     enabled: false
-  #     name: fa-db-root-creds
-  #     passwordKey: root-password
+  user: fa-test
+  password: test123
+  root:
+    user: asdfasdfasdfasdfasd
+    password: asdfasdf
+
+# database:
+#   host: localhost
+#   dbUser:
+#     username: test
+#     password: test123
+#     existingSecret:
+#       enabled: false
+#       name: fa-db-user-creds
+#       passwordKey: fa-password
+#   rootUser:
+#     username: testroot
+#     password: testroot123
+#     existingSecret:
+#       enabled: false
+#       name: fa-db-root-creds
+#       passwordKey: root-password
