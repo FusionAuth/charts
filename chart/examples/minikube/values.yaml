@@ -23,8 +23,7 @@ initContainers:
     # initContainers.image.tag -- Tag to use for initContainers docker image
     tag: latest
   # initContainers.resources -- Resource requests and limits to use for initContainers
-  resources:
-    {}
+  resources: {}
     # We usually recommend not to specify default resources and to leave this as a conscious
     # choice for the user. This also increases chances charts run on environments with little
     # resources, such as Minikube. If you do want to specify resources, uncomment the following
@@ -63,21 +62,19 @@ database:
   # database.name -- Name of the fusionauth database
   name: fusionauth
 
-  # database.fusionauthUser -- Database credentials for fusionauth to use in normal operation
-  fusionauthUser:
-    # database.fusionauthUser.username -- Database username for fusionauth to use in normal operation
+  # database.dbUser -- Database credentials for fusionauth to use in normal operation
+  dbUser:
+    # database.dbUser.username -- Database username for fusionauth to use in normal operation
     username: "fusionauth"
-    # database.fusionauthUser.password -- Database password for fusionauth to use in normal operation - not required if database.fusionauthUser.existingSecret.enabled is true
+    # database.dbUser.password -- Database password for fusionauth to use in normal operation - not required if database.dbUser.existingSecret.enabled is true
     password: "minikube-password"
-    # database.fusionauthUser.existingSecret -- Configures an existing secret that contains the normal database user credentials.
+    # database.dbUser.existingSecret -- Configures an existing secret that contains the normal database user password.
     existingSecret:
-      # database.fusionauthUser.existingSecret.enabled -- Use an existing secret for the normal database user credentials.
+      # database.dbUser.existingSecret.enabled -- Use an existing secret for the normal database user password.
       enabled: false
-      # database.fusionauthUser.existingSecret.name -- The name of an existing secret that contains the normal database user credentials.
+      # database.dbUser.existingSecret.name -- The name of an existing secret that contains the normal database user password.
       name: ""
-      # database.fusionauthUser.existingSecret.usernameKey -- The key in database.fusionauthUser.existingSecret.name that contains the database username.
-      usernameKey: username
-      # database.fusionauthUser.existingSecret.passwordKey -- The key in database.fusionauthUser.existingSecret.name that contains the database password.
+      # database.dbUser.existingSecret.passwordKey -- The key in database.dbUser.existingSecret.name that contains the database password.
       passwordKey: password
   # database.rootUser -- Database credentials for fusionauth to use during initial bootstrap
   rootUser:
@@ -85,14 +82,12 @@ database:
     username: "postgres"
     # database.rootUser.password -- Database password for fusionauth to use during initial bootstrap - not required if database.rootUser.existingSecret.enabled is true
     password: "minikube-password"
-    # database.rootUser.existingSecret -- Configures an existing secret that contains the root database user credentials.
+    # database.rootUser.existingSecret -- Configures an existing secret that contains the root database user password.
     existingSecret:
-      # database.rootUser.existingSecret.enabled -- Use an existing secret for the root database user credentials.
+      # database.rootUser.existingSecret.enabled -- Use an existing secret for the root database user password.
       enabled: false
-      # database.rootUser.existingSecret.name -- The name of an existing secret that contains the root database user credentials.
+      # database.rootUser.existingSecret.name -- The name of an existing secret that contains the root database user password.
       name: ""
-      # database.rootUser.existingSecret.usernameKey -- The key in database.rootUser.existingSecret.name that contains the root database username.
-      usernameKey: username
       # database.rootUser.existingSecret.passwordKey -- The key in database.rootUser.existingSecret.name that contains the root database password.
       passwordKey: password
 
@@ -133,8 +128,7 @@ app:
   silentMode: true
 
 # environment - Configure additional environment variables. Should only be used for things that are not explicitly set elsewhere in the chart.
-environment:
-  []
+environment: []
   # - name: POD_IP
   #   valueFrom:
   #     fieldRef:
@@ -148,8 +142,7 @@ environment:
 
 kickstart:
   enabled: false
-  data:
-    {}
+  data: {}
     # kickstart.json: |
     #    {
     #      "variables": {
@@ -187,8 +180,7 @@ kickstart:
     # setup-password.txt: |
     #    Hallo
 
-lifecycle:
-  {}
+lifecycle: {}
   # # lifecycle.postStart -- postStart lifecycle command for fusionauth container
   # postStart:
   #   exec:
@@ -203,14 +195,11 @@ podDisruptionBudget:
   enabled: false
 
 ingress:
-
   # ingress.enabled -- Enables ingress creation for fusionauth.
   enabled: true
   # ingress.annotations -- Configure annotations to add to the ingress object
   annotations:
-    {
-      kubernetes.io/ingress.class: nginx
-    }
+    { kubernetes.io/ingress.class: nginx }
     # kubernetes.io/tls-acme: "true"
   paths:
     - path: /
@@ -223,7 +212,8 @@ ingress:
   # ingress.extraPaths -- Define complete path objects, will be inserted before regular paths. Can be useful for things like ALB Ingress Controller actions
   extraPaths: []
   # ingress.hosts -- List of hostnames to configure the ingress with
-  hosts: ["localhost"]
+  hosts:
+    ["localhost"]
     # - chart-example.local
   # ingress.tls -- List of secrets used to configure TLS for the ingress.
   tls: []
@@ -232,8 +222,7 @@ ingress:
   #      - chart-example.local
 
 # resources -- Define resource requests and limits for fusionauth-app.
-resources:
-  {}
+resources: {}
   # We usually recommend not to specify default resources and to leave this as a conscious
   # choice for the user. This also increases chances charts run on environments with little
   # resources, such as Minikube. If you do want to specify resources, uncomment the following
@@ -293,14 +282,12 @@ startupProbe:
   timeoutSeconds: 5
 
 # extraVolumes -- Define extra Volumes. Allow to add existing claimName
-extraVolumes:
-  []
+extraVolumes: []
   # - name: custom-css-data
   #   persistentVolumeClaim:
   #     claimName: custom-css-data
 
 # extraVolumeMounts -- Associate mountPath for each extraVolumes
-extraVolumeMounts:
-  []
+extraVolumeMounts: []
   # - name: custom-css-data
   #   mountPath: /usr/local/fusionauth/fusionauth-app/web/custom

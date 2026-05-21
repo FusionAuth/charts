@@ -41,6 +41,8 @@ Resolve whether the search wait init container should be rendered.
 Validate deployment-only conflicts before rendering the Deployment manifest.
 */}}
 {{- define "fusionauth.deployment.validate" -}}
+{{- include "fusionauth.database.dbUser.validate" . }}
+{{- include "fusionauth.database.rootUser.validate" . }}
 {{- if hasKey .Values.podLabels "app.kubernetes.io/name" }}
 {{- fail "podLabels cannot override reserved selector label app.kubernetes.io/name" }}
 {{- end }}
@@ -94,41 +96,25 @@ entries with the same name.
 {{- $appRuntimeModeEnv := eq (include "fusionauth.environment.has" (dict "context" . "name" "FUSIONAUTH_APP_RUNTIME_MODE")) "true" -}}
 {{- $appSilentModeEnv := eq (include "fusionauth.environment.has" (dict "context" . "name" "FUSIONAUTH_APP_SILENT_MODE")) "true" -}}
 {{- $appKickstartFileEnv := eq (include "fusionauth.environment.has" (dict "context" . "name" "FUSIONAUTH_APP_KICKSTART_FILE")) "true" -}}
-{{- $databaseFusionAuthUsernameFromExistingSecretEnabled := eq (include "fusionauth.database.fusionauthUser.usernameFromExistingSecret.enabled" .) "true" -}}
-{{- $databaseRootUsernameFromExistingSecretEnabled := eq (include "fusionauth.database.rootUser.usernameFromExistingSecret.enabled" .) "true" -}}
 {{- $databaseRootUserConfigured := eq (include "fusionauth.database.rootUser.configured" .) "true" -}}
 {{- $searchExistingSecretEnabled := eq (include "fusionauth.search.existingSecret.enabled" .) "true" -}}
 {{- $chartSearchEnabled := eq (include "fusionauth.search.chartEnabled" .) "true" -}}
 {{- if .Values.environment }}{{ toYaml .Values.environment }}{{ end -}}
 {{- if not $databaseUsernameEnv }}
 - name: DATABASE_USERNAME
-  {{- if $databaseFusionAuthUsernameFromExistingSecretEnabled }}
-  valueFrom:
-    secretKeyRef:
-      name: {{ include "fusionauth.database.fusionauthUser.secretName" . }}
-      key: {{ include "fusionauth.database.fusionauthUser.usernameKey" . | quote }}
-  {{- else }}
-  value: {{ required "A valid username for the database is required!" (include "fusionauth.database.fusionauthUser.username" .) | quote }}
-  {{- end }}
+  value: {{ required "database.dbUser.username is required unless DATABASE_USERNAME is set in environment; legacy database.user is also accepted" (include "fusionauth.database.dbUser.username" .) | quote }}
 {{- end }}
 {{- if not $databasePasswordEnv }}
 - name: DATABASE_PASSWORD
   valueFrom:
     secretKeyRef:
-      name: {{ include "fusionauth.database.fusionauthUser.secretName" . }}
-      key: {{ include "fusionauth.database.fusionauthUser.passwordKey" . | quote }}
+      name: {{ include "fusionauth.database.dbUser.secretName" . }}
+      key: {{ include "fusionauth.database.dbUser.passwordKey" . | quote }}
 {{- end }}
 {{- if $databaseRootUserConfigured }}
 {{- if not $databaseRootUsernameEnv }}
 - name: DATABASE_ROOT_USERNAME
-  {{- if $databaseRootUsernameFromExistingSecretEnabled }}
-  valueFrom:
-    secretKeyRef:
-      name: {{ include "fusionauth.database.rootUser.secretName" . }}
-      key: {{ include "fusionauth.database.rootUser.usernameKey" . | quote }}
-  {{- else }}
   value: {{ include "fusionauth.database.rootUser.username" . | quote }}
-  {{- end }}
 {{- end }}
 {{- if not $databaseRootPasswordEnv }}
 - name: DATABASE_ROOT_PASSWORD
@@ -140,7 +126,7 @@ entries with the same name.
 {{- end }}
 {{- if not $databaseUrlEnv }}
 - name: DATABASE_URL
-  value: "jdbc:{{ .Values.database.protocol }}://{{- required "A valid database host is required!" .Values.database.host -}}:{{ .Values.database.port }}/{{ .Values.database.name }}{{ include "fusionauth.databaseTLS" . }}"
+  value: "jdbc:{{ .Values.database.protocol }}://{{- required "database.host is required unless DATABASE_URL is set in environment" .Values.database.host -}}:{{ .Values.database.port }}/{{ .Values.database.name }}{{ include "fusionauth.databaseTLS" . }}"
 {{- end }}
 {{- if not $searchTypeEnv }}
 - name: SEARCH_TYPE
@@ -164,7 +150,7 @@ entries with the same name.
 {{- end }}
 {{- if and $chartSearchEnabled (not $searchServersEnv) }}
 - name: SEARCH_SERVERS
-  value: "{{ .Values.search.protocol }}://{{ include "fusionauth.searchLogin" . }}{{- required "A valid elasticsearch host is required!" .Values.search.host -}}:{{ .Values.search.port }}"
+  value: "{{ .Values.search.protocol }}://{{ include "fusionauth.searchLogin" . }}{{- required "search.host is required when search.engine is elasticsearch unless SEARCH_SERVERS is set in environment" .Values.search.host -}}:{{ .Values.search.port }}"
 {{- end }}
 {{- if not $appMemoryEnv }}
 - name: FUSIONAUTH_APP_MEMORY

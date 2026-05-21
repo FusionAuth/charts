@@ -62,7 +62,7 @@
         "database": {
             "type": "object",
             "properties": {
-                "fusionauthUser": {
+                "dbUser": {
                     "type": "object",
                     "properties": {
                         "existingSecret": {
@@ -76,9 +76,6 @@
                                 },
                                 "passwordKey": {
                                     "type": "string"
-                                },
-                                "usernameKey": {
-                                    "type": "string"
                                 }
                             }
                         },
@@ -91,28 +88,7 @@
                     }
                 },
                 "existingSecret": {
-                    "oneOf": [
-                        {
-                            "type": "string"
-                        },
-                        {
-                            "type": "object",
-                            "properties": {
-                                "enabled": {
-                                    "type": "boolean"
-                                },
-                                "name": {
-                                    "type": "string"
-                                },
-                                "passwordKey": {
-                                    "type": "string"
-                                },
-                                "rootPasswordKey": {
-                                    "type": "string"
-                                }
-                            }
-                        }
-                    ]
+                    "type": "string"
                 },
                 "host": {
                     "type": "string"
@@ -159,9 +135,6 @@
                                     "type": "string"
                                 },
                                 "passwordKey": {
-                                    "type": "string"
-                                },
-                                "usernameKey": {
                                     "type": "string"
                                 }
                             }

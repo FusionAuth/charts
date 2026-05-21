@@ -50,14 +50,14 @@ jobs:
         run: |
           helm lint "$RELEASE_CHART" \
             --set database.host=postgres \
-            --set database.user=fusionauth \
-            --set database.password=password \
+            --set database.dbUser.username=fusionauth \
+            --set database.dbUser.password=password \
             --set search.host=opensearch
 
           helm template test "$RELEASE_CHART" \
             --set database.host=postgres \
-            --set database.user=fusionauth \
-            --set database.password=password \
+            --set database.dbUser.username=fusionauth \
+            --set database.dbUser.password=password \
             --set search.engine=database \
             --set ingress.enabled=true \
             --set ingress.hosts[0]=example.com \
@@ -112,8 +112,8 @@ jobs:
           helm repo add fusionauth ${CHARTS_REPO}
           helm install fusionauth fusionauth/fusionauth \
             --set database.host=host \
-            --set database.user=user \
-            --set database.password=password \
+            --set database.dbUser.username=user \
+            --set database.dbUser.password=password \
             --set search.host=host
 
       - name: Verify the chart version
