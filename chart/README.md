@@ -13,8 +13,6 @@ Review your values file carefully against these notes!
 
 #### Breaking Changes
 
-The following changes were made to simplify the chart:
-
 - **The minimum supported Kubernetes version is now 1.23.0.** This removes support
   for long-deprecated beta APIs for `HorizontalPodAutoscaler`, `Ingress`, and
   `PodDisruptionBudget`.
@@ -28,6 +26,13 @@ The following changes were made to simplify the chart:
   should not be required in this chart. If you used `ExternalName`, please open
   an issue describing your use case.
 
+- **Chart-managed database password Secrets are now split.** The chart creates
+  one Secret for `database.dbUser` and one Secret for `database.rootUser` instead
+  of putting both passwords into one Secret.
+  - This is not a breaking change for the chart itself, but if you have any external
+    consumers of the previous secret, they may require updates.
+  - If you are using `existingSecret` to store passwords, this does not affect you.
+
 #### Recommended Migrations
 
 There are additional changes to the values format, but there are compatibility shims
@@ -35,8 +40,6 @@ in place to give you time to migrate. It's recommended to migrate to the new val
 as soon as possible, as the compatibility shims will be removed in a future chart release.
 
 - **Values for `database` credentials have been updated.**
-
-  Replace the previous values with the new values.
 
   If you are using `existingSecret` to store the database passwords (recommended):
 
@@ -93,7 +96,7 @@ as soon as possible, as the compatibility shims will be removed in a future char
 
 - Values for `search` credentials have changed.
   - A `basicAuth` key was added to prepare for support of other credential types in the future.
-  - It now supports using `existingSecret`.
+  - `search.basicAuth` supports using `existingSecret`.
 
   ```yaml
   # Old values
@@ -104,10 +107,17 @@ as soon as possible, as the compatibility shims will be removed in a future char
   # New values
   search:
     basicAuth:
+      enabled: true
       username: username
+      password: password
+
+  # New values with existingSecret
+  search:
+    basicAuth:
       existingSecret:
         enabled: true
         name: fusionauth-search-creds
+        userKey: username
         passwordKey: password
   ```
 
@@ -304,7 +314,7 @@ You should now be able to connect to the FusionAuth application at http://localh
         <tr>
             <td><code>database.dbUser.username</code></td>
             <td>string</td>
-            <td><code>"fusionauth"</code></td>
+            <td><code>""</code></td>
             <td>Database username for fusionauth to use in normal operation.</td>
         </tr>
         <tr>
@@ -334,7 +344,7 @@ You should now be able to connect to the FusionAuth application at http://localh
         <tr>
             <td><code>database.rootUser.username</code></td>
             <td>string</td>
-            <td><code>"postgres"</code></td>
+            <td><code>""</code></td>
             <td>Database username for fusionauth to use during initial bootstrap - not required if you have manually bootstrapped your database.</td>
         </tr>
         <tr>
@@ -430,7 +440,7 @@ You should now be able to connect to the FusionAuth application at http://localh
         <tr>
             <td><code>image.repository</code></td>
             <td>string</td>
-            <td><code>"fusionauth/fusionauth-app"</code></td>
+            <td><code>"docker.io/fusionauth/fusionauth-app"</code></td>
             <td>The image repository to use for fusionauth-app.</td>
         </tr>
         <tr>
@@ -494,15 +504,15 @@ You should now be able to connect to the FusionAuth application at http://localh
             <td>Create an init container which waits for the database to be ready.</td>
         </tr>
         <tr>
-            <td><code>initContainers.waitForEs</code></td>
+            <td><code>initContainers.waitForSearch</code></td>
             <td>bool</td>
             <td><code>true</code></td>
-            <td>Create an init container which waits for elasticsearch to be ready.</td>
+            <td>Create an init container which waits for the search engine to be ready.</td>
         </tr>
         <tr>
             <td><code>initContainers.image.repository</code></td>
             <td>string</td>
-            <td><code>"busybox"</code></td>
+            <td><code>"docker.io/library/busybox"</code></td>
             <td>Image to use for <code>initContainers</code> docker image.</td>
         </tr>
         <tr>
@@ -611,10 +621,52 @@ You should now be able to connect to the FusionAuth application at http://localh
             <td>Define resource requests and limits for fusionauth-app.</td>
         </tr>
         <tr>
+            <td><code>search.basicAuth.enabled</code></td>
+            <td>bool</td>
+            <td><code>false</code></td>
+            <td>Enables elasticsearch basic auth using inline username/password. Not required when <code>search.basicAuth.existingSecret.enabled</code> is <code>true</code>.</td>
+        </tr>
+        <tr>
+            <td><code>search.basicAuth.username</code></td>
+            <td>string</td>
+            <td><code>""</code></td>
+            <td>Username to use with elasticsearch basic auth. Ignored when <code>search.basicAuth.existingSecret.enabled</code> is <code>true</code>.</td>
+        </tr>
+        <tr>
+            <td><code>search.basicAuth.password</code></td>
+            <td>string</td>
+            <td><code>""</code></td>
+            <td>Password to use with elasticsearch basic auth. Ignored when <code>search.basicAuth.existingSecret.enabled</code> is <code>true</code>.</td>
+        </tr>
+        <tr>
+            <td><code>search.basicAuth.existingSecret.enabled</code></td>
+            <td>bool</td>
+            <td><code>false</code></td>
+            <td>Use an existing Secret for elasticsearch basic auth credentials.</td>
+        </tr>
+        <tr>
+            <td><code>search.basicAuth.existingSecret.name</code></td>
+            <td>string</td>
+            <td><code>""</code></td>
+            <td>The name of an existing Secret that contains elasticsearch basic auth credentials.</td>
+        </tr>
+        <tr>
+            <td><code>search.basicAuth.existingSecret.userKey</code></td>
+            <td>string</td>
+            <td><code>"username"</code></td>
+            <td>The key in <code>search.basicAuth.existingSecret.name</code> that contains the elasticsearch username.</td>
+        </tr>
+        <tr>
+            <td><code>search.basicAuth.existingSecret.passwordKey</code></td>
+            <td>string</td>
+            <td><code>"password"</code></td>
+            <td>The key in <code>search.basicAuth.existingSecret.name</code> that contains the elasticsearch password.</td>
+        </tr>
+        <tr>
             <td><code>search.engine</code></td>
             <td>string</td>
             <td><code>"elasticsearch"</code></td>
-            <td>Protocol to use when connecting to elasticsearch. Ignored when <code>search.engine</code> is NOT <code>elasticsearch</code>.</td>
+            <td>Defines backend for fusionauth search capabilities. Valid values are <code>elasticsearch</code> or <code>database</code>.</td>
         </tr>
         <tr>
             <td><code>search.host</code></td>
@@ -651,12 +703,6 @@ You should now be able to connect to the FusionAuth application at http://localh
             <td>int</td>
             <td><code>9011</code></td>
             <td>Port for the Kubernetes service to expose.</td>
-        </tr>
-        <tr>
-            <td><code>service.spec</code></td>
-            <td>object</td>
-            <td><code>{}</code></td>
-            <td>Any extra fields to add to the service object spec.</td>
         </tr>
         <tr>
             <td><code>service.type</code></td>

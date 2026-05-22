@@ -82,7 +82,7 @@ entries with the same name.
 {{- $appSilentModeEnv := eq (include "fusionauth.environment.has" (dict "context" . "name" "FUSIONAUTH_APP_SILENT_MODE")) "true" -}}
 {{- $appKickstartFileEnv := eq (include "fusionauth.environment.has" (dict "context" . "name" "FUSIONAUTH_APP_KICKSTART_FILE")) "true" -}}
 {{- $databaseRootUserConfigured := eq (include "fusionauth.database.rootUser.configured" .) "true" -}}
-{{- $searchExistingSecretEnabled := eq (include "fusionauth.search.existingSecret.enabled" .) "true" -}}
+{{- $searchExistingSecretEnabled := .Values.search.basicAuth.existingSecret.enabled -}}
 {{- $chartSearchEnabled := eq (include "fusionauth.search.chartEnabled" .) "true" -}}
 {{- if .Values.environment }}{{ toYaml .Values.environment }}{{ end -}}
 {{- if not $databaseUsernameEnv }}
@@ -122,15 +122,15 @@ entries with the same name.
 - name: SEARCH_USERNAME
   valueFrom:
     secretKeyRef:
-      name: {{ required "search.basicAuth.existingSecret.name is required when search basic auth uses an existing secret" (include "fusionauth.search.existingSecret.name" .) | quote }}
-      key: {{ include "fusionauth.search.existingSecret.userKey" . | quote }}
+      name: {{ required "search.basicAuth.existingSecret.name is required when search basic auth uses an existing secret" .Values.search.basicAuth.existingSecret.name | quote }}
+      key: {{ .Values.search.basicAuth.existingSecret.userKey | default "username" | quote }}
 {{- end }}
 {{- if and $searchExistingSecretEnabled (not $searchPasswordEnv) }}
 - name: SEARCH_PASSWORD
   valueFrom:
     secretKeyRef:
-      name: {{ required "search.basicAuth.existingSecret.name is required when search basic auth uses an existing secret" (include "fusionauth.search.existingSecret.name" .) | quote }}
-      key: {{ include "fusionauth.search.existingSecret.passwordKey" . | quote }}
+      name: {{ required "search.basicAuth.existingSecret.name is required when search basic auth uses an existing secret" .Values.search.basicAuth.existingSecret.name | quote }}
+      key: {{ .Values.search.basicAuth.existingSecret.passwordKey | default "password" | quote }}
 {{- end }}
 {{- end }}
 {{- if and $chartSearchEnabled (not $searchServersEnv) }}

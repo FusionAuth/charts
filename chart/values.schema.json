@@ -603,31 +603,6 @@
                 "host": {
                     "type": "string"
                 },
-                "existingSecret": {
-                    "oneOf": [
-                        {
-                            "type": "string"
-                        },
-                        {
-                            "type": "object",
-                            "additionalProperties": false,
-                            "properties": {
-                                "enabled": {
-                                    "type": "boolean"
-                                },
-                                "name": {
-                                    "type": "string"
-                                },
-                                "passwordKey": {
-                                    "type": "string"
-                                },
-                                "userKey": {
-                                    "type": "string"
-                                }
-                            }
-                        }
-                    ]
-                },
                 "password": {
                     "type": "string"
                 },
