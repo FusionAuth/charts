@@ -1,0 +1,63 @@
+suite: init container matrix
+templates:
+  - deployment.yaml
+release:
+  name: test
+tests:
+  - it: renders default database and search wait containers
+    set:
+      database.host: db
+      database.dbUser.username: db_user
+      database.dbUser.password: db_pass
+      search.engine: elasticsearch
+      search.host: search
+    asserts:
+      - equal:
+          path: spec.template.spec.initContainers[0].name
+          value: wait-for-db
+      - equal:
+          path: spec.template.spec.initContainers[1].name
+          value: wait-for-search
+
+  - it: disables database wait using waitForDb
+    set:
+      database.host: db
+      database.dbUser.username: db_user
+      database.dbUser.password: db_pass
+      search.engine: database
+      initContainers.waitForDb: false
+    asserts:
+      - notExists:
+          path: spec.template.spec.initContainers
+
+  - it: disables search wait using legacy waitForEs
+    set:
+      database.host: db
+      database.dbUser.username: db_user
+      database.dbUser.password: db_pass
+      search.engine: elasticsearch
+      search.host: search
+      initContainers.waitForEs: false
+    asserts:
+      - equal:
+          path: spec.template.spec.initContainers[0].name
+          value: wait-for-db
+      - lengthEqual:
+          path: spec.template.spec.initContainers
+          count: 1
+
+  - it: disables search wait using waitForSearch
+    set:
+      database.host: db
+      database.dbUser.username: db_user
+      database.dbUser.password: db_pass
+      search.engine: elasticsearch
+      search.host: search
+      initContainers.waitForSearch: false
+    asserts:
+      - equal:
+          path: spec.template.spec.initContainers[0].name
+          value: wait-for-db
+      - lengthEqual:
+          path: spec.template.spec.initContainers
+          count: 1

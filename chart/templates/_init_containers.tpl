@@ -14,13 +14,12 @@ true
 Resolve the search wait init-container flag.
 Current value: initContainers.waitForSearch.
 Backward compatibility: deprecated initContainers.waitForEs is still accepted.
-When both are set, waitForSearch wins.
 */}}
 {{- define "fusionauth.initContainers.waitForSearch" -}}
-{{- if hasKey .Values.initContainers "waitForSearch" -}}
-{{- .Values.initContainers.waitForSearch -}}
-{{- else if hasKey .Values.initContainers "waitForEs" -}}
+{{- if hasKey .Values.initContainers "waitForEs" -}}
 {{- .Values.initContainers.waitForEs -}}
+{{- else if hasKey .Values.initContainers "waitForSearch" -}}
+{{- .Values.initContainers.waitForSearch -}}
 {{- else -}}
 true
 {{- end -}}

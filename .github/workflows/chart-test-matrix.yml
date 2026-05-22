@@ -1,0 +1,32 @@
+name: Chart test matrix
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  chart-unit-test-matrix:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        suite:
+          - database
+          - search
+          - init
+          - negative
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Set up Helm
+        uses: azure/setup-helm@v4
+
+      - name: Install helm-unittest
+        run: helm plugin install https://github.com/helm-unittest/helm-unittest.git --verify=false
+
+      - name: Run chart matrix suite
+        run: helm unittest --strict -f "tests/${{ matrix.suite }}_test.yaml" chart

@@ -14,6 +14,22 @@ Beginning with 1.57.1, the Helm chart version is the same as the FusionAuth app 
 
 We'll typically release any changes to the chart alongside new FusionAuth app versions. Changes will be called out in the release notes. If changes must be made to the chart outside of the FusionAuth app release cycle, we'll indicate that with a SemVer pre-release tag. For example, `1.57.1-1` would indicate the 1st revision of the chart after the `1.57.1` release, before the next FusionAuth app release.
 
+## Testing Changes
+
+Install the Helm unit test plugin:
+
+```sh
+helm plugin install https://github.com/helm-unittest/helm-unittest.git --verify=false
+```
+
+Run the chart test matrix locally:
+
+```sh
+helm unittest --strict chart
+```
+
+Changes to the chart should have corresponding tests, and the tests must pass prior to release.
+
 ## Releasing the Chart
 
 Release the chart by pushing a new tag.

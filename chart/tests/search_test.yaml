@@ -1,0 +1,138 @@
+suite: search credential matrix
+templates:
+  - deployment.yaml
+release:
+  name: test
+tests:
+  - it: renders search without basic auth
+    set:
+      database.host: db
+      database.dbUser.username: db_user
+      database.dbUser.password: db_pass
+      search.engine: elasticsearch
+      search.host: search
+    asserts:
+      - contains:
+          path: spec.template.spec.containers[0].env
+          content:
+            name: SEARCH_TYPE
+            value: elasticsearch
+      - contains:
+          path: spec.template.spec.containers[0].env
+          content:
+            name: SEARCH_SERVERS
+            value: http://search:9200
+      - notContains:
+          path: spec.template.spec.containers[0].env
+          content:
+            name: SEARCH_USERNAME
+            value: search_user
+      - notContains:
+          path: spec.template.spec.containers[0].env
+          content:
+            name: SEARCH_PASSWORD
+            value: search_pass
+
+  - it: renders legacy search inline credentials in SEARCH_SERVERS
+    set:
+      database.host: db
+      database.dbUser.username: db_user
+      database.dbUser.password: db_pass
+      search.engine: elasticsearch
+      search.host: search
+      search.user: legacy_search_user
+      search.password: legacy_search_pass
+    asserts:
+      - contains:
+          path: spec.template.spec.containers[0].env
+          content:
+            name: SEARCH_SERVERS
+            value: http://legacy_search_user:legacy_search_pass@search:9200
+      - notContains:
+          path: spec.template.spec.containers[0].env
+          content:
+            name: SEARCH_USERNAME
+            value: legacy_search_user
+
+  - it: renders new search inline credentials in SEARCH_SERVERS
+    set:
+      database.host: db
+      database.dbUser.username: db_user
+      database.dbUser.password: db_pass
+      search.engine: elasticsearch
+      search.host: search
+      search.basicAuth.enabled: true
+      search.basicAuth.username: search_user
+      search.basicAuth.password: search_pass
+    asserts:
+      - contains:
+          path: spec.template.spec.containers[0].env
+          content:
+            name: SEARCH_SERVERS
+            value: http://search_user:search_pass@search:9200
+      - notContains:
+          path: spec.template.spec.containers[0].env
+          content:
+            name: SEARCH_USERNAME
+            value: search_user
+
+  - it: uses new existing search secret with custom keys
+    set:
+      database.host: db
+      database.dbUser.username: db_user
+      database.dbUser.password: db_pass
+      search.engine: elasticsearch
+      search.host: search
+      search.basicAuth.existingSecret.enabled: true
+      search.basicAuth.existingSecret.name: search-creds
+      search.basicAuth.existingSecret.userKey: search-username
+      search.basicAuth.existingSecret.passwordKey: search-password
+    asserts:
+      - contains:
+          path: spec.template.spec.containers[0].env
+          content:
+            name: SEARCH_USERNAME
+            valueFrom:
+              secretKeyRef:
+                name: search-creds
+                key: search-username
+      - contains:
+          path: spec.template.spec.containers[0].env
+          content:
+            name: SEARCH_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: search-creds
+                key: search-password
+      - contains:
+          path: spec.template.spec.containers[0].env
+          content:
+            name: SEARCH_SERVERS
+            value: http://$(SEARCH_USERNAME):$(SEARCH_PASSWORD)@search:9200
+
+  - it: uses new existing search secret with default keys
+    set:
+      database.host: db
+      database.dbUser.username: db_user
+      database.dbUser.password: db_pass
+      search.engine: elasticsearch
+      search.host: search
+      search.basicAuth.existingSecret.enabled: true
+      search.basicAuth.existingSecret.name: search-creds
+    asserts:
+      - contains:
+          path: spec.template.spec.containers[0].env
+          content:
+            name: SEARCH_USERNAME
+            valueFrom:
+              secretKeyRef:
+                name: search-creds
+                key: username
+      - contains:
+          path: spec.template.spec.containers[0].env
+          content:
+            name: SEARCH_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: search-creds
+                key: password
