@@ -170,6 +170,25 @@ Validate root database credential combinations.
 {{- end -}}
 
 {{/*
+Validate database credential combinations that span the dbUser and rootUser.
+*/}}
+{{- define "fusionauth.database.validate" -}}
+{{- include "fusionauth.database.dbUser.validate" . }}
+{{- include "fusionauth.database.rootUser.validate" . }}
+{{- $dbUserExistingSecretEnabled := eq (include "fusionauth.database.dbUser.existingSecret.enabled" .) "true" -}}
+{{- $rootUserExistingSecretEnabled := eq (include "fusionauth.database.rootUser.existingSecret.enabled" .) "true" -}}
+{{- if and $dbUserExistingSecretEnabled $rootUserExistingSecretEnabled -}}
+{{- $dbUserSecretName := include "fusionauth.database.dbUser.secretName" . -}}
+{{- $rootUserSecretName := include "fusionauth.database.rootUser.secretName" . -}}
+{{- $dbUserPasswordKey := include "fusionauth.database.dbUser.passwordKey" . -}}
+{{- $rootUserPasswordKey := include "fusionauth.database.rootUser.passwordKey" . -}}
+{{- if and (eq $dbUserSecretName $rootUserSecretName) (eq $dbUserPasswordKey $rootUserPasswordKey) -}}
+{{- fail "passwordKey values must be different when database.dbUser.existingSecret.name and database.rootUser.existingSecret.name reference the same Secret" -}}
+{{- end -}}
+{{- end -}}
+{{- end -}}
+
+{{/*
 Resolve whether root database credentials should come from an existing secret.
 - Current: database.rootUser.existingSecret.enabled
 - Legacy:  database.existingSecret string

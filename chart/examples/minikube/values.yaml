@@ -252,8 +252,8 @@ dnsConfig: {}
 # dnsPolicy -- Define dnsPolicy for fusionauth pods.
 dnsPolicy: ClusterFirst
 
-# deploymentAnnotations -- Define annotations for fusionauth deployment.
-deploymentAnnotations: {}
+# annotations -- Define annotations for fusionauth deployment.
+annotations: {}
 # podAnnotations -- Define annotations for fusionauth pods.
 podAnnotations: {}
 

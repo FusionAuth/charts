@@ -1,17 +1,16 @@
 {{- include "fusionauth.deployment.validate" . }}
-{{- $waitForDatabase := eq (include "fusionauth.deployment.waitForDatabase.enabled" .) "true" }}
+{{- $waitForDb := eq (include "fusionauth.deployment.waitForDb.enabled" .) "true" }}
 {{- $waitForSearch := eq (include "fusionauth.deployment.waitForSearch.enabled" .) "true" }}
 {{- $kickstartVolumeName := include "fusionauth.kickstart.volumeName" . }}
-{{- $deploymentAnnotations := include "fusionauth.deploymentAnnotations" . }}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: {{ include "fusionauth.fullname" . }}
   labels:
     {{- include "fusionauth.labels" . | nindent 4 }}
-  {{- with $deploymentAnnotations }}
+  {{- with .Values.annotations }}
   annotations:
-    {{- . | nindent 4 }}
+    {{- toYaml . | nindent 4 }}
   {{- end }}
 spec:
   {{- if not .Values.autoscaling.enabled }}
@@ -37,10 +36,10 @@ spec:
       imagePullSecrets:
       {{- toYaml .Values.imagePullSecrets | nindent 8 }}
       {{- end }}
-      {{- if or (.Values.extraInitContainers) (or $waitForDatabase $waitForSearch) }}
+      {{- if or (.Values.extraInitContainers) (or $waitForDb $waitForSearch) }}
       initContainers:
       {{- end }}
-        {{- if $waitForDatabase }}
+        {{- if $waitForDb }}
         - name: wait-for-db
           image: "{{ .Values.initContainers.image.repository }}:{{ .Values.initContainers.image.tag }}"
           args:

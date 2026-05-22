@@ -21,8 +21,8 @@ fullnameOverride: ""
 
 # initContainers -- Configures init containers for fusionauth pods. Init containers are used to wait for the database and search engine to be ready before starting fusionauth.
 initContainers:
-  # initContainers.waitForDatabase -- waits for the database to be ready. Setting this to `false` is not recommended.
-  waitForDatabase: true
+  # initContainers.waitForDb -- waits for the database to be ready. Setting this to `false` is not recommended.
+  waitForDb: true
   # initContainers.waitForSearch -- waits for the search engine to be ready. Setting this to `false` is not recommended.
   waitForSearch: true
   # initContainers.image -- Configures the docker image to use for init containers.
@@ -289,8 +289,8 @@ dnsConfig: {}
 # dnsPolicy -- Define dnsPolicy for fusionauth pods.
 dnsPolicy: ClusterFirst
 
-# deploymentAnnotations -- Define annotations for fusionauth deployment.
-deploymentAnnotations: {}
+# annotations -- Define annotations for fusionauth deployment.
+annotations: {}
 # podAnnotations -- Define annotations for fusionauth pods.
 podAnnotations: {}
 

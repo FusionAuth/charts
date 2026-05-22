@@ -1,14 +1,9 @@
 {{/* vim: set filetype=mustache: */}}
 {{/*
 Resolve the database wait init-container flag.
-Current value: initContainers.waitForDatabase.
-Backward compatibility: deprecated initContainers.waitForDb is still accepted.
-When both are set, waitForDatabase wins.
 */}}
-{{- define "fusionauth.initContainers.waitForDatabase" -}}
-{{- if hasKey .Values.initContainers "waitForDatabase" -}}
-{{- .Values.initContainers.waitForDatabase -}}
-{{- else if hasKey .Values.initContainers "waitForDb" -}}
+{{- define "fusionauth.initContainers.waitForDb" -}}
+{{- if hasKey .Values.initContainers "waitForDb" -}}
 {{- .Values.initContainers.waitForDb -}}
 {{- else -}}
 true

@@ -7,27 +7,13 @@ Resolve the reserved kickstart config volume name.
 {{- end -}}
 
 {{/*
-Resolve deployment annotations.
-Current value: deploymentAnnotations.
-Backward compatibility: top-level annotations is deprecated but still accepted.
-When both are set, deploymentAnnotations wins.
-*/}}
-{{- define "fusionauth.deploymentAnnotations" -}}
-{{- if .Values.deploymentAnnotations -}}
-{{- toYaml .Values.deploymentAnnotations -}}
-{{- else if and (hasKey .Values "annotations") .Values.annotations -}}
-{{- toYaml .Values.annotations -}}
-{{- end -}}
-{{- end -}}
-
-{{/*
 Resolve whether the database wait init container should be rendered.
 DATABASE_URL supplied through .Values.environment takes precedence over the
 chart database values, so the chart does not wait on database.host in that mode.
 */}}
-{{- define "fusionauth.deployment.waitForDatabase.enabled" -}}
+{{- define "fusionauth.deployment.waitForDb.enabled" -}}
 {{- $databaseUrlEnv := eq (include "fusionauth.environment.has" (dict "context" . "name" "DATABASE_URL")) "true" -}}
-{{- if and (not $databaseUrlEnv) (eq (include "fusionauth.initContainers.waitForDatabase" .) "true") .Values.database.host -}}true{{- else -}}false{{- end -}}
+{{- if and (not $databaseUrlEnv) (eq (include "fusionauth.initContainers.waitForDb" .) "true") .Values.database.host -}}true{{- else -}}false{{- end -}}
 {{- end -}}
 
 {{/*
@@ -41,8 +27,7 @@ Resolve whether the search wait init container should be rendered.
 Validate deployment-only conflicts before rendering the Deployment manifest.
 */}}
 {{- define "fusionauth.deployment.validate" -}}
-{{- include "fusionauth.database.dbUser.validate" . }}
-{{- include "fusionauth.database.rootUser.validate" . }}
+{{- include "fusionauth.database.validate" . }}
 {{- if hasKey .Values.podLabels "app.kubernetes.io/name" }}
 {{- fail "podLabels cannot override reserved selector label app.kubernetes.io/name" }}
 {{- end }}

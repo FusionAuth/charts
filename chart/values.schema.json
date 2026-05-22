@@ -8,9 +8,6 @@
         "annotations": {
             "type": "object"
         },
-        "deploymentAnnotations": {
-            "type": "object"
-        },
         "app": {
             "type": "object",
             "properties": {
@@ -356,9 +353,6 @@
                 },
                 "resources": {
                     "type": "object"
-                },
-                "waitForDatabase": {
-                    "type": "boolean"
                 },
                 "waitForDb": {
                     "type": "boolean"

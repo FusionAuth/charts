@@ -4,85 +4,104 @@
 
 [FusionAuth](https://fusionauth.io/) is a modern platform for Customer Identity and Access Management (CIAM). FusionAuth provides APIs and a responsive web user interface to support login, registration, localized email, multi-factor authentication, reporting, and much more.
 
-## Breaking Changes
+## Important Changes
 
 ### 1.67.0
 
-- **The minimum supported Kubernetes version is now 1.23.0.** This is due
-  to removing support for long-deprecated beta APIs for `HorizontalPodAutoscaler`,
-  `Ingress`, and `PodDisruptionBudget`.
+⚠️ This release contains several breaking changes, as well as recommended changes.
+Review your values file carefully against these notes!
+
+#### Breaking Changes
+
+The following changes were made to simplify the chart:
+
+- **The minimum supported Kubernetes version is now 1.23.0.** This removes support
+  for long-deprecated beta APIs for `HorizontalPodAutoscaler`, `Ingress`, and
+  `PodDisruptionBudget`.
 
 - **`service.spec` has been removed from the chart** to eliminate the risk of
-  overwriting valid service configurations.
+  overwriting valid service configurations. If you used `service.spec` in a way
+  that is not supported by the standard chart values, please open an issue
+  describing your use case.
 
 - **`service.type` no longer supports `ExternalName`.** `ExternalName` support
-  is not relevant for this chart.
+  should not be required in this chart. If you used `ExternalName`, please open
+  an issue describing your use case.
 
-- **`database.existingSecret` has been replaced.** The legacy scalar Secret
-  name is still accepted for compatibility, but new installs should use the
-  following password-only existing Secret configuration. Database usernames
-  continue to come from `database.dbUser.username` and
-  `database.rootUser.username`.
+#### Recommended Migrations
+
+There are additional changes to the values format, but there are compatibility shims
+in place to give you time to migrate. It's recommended to migrate to the new values
+as soon as possible, as the compatibility shims will be removed in a future chart release.
+
+- **Values for `database` credentials have been updated.**
+
+  Replace the previous values with the new values.
+
+  If you are using `existingSecret` to store the database passwords (recommended):
 
   ```yaml
+  # Old values
+  database:
+    user: fusionauth # name of the database user
+    existingSecret: fusionauth-db-creds # name of the k8s Secret
+    root:
+      user: postgres # name of the root user
+
+  # New values
   database:
     dbUser:
-      username: fusionauth
+      username: fusionauth # name of the database user
       existingSecret:
         enabled: true
         name: fusionauth-db-creds # name of the k8s Secret
         passwordKey: password # name of the key that stores the password
     rootUser:
-      username: postgres
+      username: postgres # name of the root user
       existingSecret:
         enabled: true
         name: fusionauth-root-creds # name of the k8s Secret
-        passwordKey: password # name of the key that stores the password
+        passwordKey: password # name of the key that stores the root password
   ```
 
-#### Recommended value migrations
+  If you are storing the database passwords in clear text (NOT recommended):
 
-The following values have been updated, but compatibility shims are in
-place in `_helpers.tpl`. It is recommended to migrate to the new values,
-as the compatibility shims may be removed in a future release.
+  ```yaml
+  # Old values
+  database:
+    user: fusionauth
+    password: password
+    root:
+      user: postgres
+      password: password
 
-| Previous value                      | New value                                                                         |
-| ----------------------------------- | --------------------------------------------------------------------------------- |
-| `annotations`                       | `deploymentAnnotations`                                                           |
-| `initContainers.waitForDb`          | `initContainers.waitForDatabase`                                                  |
-| `initContainers.waitForEs`          | `initContainers.waitForSearch`                                                    |
-| `database.existingSecret`           | `database.dbUser.existingSecret` and `database.rootUser.existingSecret` if needed |
-| `database.user`                     | `database.dbUser.username`                                                        |
-| `database.password`                 | `database.dbUser.password`                                                        |
-| `database.root.user`                | `database.rootUser.username`                                                      |
-| `database.root.password`            | `database.rootUser.password`                                                      |
-| `search.user`                       | `search.basicAuth.username`                                                       |
-| `search.password`                   | `search.basicAuth.password`                                                       |
-| `search.existingSecret`             | `search.basicAuth.existingSecret.name: secret-name`                               |
-| `search.existingSecret.enabled`     | `search.basicAuth.existingSecret.enabled`                                         |
-| `search.existingSecret.name`        | `search.basicAuth.existingSecret.name`                                            |
-| `search.existingSecret.userKey`     | `search.basicAuth.existingSecret.userKey`                                         |
-| `search.existingSecret.passwordKey` | `search.basicAuth.existingSecret.passwordKey`                                     |
+  # New values
+  database:
+    dbUser:
+      username: fusionauth
+      password: password
+    rootUser:
+      username: postgres
+      password: password
+  ```
 
-When migrating existing database Secrets, keep database usernames in `database.dbUser.username` and `database.rootUser.username`, set `database.dbUser.existingSecret.enabled: true`, and, if you use root bootstrap credentials, set `database.rootUser.existingSecret.enabled: true`. Database existing Secrets only need password keys. When migrating inline search credentials, set `search.basicAuth.enabled: true`. When migrating search credentials from an existing Secret, set `search.basicAuth.existingSecret.enabled: true`.
+  📝 Whether you use the new shape or not, the chart will now create separate
+  Secrets for the database user and the root user, instead of putting both
+  passwords into a single secret.
 
-Prefer the following structure for database credentials:
+- `initContainers.waitForEs` renamed to `initContainers.waitForSearch`
 
-```yaml
-database:
-  dbUser:
-    username: fusionauth
-    existingSecret:
-      enabled: true
-      name: database-user-secret
-      passwordKey: password
-  rootUser:
-    username: postgres
-    existingSecret:
-      enabled: true
-      name: database-root-secret
-      passwordKey: password
-```
+  This was renamed because FusionAuth supports both ElasticSearch and OpenSearch.
+
+| Previous value                      | New value                                           |
+| ----------------------------------- | --------------------------------------------------- |
+| `search.user`                       | `search.basicAuth.username`                         |
+| `search.password`                   | `search.basicAuth.password`                         |
+| `search.existingSecret`             | `search.basicAuth.existingSecret.name: secret-name` |
+| `search.existingSecret.enabled`     | `search.basicAuth.existingSecret.enabled`           |
+| `search.existingSecret.name`        | `search.basicAuth.existingSecret.name`              |
+| `search.existingSecret.userKey`     | `search.basicAuth.existingSecret.userKey`           |
+| `search.existingSecret.passwordKey` | `search.basicAuth.existingSecret.passwordKey`       |
 
 Prefer the following structure for search basic auth credentials:
 
