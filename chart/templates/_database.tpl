@@ -9,6 +9,13 @@ Configure TLS if enabled
 {{- end -}}
 
 {{/*
+Build DATABASE_URL from chart database values.
+*/}}
+{{- define "fusionauth.database.url" -}}
+jdbc:{{ .Values.database.protocol }}://{{- required "database.host is required" .Values.database.host -}}:{{ .Values.database.port }}/{{ .Values.database.name }}{{ include "fusionauth.databaseTLS" . }}
+{{- end -}}
+
+{{/*
 Resolve FusionAuth database username.
 - Current: database.dbUser.username
 - Legacy:  database.user, which takes precedence when set for compatibility
@@ -113,13 +120,11 @@ password
 
 {{/*
 Resolve whether the chart should create the FusionAuth database credentials
-Secret. If DATABASE_PASSWORD is supplied through .Values.environment, that env
-var takes precedence and the generated Secret is not needed.
+Secret.
 */}}
 {{- define "fusionauth.database.dbUser.generatedSecret.enabled" -}}
 {{- $existingSecret := eq (include "fusionauth.database.dbUser.existingSecret.enabled" .) "true" -}}
-{{- $databasePasswordEnv := eq (include "fusionauth.environment.has" (dict "context" . "name" "DATABASE_PASSWORD")) "true" -}}
-{{- if and (not $existingSecret) (not $databasePasswordEnv) -}}true{{- else -}}false{{- end -}}
+{{- if not $existingSecret -}}true{{- else -}}false{{- end -}}
 {{- end -}}
 
 {{/*
@@ -173,6 +178,7 @@ Validate root database credential combinations.
 Validate database credential combinations that span the dbUser and rootUser.
 */}}
 {{- define "fusionauth.database.validate" -}}
+{{- include "fusionauth.environment.validate" . }}
 {{- include "fusionauth.database.dbUser.validate" . }}
 {{- include "fusionauth.database.rootUser.validate" . }}
 {{- $dbUserExistingSecretEnabled := eq (include "fusionauth.database.dbUser.existingSecret.enabled" .) "true" -}}
@@ -253,17 +259,13 @@ password
 Resolve whether root database credentials are configured.
 */}}
 {{- define "fusionauth.database.rootUser.configured" -}}
-{{- $databaseRootUsernameEnv := eq (include "fusionauth.environment.has" (dict "context" . "name" "DATABASE_ROOT_USERNAME")) "true" -}}
-{{- if or (include "fusionauth.database.rootUser.username" .) $databaseRootUsernameEnv -}}true{{- else -}}false{{- end -}}
+{{- if include "fusionauth.database.rootUser.username" . -}}true{{- else -}}false{{- end -}}
 {{- end -}}
 
 {{/*
 Resolve whether the chart should create the root database credentials Secret.
-If DATABASE_ROOT_PASSWORD is supplied through .Values.environment, that env var
-takes precedence and the generated Secret is not needed.
 */}}
 {{- define "fusionauth.database.rootUser.generatedSecret.enabled" -}}
 {{- $existingSecret := eq (include "fusionauth.database.rootUser.existingSecret.enabled" .) "true" -}}
-{{- $databaseRootPasswordEnv := eq (include "fusionauth.environment.has" (dict "context" . "name" "DATABASE_ROOT_PASSWORD")) "true" -}}
-{{- if and (eq (include "fusionauth.database.rootUser.configured" .) "true") (not $existingSecret) (not $databaseRootPasswordEnv) -}}true{{- else -}}false{{- end -}}
+{{- if and (eq (include "fusionauth.database.rootUser.configured" .) "true") (not $existingSecret) -}}true{{- else -}}false{{- end -}}
 {{- end -}}

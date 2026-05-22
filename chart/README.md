@@ -26,12 +26,12 @@ Review your values file carefully against these notes!
   should not be required in this chart. If you used `ExternalName`, please open
   an issue describing your use case.
 
-- **Chart-managed database password Secrets are now split.** The chart creates
-  one Secret for `database.dbUser` and one Secret for `database.rootUser` instead
-  of putting both passwords into one Secret.
+- **Chart-managed database password Secrets are now split.**
+  - If you are using `existingSecret` to store passwords, this does not affect you.
+  - `<release-name>-db-credentials` contains the password from `database.dbUser.password`.
+  - `<release-name>-db-root-credentials` contains the password from `database.rootUser.password`.
   - This is not a breaking change for the chart itself, but if you have any external
     consumers of the previous secret, they may require updates.
-  - If you are using `existingSecret` to store passwords, this does not affect you.
 
 #### Recommended Migrations
 
@@ -88,11 +88,16 @@ as soon as possible, as the compatibility shims will be removed in a future char
       password: password
   ```
 
-  📝 Whether you use the new shape or not, if you are not using `existingSecrets`,
+  📝 Whether you use the new shape or not, if you are not using `existingSecret`,
   the chart will now create separate Secrets for the database user and the root
   user, instead of putting both passwords into a single secret.
 
 - `initContainers.waitForEs` renamed to `initContainers.waitForSearch`
+
+- `environment` can no longer override variables managed by chart values, such
+  as `DATABASE_URL`, `DATABASE_USERNAME`, `DATABASE_PASSWORD`, `SEARCH_TYPE`,
+  `SEARCH_SERVERS`, `FUSIONAUTH_APP_MEMORY`, or
+  `FUSIONAUTH_APP_KICKSTART_FILE`. Use the corresponding chart values instead.
 
 - Values for `search` credentials have changed.
   - A `basicAuth` key was added to prepare for support of other credential types in the future.

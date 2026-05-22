@@ -150,10 +150,6 @@ environment: []
   #       fieldPath: status.podIP
   # - name: FUSIONAUTH_API_KEY
   #   value: test
-  # Its important to add /kickstart/<file> as prefix to your kickstart file else it won't work! All other files will be mounted below /kickstart/
-  # => Use this environment variable to override the default location '/kickstart/kickstart.json' which is autom. set when kickstart.enabled is set
-  # - name: FUSIONAUTH_APP_KICKSTART_FILE
-  #   value: /kickstart/kickstart.json
 
 # kickstart -- Configures kickstart for initial application setup
 kickstart:

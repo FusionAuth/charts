@@ -33,7 +33,7 @@ Changes to the chart should have corresponding tests, and the tests must pass pr
 
 ## Updating Chart Documentation
 
-The chart README is generated from README.md.gotpml and `helm-docs`. Do not manually update `chart/README.md`. Update the template and regenerate it.
+The chart README is generated from README.md.gotmpl and `helm-docs`. Do not manually update `chart/README.md`. Update the template and regenerate it.
 
 Install `helm-docs` with homebrew:
 
