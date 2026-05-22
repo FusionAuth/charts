@@ -1,0 +1,226 @@
+# FusionAuth Helm Chart
+
+![Build Status](https://github.com/FusionAuth/charts/actions/workflows/release.yml/badge.svg)
+
+[FusionAuth](https://fusionauth.io/) is a modern platform for Customer Identity and Access Management (CIAM). FusionAuth provides APIs and a responsive web user interface to support login, registration, localized email, multi-factor authentication, reporting, and much more.
+
+## Important Changes
+
+### 1.67.0
+
+⚠️ This release contains several breaking changes, as well as recommended changes.
+Review your values file carefully against these notes!
+
+#### Breaking Changes
+
+- **The minimum supported Kubernetes version is now 1.23.0.** This removes support
+  for long-deprecated beta APIs for `HorizontalPodAutoscaler`, `Ingress`, and
+  `PodDisruptionBudget`.
+
+- **`service.spec` has been removed from the chart** to eliminate the risk of
+  overwriting valid service configurations. If you used `service.spec` in a way
+  that is not supported by the standard chart values, please open an issue
+  describing your use case.
+
+- **`service.type` no longer supports `ExternalName`.** `ExternalName` support
+  should not be required in this chart. If you used `ExternalName`, please open
+  an issue describing your use case.
+
+- **Chart-managed database password Secrets are now split.** The chart creates
+  one Secret for `database.dbUser` and one Secret for `database.rootUser` instead
+  of putting both passwords into one Secret.
+  - This is not a breaking change for the chart itself, but if you have any external
+    consumers of the previous secret, they may require updates.
+  - If you are using `existingSecret` to store passwords, this does not affect you.
+
+#### Recommended Migrations
+
+There are additional changes to the values format, but there are compatibility shims
+in place to give you time to migrate. It's recommended to migrate to the new values
+as soon as possible, as the compatibility shims will be removed in a future chart release.
+
+- **Values for `database` credentials have been updated.**
+
+  If you are using `existingSecret` to store the database passwords (recommended):
+
+  ```yaml
+  # Old values
+  database:
+    user: fusionauth # name of the database user
+    existingSecret: fusionauth-db-creds # name of the k8s Secret
+    root:
+      user: postgres # name of the root user
+
+  # New values
+  database:
+    dbUser:
+      username: fusionauth # name of the database user
+      existingSecret:
+        enabled: true
+        name: fusionauth-db-creds # name of the k8s Secret
+        passwordKey: password # name of the key that stores the password
+    rootUser:
+      username: postgres # name of the root user
+      existingSecret:
+        enabled: true
+        name: fusionauth-root-creds # name of the k8s Secret
+        passwordKey: password # name of the key that stores the root password
+  ```
+
+  If you are storing the database passwords in clear text (NOT recommended):
+
+  ```yaml
+  # Old values
+  database:
+    user: fusionauth
+    password: password
+    root:
+      user: postgres
+      password: password
+
+  # New values
+  database:
+    dbUser:
+      username: fusionauth
+      password: password
+    rootUser:
+      username: postgres
+      password: password
+  ```
+
+  📝 Whether you use the new shape or not, if you are not using `existingSecrets`,
+  the chart will now create separate Secrets for the database user and the root
+  user, instead of putting both passwords into a single secret.
+
+- `initContainers.waitForEs` renamed to `initContainers.waitForSearch`
+
+- Values for `search` credentials have changed.
+  - A `basicAuth` key was added to prepare for support of other credential types in the future.
+  - `search.basicAuth` supports using `existingSecret`.
+
+  ```yaml
+  # Old values
+  search:
+    user: username # name of the search user
+    password: password # password for the search user
+
+  # New values
+  search:
+    basicAuth:
+      enabled: true
+      username: username
+      password: password
+
+  # New values with existingSecret
+  search:
+    basicAuth:
+      existingSecret:
+        enabled: true
+        name: fusionauth-search-creds
+        userKey: username
+        passwordKey: password
+  ```
+
+### 1.57.1
+
+- **The chart version now matches the FusionAuth app version.**
+
+  ⚠️ You can (and probably should) override the `image.tag` field in `values.yaml` to pin the desired version of the FusionAuth application. This ensures that upgrading the helm chart doesn't unexpectedly upgrade the FusionAuth version.
+
+### 1.0.0
+
+- **The FusionAuth app version will now default to the latest available at the time of the chart's release.** Release notes will indicate the FusionAuth version included in the chart.
+
+  ⚠️ You can (and probably should) override the `image.tag` field in `values.yaml` to pin the desired version of the FusionAuth application. This ensures that upgrading the helm chart doesn't unexpectedly upgrade the FusionAuth version.
+
+### 0.8.0
+
+- **The `environment` value is now an array instead of an object.** Make sure to reformat your values when you update.
+
+### 0.4.0
+
+- **The external postgresql and elasticsearch charts were dropped.** You will need to maintain those dependencies on your own.
+
+## Installing the Chart
+
+You can read the official instructions, including install steps for AWS, GCP, and Azure, in the [FusionAuth Kubernetes installation guide](https://fusionauth.io/docs/get-started/download-and-install/kubernetes/fusionauth-deployment).
+
+### Prerequisites
+
+- PostgreSQL or MySQL database
+- ElasticSearch or OpenSearch instance (optional)
+
+⚠️ Though an ElasticSearch or OpenSearch instance is optional, it is strongly recommended for most use cases.
+
+### Installation
+
+To install the chart with the release name `fusionauth`:
+
+```shell
+helm repo add fusionauth https://fusionauth.github.io/charts
+helm install fusionauth fusionauth/fusionauth \
+  --set database.host=[database host] \
+  --set database.dbUser.username=[database username] \
+  --set database.dbUser.password=[database password] \
+  --set search.host=[elasticsearch host]
+```
+
+## Setting Up a Test Deployment
+
+This will install FusionAuth and its prerequisites in a single kubernetes namespace, with a configuration suitable for evaluation and testing. **This configuration is not suitable for production.**
+
+Create and switch to the test namespace.
+
+```shell
+kubectl create namespace fusionauth-test
+kubectl config set-context --current --namespace=fusionauth-test
+```
+
+### Install PostgreSQL
+
+```shell
+helm install postgres oci://registry-1.docker.io/bitnamicharts/postgresql
+```
+
+### Install Opensearch
+
+Opensearch is optional, but highly recommended. See the note below.
+
+```shell
+helm repo add opensearch https://opensearch-project.github.io/helm-charts/
+helm install opensearch opensearch/opensearch \
+--set singleNode=true \
+--set-json 'extraEnvs=[{"name":"DISABLE_SECURITY_PLUGIN","value":"true"}]'
+```
+
+### Install FusionAuth
+
+Wait for the Postgres and Opensearch pods to be ready, then install FusionAuth.
+
+```shell
+export FA_PSQL_PASS=$(kubectl get secret postgres-postgresql -o jsonpath="{.data.postgres-password}" | base64 -d)
+helm repo add fusionauth https://fusionauth.github.io/charts
+helm install fusionauth fusionauth/fusionauth \
+--set database.host=postgres-postgresql \
+--set database.dbUser.username=fusionauth \
+--set database.dbUser.password=$FA_PSQL_PASS \
+--set search.host=opensearch-cluster-master
+```
+
+📝 For test deployments, you can remove `--set search.host` and add `--set search.engine=database` to configure FusionAuth to use the database for search instead of a dedicated search host. This is **not recommended** for real-world use, as search performance will be greatly reduced.
+
+### Connect to FusionAuth
+
+Create a port forward to connect to the FusionAuth app.
+
+```shell
+kubectl port-forward svc/fusionauth 9011:9011
+```
+
+You should now be able to connect to the FusionAuth application at http://localhost:9011 to start the initial setup.
+
+📝 You may wish to set up an ingress instead of using a port forward. See the table below for how to configure the FusionAuth chart values to add an ingress.
+
+## Chart Values
+
+{{ template "chart.valuesTable" . }}

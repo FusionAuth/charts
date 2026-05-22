@@ -1,3 +1,5 @@
+name: Release
+
 on:
   push:
     tags:
@@ -40,32 +42,12 @@ jobs:
               "$RELEASE_CHART/$file"
           done
 
-          helm lint "$RELEASE_CHART"
-
           echo "APP_VERSION=$APP_VERSION" >> $GITHUB_ENV
           echo "CHART_VERSION=$CHART_VERSION" >> $GITHUB_ENV
           echo "RELEASE_CHART=$RELEASE_CHART" >> $GITHUB_ENV
 
-      - name: lint and test the release chart
-        run: |
-          helm lint "$RELEASE_CHART" \
-            --set database.host=postgres \
-            --set database.dbUser.username=fusionauth \
-            --set database.dbUser.password=password \
-            --set search.host=opensearch
-
-          helm template test "$RELEASE_CHART" \
-            --set database.host=postgres \
-            --set database.dbUser.username=fusionauth \
-            --set database.dbUser.password=password \
-            --set search.engine=database \
-            --set ingress.enabled=true \
-            --set ingress.hosts[0]=example.com \
-            --set ingress.paths[0].path=/ \
-            --set ingress.paths[0].pathType=Prefix \
-            --set autoscaling.enabled=true \
-            --set podDisruptionBudget.enabled=true \
-            --set serviceMonitor.enabled=true
+      - name: Smoke-test release chart
+        run: sh scripts/validate-chart.sh "$RELEASE_CHART"
 
       - name: configure git
         run: |

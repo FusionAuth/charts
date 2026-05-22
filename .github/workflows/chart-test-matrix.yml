@@ -1,4 +1,4 @@
-name: Chart test matrix
+name: Chart Test Matrix
 
 on:
   pull_request:
@@ -8,6 +8,18 @@ on:
   workflow_dispatch:
 
 jobs:
+  chart-smoke-test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Set up Helm
+        uses: azure/setup-helm@v4
+
+      - name: Smoke-test chart
+        run: sh scripts/validate-chart.sh chart
+
   chart-unit-test-matrix:
     runs-on: ubuntu-latest
     strategy:

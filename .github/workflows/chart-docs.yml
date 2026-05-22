@@ -1,0 +1,30 @@
+name: Generate Chart README
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  chart-docs:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Set up Go
+        uses: actions/setup-go@v6
+        with:
+          go-version: stable
+
+      - name: Install helm-docs
+        run: go install github.com/norwoodj/helm-docs/cmd/helm-docs@v1.14.2
+
+      - name: Generate chart docs
+        run: |
+          "$(go env GOPATH)/bin/helm-docs" -x --chart-search-root . --chart-to-generate chart
+
+      - name: Verify chart docs are current
+        run: git diff --exit-code chart/README.md

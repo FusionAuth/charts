@@ -26,11 +26,36 @@ Run the chart test matrix locally:
 
 ```sh
 helm unittest --strict chart
+sh scripts/validate-chart.sh chart
 ```
 
 Changes to the chart should have corresponding tests, and the tests must pass prior to release.
 
+## Updating Chart Documentation
+
+The chart README is generated from README.md.gotpml and `helm-docs`. Do not manually update `chart/README.md`. Update the template and regenerate it.
+
+Install `helm-docs` with homebrew:
+
+```sh
+brew install norwoodj/tap/helm-docs
+```
+
+Install `helm-docs` with `go install`:
+
+```sh
+go install github.com/norwoodj/helm-docs/cmd/helm-docs@v1.14.2
+```
+
+Regenerate the chart README after changing `chart/values.yaml`, `chart/Chart.yaml`, or `chart/README.md.gotmpl`:
+
+```sh
+helm-docs -x --chart-search-root . --chart-to-generate chart
+```
+
 ## Releasing the Chart
+
+Make sure you've run tests and generated docs before releasing. The release could fail if these are not done.
 
 Release the chart by pushing a new tag.
 
