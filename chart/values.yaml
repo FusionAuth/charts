@@ -57,12 +57,14 @@ service:
 
 # database -- Configures the database connection for fusionauth
 database:
+  # database.url -- Optional full JDBC URL. When set, this value is used for DATABASE_URL instead of building it from protocol, host, port, name, tls, and tlsMode.
+  url: ""
+  # database.host -- Hostname or ip of the database instance. Required by the wait-for-db init container even when database.url is set.
+  host: ""
+  # database.port -- Port of the database instance. Required by the wait-for-db init container even when database.url is set.
+  port: 5432
   # database.protocol -- Protocol for jdbc connection to database [`postgresql|mysql`].
   protocol: postgresql
-  # database.host -- Hostname or ip of the database instance
-  host: ""
-  # database.port -- Port of the database instance
-  port: 5432
   # database.tls -- Configures whether or not to use tls when connecting to the database
   tls: false
   # database.tlsMode -- If tls is enabled, this configures the mode

@@ -26,6 +26,13 @@ Review your values file carefully against these notes!
   should not be required in this chart. If you used `ExternalName`, please open
   an issue describing your use case.
 
+- `environment` can no longer override variables managed by chart values, such
+  as `DATABASE_URL`, `DATABASE_USERNAME`, `DATABASE_PASSWORD`, `SEARCH_TYPE`,
+  `SEARCH_SERVERS`, `FUSIONAUTH_APP_MEMORY`, or
+  `FUSIONAUTH_APP_KICKSTART_FILE`. Use the corresponding chart values instead.
+  If you previously set `DATABASE_URL` through `environment`, use `database.url`
+  instead.
+
 - **Chart-managed database password Secrets are now split.**
   - If you are using `existingSecret` to store passwords, this does not affect you.
   - `<release-name>-db-credentials` contains the password from `database.dbUser.password`.
@@ -93,11 +100,6 @@ as soon as possible, as the compatibility shims will be removed in a future char
   user, instead of putting both passwords into a single secret.
 
 - `initContainers.waitForEs` renamed to `initContainers.waitForSearch`
-
-- `environment` can no longer override variables managed by chart values, such
-  as `DATABASE_URL`, `DATABASE_USERNAME`, `DATABASE_PASSWORD`, `SEARCH_TYPE`,
-  `SEARCH_SERVERS`, `FUSIONAUTH_APP_MEMORY`, or
-  `FUSIONAUTH_APP_KICKSTART_FILE`. Use the corresponding chart values instead.
 
 - Values for `search` credentials have changed.
   - A `basicAuth` key was added to prepare for support of other credential types in the future.

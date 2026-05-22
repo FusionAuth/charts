@@ -84,6 +84,17 @@ tests:
           errorMessage: environment cannot override chart-managed variable DATABASE_URL; use the corresponding chart value instead
         template: secret.yaml
 
+  - it: fails when database.url is set without a wait host
+    set:
+      database.url: jdbc:postgresql://db:5432/fusionauth?sslmode=verify-full
+      database.dbUser.username: db_user
+      database.dbUser.password: db_pass
+      search.engine: database
+    asserts:
+      - failedTemplate:
+          errorMessage: database.host is required when database.url is set and initContainers.waitForDb is true
+        template: secret.yaml
+
   - it: fails when environment overrides SEARCH_SERVERS
     set:
       database.host: db

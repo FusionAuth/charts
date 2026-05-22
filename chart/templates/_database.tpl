@@ -12,7 +12,11 @@ Configure TLS if enabled
 Build DATABASE_URL from chart database values.
 */}}
 {{- define "fusionauth.database.url" -}}
+{{- if .Values.database.url -}}
+{{- .Values.database.url -}}
+{{- else -}}
 jdbc:{{ .Values.database.protocol }}://{{- required "database.host is required" .Values.database.host -}}:{{ .Values.database.port }}/{{ .Values.database.name }}{{ include "fusionauth.databaseTLS" . }}
+{{- end -}}
 {{- end -}}
 
 {{/*
@@ -181,6 +185,9 @@ Validate database credential combinations that span the dbUser and rootUser.
 {{- include "fusionauth.environment.validate" . }}
 {{- include "fusionauth.database.dbUser.validate" . }}
 {{- include "fusionauth.database.rootUser.validate" . }}
+{{- if and .Values.database.url (eq (include "fusionauth.initContainers.waitForDb" .) "true") (not .Values.database.host) -}}
+{{- fail "database.host is required when database.url is set and initContainers.waitForDb is true" -}}
+{{- end -}}
 {{- $dbUserExistingSecretEnabled := eq (include "fusionauth.database.dbUser.existingSecret.enabled" .) "true" -}}
 {{- $rootUserExistingSecretEnabled := eq (include "fusionauth.database.rootUser.existingSecret.enabled" .) "true" -}}
 {{- if and $dbUserExistingSecretEnabled $rootUserExistingSecretEnabled -}}

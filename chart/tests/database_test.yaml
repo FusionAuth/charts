@@ -5,6 +5,26 @@ templates:
 release:
   name: test
 tests:
+  - it: renders database.url as DATABASE_URL while keeping wait host from database.host
+    set:
+      database.url: jdbc:postgresql://db-primary:5432/fusionauth?sslmode=verify-full&connectTimeout=10
+      database.host: db-proxy
+      database.port: 15432
+      database.dbUser.username: db_user
+      database.dbUser.password: db_pass
+      search.engine: database
+    asserts:
+      - contains:
+          path: spec.template.spec.containers[0].env
+          content:
+            name: DATABASE_URL
+            value: jdbc:postgresql://db-primary:5432/fusionauth?sslmode=verify-full&connectTimeout=10
+        template: deployment.yaml
+      - matchRegex:
+          path: spec.template.spec.initContainers[0].args[2]
+          pattern: "nc -zv 'db-proxy' 15432"
+        template: deployment.yaml
+
   - it: renders legacy inline database credentials without root credentials
     set:
       database.host: db

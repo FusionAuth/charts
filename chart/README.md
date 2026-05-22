@@ -26,6 +26,13 @@ Review your values file carefully against these notes!
   should not be required in this chart. If you used `ExternalName`, please open
   an issue describing your use case.
 
+- `environment` can no longer override variables managed by chart values, such
+  as `DATABASE_URL`, `DATABASE_USERNAME`, `DATABASE_PASSWORD`, `SEARCH_TYPE`,
+  `SEARCH_SERVERS`, `FUSIONAUTH_APP_MEMORY`, or
+  `FUSIONAUTH_APP_KICKSTART_FILE`. Use the corresponding chart values instead.
+  If you previously set `DATABASE_URL` through `environment`, use `database.url`
+  instead.
+
 - **Chart-managed database password Secrets are now split.**
   - If you are using `existingSecret` to store passwords, this does not affect you.
   - `<release-name>-db-credentials` contains the password from `database.dbUser.password`.
@@ -93,11 +100,6 @@ as soon as possible, as the compatibility shims will be removed in a future char
   user, instead of putting both passwords into a single secret.
 
 - `initContainers.waitForEs` renamed to `initContainers.waitForSearch`
-
-- `environment` can no longer override variables managed by chart values, such
-  as `DATABASE_URL`, `DATABASE_USERNAME`, `DATABASE_PASSWORD`, `SEARCH_TYPE`,
-  `SEARCH_SERVERS`, `FUSIONAUTH_APP_MEMORY`, or
-  `FUSIONAUTH_APP_KICKSTART_FILE`. Use the corresponding chart values instead.
 
 - Values for `search` credentials have changed.
   - A `basicAuth` key was added to prepare for support of other credential types in the future.
@@ -241,7 +243,7 @@ You should now be able to connect to the FusionAuth application at http://localh
 | autoscaling.maxReplicas | int | `5` | Maximum number of running instances when HPA is enabled. |
 | autoscaling.minReplicas | int | `2` | Minimum number of running instances when HPA is enabled. |
 | autoscaling.targetCPU | int | `50` | CPU use % threshold to trigger a HPA scale up. |
-| database | object | `{"dbUser":{"existingSecret":{"enabled":false,"name":"","passwordKey":"password"},"password":"","username":""},"host":"","name":"fusionauth","port":5432,"protocol":"postgresql","rootUser":{"existingSecret":{"enabled":false,"name":"","passwordKey":"password"},"password":"","username":""},"tls":false,"tlsMode":"require"}` | Configures the database connection for fusionauth |
+| database | object | `{"dbUser":{"existingSecret":{"enabled":false,"name":"","passwordKey":"password"},"password":"","username":""},"host":"","name":"fusionauth","port":5432,"protocol":"postgresql","rootUser":{"existingSecret":{"enabled":false,"name":"","passwordKey":"password"},"password":"","username":""},"tls":false,"tlsMode":"require","url":""}` | Configures the database connection for fusionauth |
 | database.dbUser | object | `{"existingSecret":{"enabled":false,"name":"","passwordKey":"password"},"password":"","username":""}` | Database credentials for fusionauth to use in normal operation |
 | database.dbUser.existingSecret | object | `{"enabled":false,"name":"","passwordKey":"password"}` | Configures an existing secret that contains the normal database user password. |
 | database.dbUser.existingSecret.enabled | bool | `false` | Use an existing secret for the normal database user password. |
@@ -249,9 +251,9 @@ You should now be able to connect to the FusionAuth application at http://localh
 | database.dbUser.existingSecret.passwordKey | string | `"password"` | The key in the existing secret that contains the database password. |
 | database.dbUser.password | string | `""` | Database password for fusionauth to use in normal operation. It is not recommended to set the password in clear text here. Use an existing secret instead. |
 | database.dbUser.username | string | `""` | Database username for fusionauth to use in normal operation. |
-| database.host | string | `""` | Hostname or ip of the database instance |
+| database.host | string | `""` | Hostname or ip of the database instance. Required by the wait-for-db init container even when database.url is set. |
 | database.name | string | `"fusionauth"` | Name of the fusionauth database |
-| database.port | int | `5432` | Port of the database instance |
+| database.port | int | `5432` | Port of the database instance. Required by the wait-for-db init container even when database.url is set. |
 | database.protocol | string | `"postgresql"` | Protocol for jdbc connection to database [`postgresql|mysql`]. |
 | database.rootUser | object | `{"existingSecret":{"enabled":false,"name":"","passwordKey":"password"},"password":"","username":""}` | Database credentials for fusionauth to use during initial bootstrap |
 | database.rootUser.existingSecret | object | `{"enabled":false,"name":"","passwordKey":"password"}` | Configures an existing secret that contains the root database user password. |
@@ -262,6 +264,7 @@ You should now be able to connect to the FusionAuth application at http://localh
 | database.rootUser.username | string | `""` | Database username for fusionauth to use during initial bootstrap |
 | database.tls | bool | `false` | Configures whether or not to use tls when connecting to the database |
 | database.tlsMode | string | `"require"` | If tls is enabled, this configures the mode |
+| database.url | string | `""` | Optional full JDBC URL. When set, this value is used for DATABASE_URL instead of building it from protocol, host, port, name, tls, and tlsMode. |
 | dnsConfig | object | `{}` | Define dnsConfig for fusionauth pods. |
 | dnsPolicy | string | `"ClusterFirst"` | Define dnsPolicy for fusionauth pods. |
 | environment | list | `[]` | Configure additional environment variables. Should only be used for things that are not explicitly set elsewhere in the chart. |
