@@ -85,35 +85,31 @@ as soon as possible, as the compatibility shims will be removed in a future char
       password: password
   ```
 
-  📝 Whether you use the new shape or not, the chart will now create separate
-  Secrets for the database user and the root user, instead of putting both
-  passwords into a single secret.
+  📝 Whether you use the new shape or not, if you are not using `existingSecrets`,
+  the chart will now create separate Secrets for the database user and the root
+  user, instead of putting both passwords into a single secret.
 
 - `initContainers.waitForEs` renamed to `initContainers.waitForSearch`
 
-  This was renamed because FusionAuth supports both ElasticSearch and OpenSearch.
+- Values for `search` credentials have changed.
+  - A `basicAuth` key was added to prepare for support of other credential types in the future.
+  - It now supports using `existingSecret`.
 
-| Previous value                      | New value                                           |
-| ----------------------------------- | --------------------------------------------------- |
-| `search.user`                       | `search.basicAuth.username`                         |
-| `search.password`                   | `search.basicAuth.password`                         |
-| `search.existingSecret`             | `search.basicAuth.existingSecret.name: secret-name` |
-| `search.existingSecret.enabled`     | `search.basicAuth.existingSecret.enabled`           |
-| `search.existingSecret.name`        | `search.basicAuth.existingSecret.name`              |
-| `search.existingSecret.userKey`     | `search.basicAuth.existingSecret.userKey`           |
-| `search.existingSecret.passwordKey` | `search.basicAuth.existingSecret.passwordKey`       |
+  ```yaml
+  # Old values
+  search:
+    user: username # name of the search user
+    password: password # password for the search user
 
-Prefer the following structure for search basic auth credentials:
-
-```yaml
-search:
-  basicAuth:
-    existingSecret:
-      enabled: true
-      name: secret-name
-      userKey: username
-      passwordKey: password
-```
+  # New values
+  search:
+    basicAuth:
+      username: username
+      existingSecret:
+        enabled: true
+        name: fusionauth-search-creds
+        passwordKey: password
+  ```
 
 ### 1.57.1
 
