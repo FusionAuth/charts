@@ -25,6 +25,29 @@ tests:
           pattern: "nc -zv 'db-proxy' 15432"
         template: deployment.yaml
 
+  - it: renders custom environment entries before chart-managed entries
+    set:
+      database.host: db
+      database.dbUser.username: db_user
+      database.dbUser.password: db_pass
+      search.engine: database
+      environment:
+        - name: SOME_VAR
+          value: some_value
+    asserts:
+      - equal:
+          path: spec.template.spec.containers[0].env[0]
+          value:
+            name: SOME_VAR
+            value: some_value
+        template: deployment.yaml
+      - equal:
+          path: spec.template.spec.containers[0].env[1]
+          value:
+            name: DATABASE_USERNAME
+            value: db_user
+        template: deployment.yaml
+
   - it: renders legacy inline database credentials without root credentials
     set:
       database.host: db

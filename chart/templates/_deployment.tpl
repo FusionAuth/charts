@@ -66,7 +66,9 @@ Render FusionAuth container environment variables.
 {{- $databaseRootUserConfigured := eq (include "fusionauth.database.rootUser.configured" .) "true" -}}
 {{- $searchExistingSecretEnabled := .Values.search.basicAuth.existingSecret.enabled -}}
 {{- $chartSearchEnabled := eq (include "fusionauth.search.chartEnabled" .) "true" -}}
-{{- if .Values.environment }}{{ toYaml .Values.environment }}{{ end -}}
+{{- if .Values.environment }}
+{{ toYaml .Values.environment }}
+{{- end }}
 - name: DATABASE_USERNAME
   value: {{ required "database.dbUser.username is required; legacy database.user is also accepted" (include "fusionauth.database.dbUser.username" .) | quote }}
 - name: DATABASE_PASSWORD

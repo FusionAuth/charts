@@ -26,24 +26,39 @@ Review your values file carefully against these notes!
   should not be required in this chart. If you used `ExternalName`, please open
   an issue describing your use case.
 
-- `environment` can no longer override variables managed by chart values, such
-  as `DATABASE_URL`, `DATABASE_USERNAME`, `DATABASE_PASSWORD`, `SEARCH_TYPE`,
-  `SEARCH_SERVERS`, `FUSIONAUTH_APP_MEMORY`, or
-  `FUSIONAUTH_APP_KICKSTART_FILE`. Use the corresponding chart values instead.
-  If you previously set `DATABASE_URL` through `environment`, use `database.url`
-  instead.
+- **`environment` can no longer override variables managed by chart values.**
+  If you have set any of the following variables in the `environment` section,
+  you must remove them and use the corresponding chart values instead.
+  | Env Var | Chart Value |
+  | --- | --- |
+  | `DATABASE_USERNAME` | `database.dbUser.username` |
+  | `DATABASE_PASSWORD` | `database.dbUser.password` |
+  | `DATABASE_ROOT_USERNAME` | `database.rootUser.username` |
+  | `DATABASE_ROOT_PASSWORD` | `database.rootUser.password` |
+  | `DATABASE_URL` | `database.url` |
+  | `FUSIONAUTH_APP_MEMORY` | `fusionauth.app.memory` |
+  | `FUSIONAUTH_APP_RUNTIME_MODE` | `fusionauth.app.runtimeMode` |
+  | `FUSIONAUTH_APP_SILENT_MODE` | `fusionauth.app.silentMode` |
+  | `FUSIONAUTH_APP_KICKSTART_FILE` | `kickstart.file` |
+  | `SEARCH_TYPE` | `search.engine` |
+  | `SEARCH_SERVERS` | `search.host`<br/>`search.protocol`<br/>`search.port` |
+  | `SEARCH_USERNAME` | `search.basicAuth.username` |
+  | `SEARCH_PASSWORD` | `search.basicAuth.password` |
 
-- **Chart-managed database password Secrets are now split.**
+- **Chart-managed database secrets have changed.**
   - If you are using `existingSecret` to store passwords, this does not affect you.
-  - `<release-name>-db-credentials` contains the password from `database.dbUser.password`.
-  - `<release-name>-db-root-credentials` contains the password from `database.rootUser.password`.
-  - This is not a breaking change for the chart itself, but if you have any external
-    consumers of the previous secret, they may require updates.
+  - If you are not using `existingSecret`, we recommend that you do, as storing passwords
+    in clear text in the values file is not secure. If you continue to store passwords in
+    the values file, you will be impacted by these changes.
+    - The previous secret `<release-name>-credentials` is no longer created or used by
+      the chart. Instead, the chart creates two new secrets:
+      - `<release-name>-db-credentials` contains the password from `database.dbUser.password`.
+      - `<release-name>-db-root-credentials` contains the password from `database.rootUser.password`.
 
 #### Recommended Migrations
 
-There are additional changes to the values format, but there are compatibility shims
-in place to give you time to migrate. It's recommended to migrate to the new values
+There are additional changes to the values, but these changes include compatibility
+shims to give you time to migrate. It's recommended to migrate to the new values
 as soon as possible, as the compatibility shims will be removed in a future chart release.
 
 - **Values for `database` credentials have been updated.**
@@ -103,7 +118,7 @@ as soon as possible, as the compatibility shims will be removed in a future char
 
 - Values for `search` credentials have changed.
   - A `basicAuth` key was added to prepare for support of other credential types in the future.
-  - `search.basicAuth` supports using `existingSecret`.
+  - `search.basicAuth` now supports `existingSecret`.
 
   ```yaml
   # Old values
