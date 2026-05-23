@@ -29,6 +29,12 @@ $(SEARCH_USERNAME):$(SEARCH_PASSWORD)@
 {{- if .Values.search.basicAuth.enabled -}}
 {{- $username = .Values.search.basicAuth.username -}}
 {{- $password = .Values.search.basicAuth.password -}}
+{{- if not $username -}}
+{{- fail "search.basicAuth.username is required when search.basicAuth.enabled is true and search.basicAuth.existingSecret.enabled is false" -}}
+{{- end -}}
+{{- if not $password -}}
+{{- fail "search.basicAuth.password is required when search.basicAuth.enabled is true and search.basicAuth.existingSecret.enabled is false" -}}
+{{- end -}}
 {{- else -}}
 {{- $username = .Values.search.user -}}
 {{- $password = .Values.search.password -}}

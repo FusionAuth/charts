@@ -109,3 +109,31 @@ tests:
       - failedTemplate:
           errorMessage: environment cannot override chart-managed variable SEARCH_SERVERS; use the corresponding chart value instead
         template: secret.yaml
+
+  - it: fails when search basic auth is enabled without a username
+    set:
+      database.host: db
+      database.dbUser.username: db_user
+      database.dbUser.password: db_pass
+      search.engine: elasticsearch
+      search.host: search
+      search.basicAuth.enabled: true
+      search.basicAuth.password: search_pass
+    asserts:
+      - failedTemplate:
+          errorMessage: search.basicAuth.username is required when search.basicAuth.enabled is true and search.basicAuth.existingSecret.enabled is false
+        template: deployment.yaml
+
+  - it: fails when search basic auth is enabled without a password
+    set:
+      database.host: db
+      database.dbUser.username: db_user
+      database.dbUser.password: db_pass
+      search.engine: elasticsearch
+      search.host: search
+      search.basicAuth.enabled: true
+      search.basicAuth.username: search_user
+    asserts:
+      - failedTemplate:
+          errorMessage: search.basicAuth.password is required when search.basicAuth.enabled is true and search.basicAuth.existingSecret.enabled is false
+        template: deployment.yaml

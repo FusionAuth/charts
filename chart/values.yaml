@@ -256,7 +256,7 @@ resources: {}
   #   cpu: 100m
   #   memory: 128Mi
 
-# autoscaling -- Configures Horizontal Pod Autoscaling.
+# autoscaling -- Configures Horizontal Pod Autoscaling. If you enable autoscaling, you will need to also set resource requests for the corresponding targets.
 autoscaling:
   # autoscaling.enabled -- Enable Horizontal Pod Autoscaling.
   enabled: false

@@ -238,7 +238,7 @@ You should now be able to connect to the FusionAuth application at http://localh
 | app.memory | string | `"256M"` | Configures the amount of memory Java can use |
 | app.runtimeMode | string | `"development"` | Configures runtime mode for fusionauth. Should be 'development' or 'production' learn more about the difference here: https://fusionauth.io/docs/v1/tech/reference/configuration |
 | app.silentMode | bool | `false` | Configures silent mode for fusionauth. Should be 'true' or 'false' learn more about silent mode here: https://fusionauth.io/docs/get-started/download-and-install/silent-mode silent-mode minimizes downtime during upgrades: https://fusionauth.io/docs/operate/deploy/upgrade#downtime-and-database-migrations |
-| autoscaling | object | `{"enabled":false,"maxReplicas":5,"minReplicas":2,"targetCPU":50}` | Configures Horizontal Pod Autoscaling. |
+| autoscaling | object | `{"enabled":false,"maxReplicas":5,"minReplicas":2,"targetCPU":50}` | Configures Horizontal Pod Autoscaling. If you enable autoscaling, you will need to also set resource requests for the corresponding targets. |
 | autoscaling.enabled | bool | `false` | Enable Horizontal Pod Autoscaling. |
 | autoscaling.maxReplicas | int | `5` | Maximum number of running instances when HPA is enabled. |
 | autoscaling.minReplicas | int | `2` | Minimum number of running instances when HPA is enabled. |
