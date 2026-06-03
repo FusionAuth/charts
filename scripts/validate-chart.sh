@@ -21,5 +21,8 @@ helm template test "$chart" \
   --set autoscaling.enabled=true \
   --set podDisruptionBudget.enabled=true \
   --set networkPolicy.enabled=true \
+  --set extraObjects[0].apiVersion=v1 \
+  --set extraObjects[0].kind=ConfigMap \
+  --set extraObjects[0].metadata.name=extra-object \
   --set serviceMonitor.enabled=true \
   >/dev/null

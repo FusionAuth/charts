@@ -285,6 +285,7 @@ You should now be able to connect to the FusionAuth application at http://localh
 | environment | list | `[]` | Configure additional environment variables. Should only be used for things that are not explicitly set elsewhere in the chart. |
 | extraContainers | list | `[]` | Add specs for additional containers if needed. |
 | extraInitContainers | list | `[]` | Add specs for additional init containers if needed. |
+| extraObjects | list | `[]` | Additional Kubernetes objects to deploy with the chart. Values are rendered with Helm templating support. |
 | extraVolumeMounts | list | `[]` | Associate mountPath for each extraVolumes |
 | extraVolumes | list | `[]` | Define extra Volumes. Allow to add existing claimName |
 | fullnameOverride | string | `""` | Overrides full resource names |

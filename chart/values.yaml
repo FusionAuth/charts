@@ -46,6 +46,15 @@ extraInitContainers: []
 # extraContainers -- Add specs for additional containers if needed.
 extraContainers: []
 
+# extraObjects -- Additional Kubernetes objects to deploy with the chart. Values are rendered with Helm templating support.
+extraObjects: []
+  # - apiVersion: v1
+  #   kind: ConfigMap
+  #   metadata:
+  #     name: "{{ include \"fusionauth.fullname\" . }}-extra"
+  #   data:
+  #     example: value
+
 # service -- Configures the Kubernetes service for FusionAuth.
 service:
   # service.type -- Type of Kubernetes service to create
