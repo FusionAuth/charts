@@ -82,7 +82,7 @@ jobs:
     needs: release
     steps:
       - name: Set up helm
-        uses: azure/setup-helm@v4
+        uses: azure/setup-helm@v5
 
       - name: Set up kind
         uses: helm/kind-action@v1
