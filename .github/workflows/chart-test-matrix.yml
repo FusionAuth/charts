@@ -27,9 +27,12 @@ jobs:
       matrix:
         suite:
           - database
-          - search
+          - extraobjects
+          - gateway
           - init
           - negative
+          - networkpolicy
+          - search
     steps:
       - name: Checkout
         uses: actions/checkout@v6
