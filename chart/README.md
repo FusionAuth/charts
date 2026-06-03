@@ -6,7 +6,7 @@
 
 ## Important Changes
 
-### 1.67.0
+### 1.68.0
 
 ⚠️ This release contains several breaking changes, as well as recommended changes.
 Review your values file carefully against these notes!
