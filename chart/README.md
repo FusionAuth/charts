@@ -289,6 +289,13 @@ You should now be able to connect to the FusionAuth application at http://localh
 | extraVolumeMounts | list | `[]` | Associate mountPath for each extraVolumes |
 | extraVolumes | list | `[]` | Define extra Volumes. Allow to add existing claimName |
 | fullnameOverride | string | `""` | Overrides full resource names |
+| gateway | object | `{"annotations":{},"enabled":false,"hostnames":[],"labels":{},"parentRefs":[],"rules":[]}` | Configures a Gateway API HTTPRoute for FusionAuth. GatewayClass and Gateway resources are not created by this chart. |
+| gateway.annotations | object | `{}` | Configure annotations to add to the HTTPRoute object. |
+| gateway.enabled | bool | `false` | Enables creation of an HTTPRoute. |
+| gateway.hostnames | list | `[]` | Hostnames to match for the HTTPRoute. When empty, hostnames are not restricted by the route. |
+| gateway.labels | object | `{}` | Configure labels to add to the HTTPRoute object. |
+| gateway.parentRefs | list | `[]` | Parent Gateway references for the HTTPRoute. Required when gateway.enabled is true. |
+| gateway.rules | list | `[]` | HTTPRoute rules. Each rule routes to the FusionAuth service HTTP port. When empty, a default PathPrefix / rule is used. |
 | image | object | `{"pullPolicy":"IfNotPresent","repository":"docker.io/fusionauth/fusionauth-app","tag":"0.0.0-app-dev"}` | Configures the docker image to use for fusionauth-app |
 | image.pullPolicy | string | `"IfNotPresent"` | Kubernetes image pullPolicy to use for fusionauth-app |
 | image.repository | string | `"docker.io/fusionauth/fusionauth-app"` | The name of the docker repository for fusionauth-app |

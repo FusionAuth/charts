@@ -18,6 +18,9 @@ helm template test "$chart" \
   --set ingress.hosts[0]=example.com \
   --set ingress.paths[0].path=/ \
   --set ingress.paths[0].pathType=Prefix \
+  --set gateway.enabled=true \
+  --set gateway.parentRefs[0].name=shared-gateway \
+  --set gateway.hostnames[0]=gateway.example.com \
   --set autoscaling.enabled=true \
   --set podDisruptionBudget.enabled=true \
   --set networkPolicy.enabled=true \

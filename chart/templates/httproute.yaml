@@ -1,0 +1,42 @@
+{{- if .Values.gateway.enabled -}}
+{{- $fullName := include "fusionauth.fullname" . -}}
+{{- $defaultRules := list (dict "matches" (list (dict "path" (dict "type" "PathPrefix" "value" "/")))) -}}
+{{- $rules := default $defaultRules .Values.gateway.rules -}}
+{{- if not .Values.gateway.parentRefs -}}
+{{- fail "gateway.enabled requires at least one gateway.parentRefs entry" -}}
+{{- end -}}
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: {{ $fullName }}
+  labels:
+    {{- include "fusionauth.labels" . | nindent 4 }}
+    {{- with .Values.gateway.labels }}
+    {{- toYaml . | nindent 4 }}
+    {{- end }}
+  {{- with .Values.gateway.annotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+spec:
+  parentRefs:
+    {{- toYaml .Values.gateway.parentRefs | nindent 4 }}
+  {{- with .Values.gateway.hostnames }}
+  hostnames:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+  rules:
+    {{- range $rules }}
+    - backendRefs:
+        - name: {{ $fullName }}
+          port: {{ $.Values.service.port }}
+      {{- with .matches }}
+      matches:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .filters }}
+      filters:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+    {{- end }}
+{{- end }}

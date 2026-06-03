@@ -274,6 +274,30 @@ ingress:
   #    hosts:
   #      - chart-example.local
 
+# gateway -- Configures a Gateway API HTTPRoute for FusionAuth. GatewayClass and Gateway resources are not created by this chart.
+gateway:
+  # gateway.enabled -- Enables creation of an HTTPRoute.
+  enabled: false
+  # gateway.annotations -- Configure annotations to add to the HTTPRoute object.
+  annotations: {}
+  # gateway.labels -- Configure labels to add to the HTTPRoute object.
+  labels: {}
+  # gateway.parentRefs -- Parent Gateway references for the HTTPRoute. Required when gateway.enabled is true.
+  parentRefs: []
+    # - name: shared-gateway
+    #   namespace: gateway-system
+    #   sectionName: https
+  # gateway.hostnames -- Hostnames to match for the HTTPRoute. When empty, hostnames are not restricted by the route.
+  hostnames: []
+    # - chart-example.local
+  # gateway.rules -- HTTPRoute rules. Each rule routes to the FusionAuth service HTTP port. When empty, a default PathPrefix / rule is used.
+  rules: []
+    # - matches:
+    #     - path:
+    #         type: PathPrefix
+    #         value: /
+    #   filters: []
+
 # resources -- Define resource requests and limits for fusionauth-app. It is recommended to set these values when you understand FusionAuth's resource usage in your specific environment.
 resources: {}
   # limits:
