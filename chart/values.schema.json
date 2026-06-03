@@ -258,6 +258,14 @@
         "fullnameOverride": {
             "type": "string"
         },
+        "global": {
+            "type": "object",
+            "properties": {
+                "imageRegistry": {
+                    "type": "string"
+                }
+            }
+        },
         "gateway": {
             "type": "object",
             "properties": {
@@ -319,6 +327,9 @@
                     ]
                 },
                 "repository": {
+                    "type": "string"
+                },
+                "registry": {
                     "type": "string"
                 },
                 "tag": {
@@ -402,6 +413,9 @@
                     "type": "object",
                     "properties": {
                         "repository": {
+                            "type": "string"
+                        },
+                        "registry": {
                             "type": "string"
                         },
                         "tag": {

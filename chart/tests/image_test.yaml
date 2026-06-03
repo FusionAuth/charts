@@ -1,0 +1,68 @@
+suite: image rendering
+templates:
+  - deployment.yaml
+release:
+  name: test
+tests:
+  - it: renders default image repositories unchanged
+    set:
+      database.host: db
+      database.dbUser.username: db_user
+      database.dbUser.password: db_pass
+      search.engine: database
+    asserts:
+      - equal:
+          path: spec.template.spec.initContainers[0].image
+          value: docker.io/library/busybox:1.36.1
+      - equal:
+          path: spec.template.spec.containers[0].image
+          value: docker.io/fusionauth/fusionauth-app:0.0.0-app-dev
+
+  - it: applies global registry to chart-managed images
+    set:
+      global.imageRegistry: registry.internal.example.com
+      database.host: db
+      database.dbUser.username: db_user
+      database.dbUser.password: db_pass
+      search.engine: database
+    asserts:
+      - equal:
+          path: spec.template.spec.initContainers[0].image
+          value: registry.internal.example.com/library/busybox:1.36.1
+      - equal:
+          path: spec.template.spec.containers[0].image
+          value: registry.internal.example.com/fusionauth/fusionauth-app:0.0.0-app-dev
+
+  - it: lets image registry override global registry
+    set:
+      global.imageRegistry: registry.internal.example.com
+      image.registry: app-registry.internal.example.com
+      initContainers.image.registry: init-registry.internal.example.com
+      database.host: db
+      database.dbUser.username: db_user
+      database.dbUser.password: db_pass
+      search.engine: database
+    asserts:
+      - equal:
+          path: spec.template.spec.initContainers[0].image
+          value: init-registry.internal.example.com/library/busybox:1.36.1
+      - equal:
+          path: spec.template.spec.containers[0].image
+          value: app-registry.internal.example.com/fusionauth/fusionauth-app:0.0.0-app-dev
+
+  - it: prefixes registryless repositories when registry override is set
+    set:
+      global.imageRegistry: registry.internal.example.com
+      image.repository: fusionauth/fusionauth-app
+      initContainers.image.repository: library/busybox
+      database.host: db
+      database.dbUser.username: db_user
+      database.dbUser.password: db_pass
+      search.engine: database
+    asserts:
+      - equal:
+          path: spec.template.spec.initContainers[0].image
+          value: registry.internal.example.com/library/busybox:1.36.1
+      - equal:
+          path: spec.template.spec.containers[0].image
+          value: registry.internal.example.com/fusionauth/fusionauth-app:0.0.0-app-dev

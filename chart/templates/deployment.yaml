@@ -41,7 +41,7 @@ spec:
       {{- end }}
         {{- if $waitForDb }}
         - name: wait-for-db
-          image: "{{ .Values.initContainers.image.repository }}:{{ .Values.initContainers.image.tag }}"
+          image: "{{ include "fusionauth.image" (dict "root" . "image" .Values.initContainers.image) }}"
           args:
             - /bin/sh
             - -c
@@ -56,7 +56,7 @@ spec:
         {{- end }}
         {{- if $waitForSearch }}
         - name: wait-for-search
-          image: "{{ .Values.initContainers.image.repository }}:{{ .Values.initContainers.image.tag }}"
+          image: "{{ include "fusionauth.image" (dict "root" . "image" .Values.initContainers.image) }}"
           args:
             - /bin/sh
             - -c
@@ -74,7 +74,7 @@ spec:
         {{- end }}
       containers:
         - name: {{ .Chart.Name }}
-          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          image: "{{ include "fusionauth.image" (dict "root" . "image" .Values.image) }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           ports:
             - name: http

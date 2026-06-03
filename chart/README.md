@@ -296,8 +296,11 @@ You should now be able to connect to the FusionAuth application at http://localh
 | gateway.labels | object | `{}` | Configure labels to add to the HTTPRoute object. |
 | gateway.parentRefs | list | `[]` | Parent Gateway references for the HTTPRoute. Required when gateway.enabled is true. |
 | gateway.rules | list | `[]` | HTTPRoute rules. Each rule routes to the FusionAuth service HTTP port. When empty, a default PathPrefix / rule is used. |
-| image | object | `{"pullPolicy":"IfNotPresent","repository":"docker.io/fusionauth/fusionauth-app","tag":"0.0.0-app-dev"}` | Configures the docker image to use for fusionauth-app |
+| global | object | `{"imageRegistry":""}` | Global values shared across chart images. |
+| global.imageRegistry | string | `""` | Optional registry override applied to chart-managed images when image-specific registry values are not set. |
+| image | object | `{"pullPolicy":"IfNotPresent","registry":"","repository":"docker.io/fusionauth/fusionauth-app","tag":"0.0.0-app-dev"}` | Configures the docker image to use for fusionauth-app |
 | image.pullPolicy | string | `"IfNotPresent"` | Kubernetes image pullPolicy to use for fusionauth-app |
+| image.registry | string | `""` | Optional registry override for fusionauth-app. When set, this replaces any registry included in image.repository. |
 | image.repository | string | `"docker.io/fusionauth/fusionauth-app"` | The name of the docker repository for fusionauth-app |
 | image.tag | string | `"0.0.0-app-dev"` | The docker tag to pull for fusionauth-app |
 | imagePullSecrets | list | `[]` | Configures kubernetes secrets to use for pulling private images |
@@ -309,8 +312,9 @@ You should now be able to connect to the FusionAuth application at http://localh
 | ingress.ingressClassName | string/null | null | Specify the ingressClass to be used by the Ingress. The kubernetes.io/ingress.class annotation is deprecated as of networking.k8s.io/v1 or Kubernetes 1.22+. |
 | ingress.paths | list | `[]` | Paths to be used by the Ingress. |
 | ingress.tls | list | `[]` | List of secrets used to configure TLS for the ingress. |
-| initContainers | object | `{"image":{"repository":"docker.io/library/busybox","tag":"1.36.1"},"resources":{},"waitForDb":true,"waitForSearch":true}` | Configures init containers for fusionauth pods. Init containers are used to wait for the database and search engine to be ready before starting fusionauth. |
-| initContainers.image | object | `{"repository":"docker.io/library/busybox","tag":"1.36.1"}` | Configures the docker image to use for init containers. |
+| initContainers | object | `{"image":{"registry":"","repository":"docker.io/library/busybox","tag":"1.36.1"},"resources":{},"waitForDb":true,"waitForSearch":true}` | Configures init containers for fusionauth pods. Init containers are used to wait for the database and search engine to be ready before starting fusionauth. |
+| initContainers.image | object | `{"registry":"","repository":"docker.io/library/busybox","tag":"1.36.1"}` | Configures the docker image to use for init containers. |
+| initContainers.image.registry | string | `""` | Optional registry override for init containers. When set, this replaces any registry included in initContainers.image.repository. |
 | initContainers.image.repository | string | `"docker.io/library/busybox"` | Docker image to use for initContainers. This image must contain `nc`, `wget` and a shell of some kind to do a simple loop. |
 | initContainers.image.tag | string | `"1.36.1"` | Tag to use for initContainers docker image |
 | initContainers.resources | object | `{}` | It is recommended to set these values when you understand FusionAuth's resource usage in your specific environment. |

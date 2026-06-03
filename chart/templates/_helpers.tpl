@@ -50,3 +50,28 @@ environment variables. Use the corresponding chart values instead.
 {{- end -}}
 {{- end -}}
 {{- end -}}
+
+{{/*
+Build a container image reference.
+
+repository keeps its historical meaning: a full image repository path that may
+already include a registry. When registry is explicitly set, either on the image
+or globally, it replaces any registry already present in repository.
+*/}}
+{{- define "fusionauth.image" -}}
+{{- $root := .root -}}
+{{- $image := .image -}}
+{{- $repository := $image.repository -}}
+{{- $globalRegistry := $root.Values.global.imageRegistry -}}
+{{- $registry := default $globalRegistry $image.registry -}}
+{{- if $registry -}}
+{{- $repositoryParts := splitList "/" $repository -}}
+{{- $firstPart := first $repositoryParts -}}
+{{- if or (contains "." $firstPart) (contains ":" $firstPart) (eq $firstPart "localhost") -}}
+{{- $repository = join "/" (rest $repositoryParts) -}}
+{{- end -}}
+{{- printf "%s/%s:%s" (trimSuffix "/" $registry) $repository $image.tag -}}
+{{- else -}}
+{{- printf "%s:%s" $repository $image.tag -}}
+{{- end -}}
+{{- end -}}

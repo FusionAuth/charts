@@ -3,8 +3,15 @@
 # replicaCount -- The number of fusionauth-app instances to run
 replicaCount: 1
 
+# global -- Global values shared across chart images.
+global:
+  # global.imageRegistry -- Optional registry override applied to chart-managed images when image-specific registry values are not set.
+  imageRegistry: ""
+
 # image -- Configures the docker image to use for fusionauth-app
 image:
+  # image.registry -- Optional registry override for fusionauth-app. When set, this replaces any registry included in image.repository.
+  registry: ""
   # image.repository -- The name of the docker repository for fusionauth-app
   repository: docker.io/fusionauth/fusionauth-app
   # image.tag -- The docker tag to pull for fusionauth-app
@@ -27,6 +34,8 @@ initContainers:
   waitForSearch: true
   # initContainers.image -- Configures the docker image to use for init containers.
   image:
+    # initContainers.image.registry -- Optional registry override for init containers. When set, this replaces any registry included in initContainers.image.repository.
+    registry: ""
     # initContainers.image.repository -- Docker image to use for initContainers. This image must contain `nc`, `wget` and a shell of some kind to do a simple loop.
     repository: docker.io/library/busybox
     # initContainers.image.tag -- Tag to use for initContainers docker image
