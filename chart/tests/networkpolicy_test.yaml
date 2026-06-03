@@ -1,0 +1,96 @@
+suite: network policy matrix
+templates:
+  - networkpolicy.yaml
+release:
+  name: test
+tests:
+  - it: does not render by default
+    asserts:
+      - hasDocuments:
+          count: 0
+
+  - it: allows HTTP ingress by default when enabled
+    set:
+      networkPolicy.enabled: true
+    asserts:
+      - equal:
+          path: apiVersion
+          value: networking.k8s.io/v1
+      - equal:
+          path: kind
+          value: NetworkPolicy
+      - equal:
+          path: metadata.name
+          value: test-fusionauth
+      - equal:
+          path: spec.podSelector.matchLabels
+          value:
+            app.kubernetes.io/name: fusionauth
+            app.kubernetes.io/instance: test
+      - equal:
+          path: spec.policyTypes
+          value:
+            - Ingress
+      - equal:
+          path: spec.ingress[0].ports[0]
+          value:
+            port: http
+            protocol: TCP
+      - notExists:
+          path: spec.egress
+
+  - it: renders deny all ingress when ingress is explicitly empty
+    set:
+      networkPolicy.enabled: true
+      networkPolicy.ingress: []
+    asserts:
+      - equal:
+          path: spec.policyTypes
+          value:
+            - Ingress
+      - notExists:
+          path: spec.ingress
+      - notExists:
+          path: spec.egress
+
+  - it: renders custom ingress and egress policy
+    set:
+      networkPolicy.enabled: true
+      networkPolicy.policyTypes:
+        - Ingress
+        - Egress
+      networkPolicy.ingress:
+        - from:
+            - namespaceSelector:
+                matchLabels:
+                  kubernetes.io/metadata.name: ingress-nginx
+          ports:
+            - port: http
+              protocol: TCP
+      networkPolicy.egress:
+        - to:
+            - namespaceSelector:
+                matchLabels:
+                  kubernetes.io/metadata.name: data
+          ports:
+            - port: 5432
+              protocol: TCP
+    asserts:
+      - equal:
+          path: spec.policyTypes
+          value:
+            - Ingress
+            - Egress
+      - equal:
+          path: spec.ingress[0].from[0].namespaceSelector.matchLabels
+          value:
+            kubernetes.io/metadata.name: ingress-nginx
+      - equal:
+          path: spec.egress[0].to[0].namespaceSelector.matchLabels
+          value:
+            kubernetes.io/metadata.name: data
+      - equal:
+          path: spec.egress[0].ports[0]
+          value:
+            port: 5432
+            protocol: TCP

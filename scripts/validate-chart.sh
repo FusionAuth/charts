@@ -20,5 +20,6 @@ helm template test "$chart" \
   --set ingress.paths[0].pathType=Prefix \
   --set autoscaling.enabled=true \
   --set podDisruptionBudget.enabled=true \
+  --set networkPolicy.enabled=true \
   --set serviceMonitor.enabled=true \
   >/dev/null

@@ -220,6 +220,24 @@ podDisruptionBudget:
   # @default -- null
   maxUnavailable: null
 
+# networkPolicy -- Configures NetworkPolicy for FusionAuth pods. By default, no NetworkPolicy is created.
+networkPolicy:
+  # networkPolicy.enabled -- Enables creation of a NetworkPolicy. When enabled with the default values, ingress to the FusionAuth HTTP port is allowed from any source and egress is not restricted.
+  enabled: false
+  # networkPolicy.policyTypes -- NetworkPolicy policy types to apply.
+  policyTypes:
+    - Ingress
+  # networkPolicy.ingress -- (list/null) Ingress rules for the NetworkPolicy. The default null value renders an allow rule for TCP traffic to the FusionAuth HTTP port from any source. Set to an empty list to deny all ingress traffic, or provide custom rules to limit which pods or namespaces can reach FusionAuth.
+  # @default -- null
+  ingress: null
+    # - from:
+    #     - namespaceSelector: {}
+    #   ports:
+    #     - port: http
+    #       protocol: TCP
+  # networkPolicy.egress -- Egress rules for the NetworkPolicy. Egress is not restricted unless policyTypes includes Egress. When policyTypes includes Egress, set custom rules here to allow required outbound traffic such as database, search, and DNS connections.
+  egress: []
+
 # ingress -- Configures ingress for FusionAuth.
 ingress:
   # ingress.enabled -- Enables ingress creation for fusionauth.

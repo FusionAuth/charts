@@ -321,6 +321,11 @@ You should now be able to connect to the FusionAuth application at http://localh
 | livenessProbe.periodSeconds | int | `30` | Period in seconds between liveness probe checks. |
 | livenessProbe.timeoutSeconds | int | `5` | Timeout in seconds for the liveness probe. |
 | nameOverride | string | `""` | Overrides resource names |
+| networkPolicy | object | `{"egress":[],"enabled":false,"ingress":null,"policyTypes":["Ingress"]}` | Configures NetworkPolicy for FusionAuth pods. By default, no NetworkPolicy is created. |
+| networkPolicy.egress | list | `[]` | Egress rules for the NetworkPolicy. Egress is not restricted unless policyTypes includes Egress. When policyTypes includes Egress, set custom rules here to allow required outbound traffic such as database, search, and DNS connections. |
+| networkPolicy.enabled | bool | `false` | Enables creation of a NetworkPolicy. When enabled with the default values, ingress to the FusionAuth HTTP port is allowed from any source and egress is not restricted. |
+| networkPolicy.ingress | list/null | null | Ingress rules for the NetworkPolicy. The default null value renders an allow rule for TCP traffic to the FusionAuth HTTP port from any source. Set to an empty list to deny all ingress traffic, or provide custom rules to limit which pods or namespaces can reach FusionAuth. |
+| networkPolicy.policyTypes | list | `["Ingress"]` | NetworkPolicy policy types to apply. |
 | nodeSelector | object | `{}` | Define nodeSelector for kubernetes to use when scheduling fusionauth pods. |
 | podAnnotations | object | `{}` | Define annotations for fusionauth pods. |
 | podDisruptionBudget | object | `{"enabled":false,"maxUnavailable":null,"minAvailable":null}` | Configures the PodDisruptionBudget for FusionAuth pods. |
