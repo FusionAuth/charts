@@ -29,24 +29,24 @@ Fail when .Values.environment attempts to override chart-managed FusionAuth
 environment variables. Use the corresponding chart values instead.
 */}}
 {{- define "fusionauth.environment.validate" -}}
-{{- $reserved := list
-  "DATABASE_USERNAME"
-  "DATABASE_PASSWORD"
-  "DATABASE_ROOT_USERNAME"
-  "DATABASE_ROOT_PASSWORD"
-  "DATABASE_URL"
-  "SEARCH_TYPE"
-  "SEARCH_USERNAME"
-  "SEARCH_PASSWORD"
-  "SEARCH_SERVERS"
-  "FUSIONAUTH_APP_MEMORY"
-  "FUSIONAUTH_APP_RUNTIME_MODE"
-  "FUSIONAUTH_APP_SILENT_MODE"
-  "FUSIONAUTH_APP_KICKSTART_FILE"
+{{- $reserved := dict
+  "DATABASE_USERNAME" "database.dbUser.username"
+  "DATABASE_PASSWORD" "database.dbUser.password or database.dbUser.existingSecret"
+  "DATABASE_ROOT_USERNAME" "database.rootUser.username"
+  "DATABASE_ROOT_PASSWORD" "database.rootUser.password or database.rootUser.existingSecret"
+  "DATABASE_URL" "database.url"
+  "SEARCH_TYPE" "search.engine"
+  "SEARCH_USERNAME" "search.basicAuth.username or search.basicAuth.existingSecret"
+  "SEARCH_PASSWORD" "search.basicAuth.password or search.basicAuth.existingSecret"
+  "SEARCH_SERVERS" "search.host, search.protocol, search.port, and search.basicAuth"
+  "FUSIONAUTH_APP_MEMORY" "app.memory"
+  "FUSIONAUTH_APP_RUNTIME_MODE" "app.runtimeMode"
+  "FUSIONAUTH_APP_SILENT_MODE" "app.silentMode"
+  "FUSIONAUTH_APP_KICKSTART_FILE" "kickstart.file"
 -}}
 {{- range .Values.environment -}}
-{{- if has .name $reserved -}}
-{{- fail (printf "environment cannot override chart-managed variable %s; use the corresponding chart value instead" .name) -}}
+{{- if hasKey $reserved .name -}}
+{{- fail (printf "environment cannot override chart-managed variable %s; use chart value(s): %s" .name (get $reserved .name)) -}}
 {{- end -}}
 {{- end -}}
 {{- end -}}

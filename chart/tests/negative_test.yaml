@@ -81,7 +81,7 @@ tests:
           value: jdbc:postgresql://db:5432/fusionauth
     asserts:
       - failedTemplate:
-          errorMessage: environment cannot override chart-managed variable DATABASE_URL; use the corresponding chart value instead
+          errorMessage: "environment cannot override chart-managed variable DATABASE_URL; use chart value(s): database.url"
         template: secret.yaml
 
   - it: fails when database.url is set without a wait host
@@ -107,7 +107,7 @@ tests:
           value: http://search:9200
     asserts:
       - failedTemplate:
-          errorMessage: environment cannot override chart-managed variable SEARCH_SERVERS; use the corresponding chart value instead
+          errorMessage: "environment cannot override chart-managed variable SEARCH_SERVERS; use chart value(s): search.host, search.protocol, search.port, and search.basicAuth"
         template: secret.yaml
 
   - it: fails when search basic auth is enabled without a username
