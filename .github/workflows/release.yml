@@ -1,3 +1,5 @@
+name: Release
+
 on:
   push:
     tags:
@@ -17,25 +19,35 @@ jobs:
           token: "${{ secrets.PAT_ACTIONS_WORKFLOWS }}"
           fetch-depth: 0
 
-      - name: update placeholder versions
-        working-directory: ./chart
-        run: |
-          apk add -q curl jq envsubst
+      - name: add prerequisites
+        run: apk add -q curl jq envsubst
 
+      - name: prepare release chart
+        run: |
           export APP_VERSION=$(curl -s https://account.fusionauth.io/api/version | jq -r '.versions[]' | sort -V | tail -n 1)
           export CHART_VERSION="${GITHUB_REF##*/}"
+          export RELEASE_CHART=/tmp/fusionauth-chart
 
           echo "Chart: $CHART_VERSION"
           echo "App:   $APP_VERSION"
 
+          rm -rf "$RELEASE_CHART"
+          cp -R chart "$RELEASE_CHART"
+
           for file in Chart.yaml values.yaml README.md examples/minikube/values.yaml
           do
-            tmpfile=$(mktemp)
-            cat "$file" > "$tmpfile"
-            envsubst < "$tmpfile" > "$file"
+            sed -i \
+              -e "s/0\.0\.0-chart-dev/${CHART_VERSION}/g" \
+              -e "s/0\.0\.0-app-dev/${APP_VERSION}/g" \
+              "$RELEASE_CHART/$file"
           done
 
           echo "APP_VERSION=$APP_VERSION" >> $GITHUB_ENV
+          echo "CHART_VERSION=$CHART_VERSION" >> $GITHUB_ENV
+          echo "RELEASE_CHART=$RELEASE_CHART" >> $GITHUB_ENV
+
+      - name: Smoke-test release chart
+        run: sh scripts/validate-chart.sh "$RELEASE_CHART"
 
       - name: configure git
         run: |
@@ -59,7 +71,7 @@ jobs:
           CR_PAGES_BRANCH: main
           CR_RELEASE_NAME_TEMPLATE: "{{ .Version }}"
         run: |
-          cr package chart
+          cr package "$RELEASE_CHART"
           cr upload --release-notes-file /tmp/release-notes.md
           cr index --push
           ARCHIVE=$(ls ${CR_PACKAGE_PATH})
@@ -70,7 +82,7 @@ jobs:
     needs: release
     steps:
       - name: Set up helm
-        uses: azure/setup-helm@v4
+        uses: azure/setup-helm@v5
 
       - name: Set up kind
         uses: helm/kind-action@v1
@@ -82,8 +94,8 @@ jobs:
           helm repo add fusionauth ${CHARTS_REPO}
           helm install fusionauth fusionauth/fusionauth \
             --set database.host=host \
-            --set database.user=user \
-            --set database.password=password \
+            --set database.dbUser.username=user \
+            --set database.dbUser.password=password \
             --set search.host=host
 
       - name: Verify the chart version

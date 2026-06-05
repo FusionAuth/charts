@@ -1,0 +1,59 @@
+suite: extra objects matrix
+templates:
+  - extraobjects.yaml
+release:
+  name: test
+tests:
+  - it: does not render by default
+    asserts:
+      - hasDocuments:
+          count: 0
+
+  - it: renders extra Kubernetes objects with templating
+    set:
+      extraObjects:
+        - apiVersion: v1
+          kind: ConfigMap
+          metadata:
+            name: "{{ .Release.Name }}-extra"
+          data:
+            example: value
+        - apiVersion: secrets-store.csi.x-k8s.io/v1
+          kind: SecretProviderClass
+          metadata:
+            name: "{{ include \"fusionauth.fullname\" . }}-keyvault"
+          spec:
+            provider: azure
+            parameters:
+              keyvaultName: example-key-vault
+    asserts:
+      - hasDocuments:
+          count: 2
+      - equal:
+          path: kind
+          value: ConfigMap
+        documentIndex: 0
+      - equal:
+          path: metadata.name
+          value: test-extra
+        documentIndex: 0
+      - equal:
+          path: data.example
+          value: value
+        documentIndex: 0
+      - equal:
+          path: apiVersion
+          value: secrets-store.csi.x-k8s.io/v1
+        documentIndex: 1
+      - equal:
+          path: kind
+          value: SecretProviderClass
+        documentIndex: 1
+      - equal:
+          path: metadata.name
+          value: test-fusionauth-keyvault
+        documentIndex: 1
+      - equal:
+          path: spec.provider
+          value: azure
+        documentIndex: 1

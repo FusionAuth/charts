@@ -1,0 +1,524 @@
+suite: database credential matrix
+templates:
+  - secret.yaml
+  - deployment.yaml
+release:
+  name: test
+tests:
+  - it: renders database.url as DATABASE_URL while keeping wait host from database.host
+    set:
+      database.url: jdbc:postgresql://db-primary:5432/fusionauth?sslmode=verify-full&connectTimeout=10
+      database.host: db-proxy
+      database.port: 15432
+      database.dbUser.username: db_user
+      database.dbUser.password: db_pass
+      search.engine: database
+    asserts:
+      - contains:
+          path: spec.template.spec.containers[0].env
+          content:
+            name: DATABASE_URL
+            value: jdbc:postgresql://db-primary:5432/fusionauth?sslmode=verify-full&connectTimeout=10
+        template: deployment.yaml
+      - matchRegex:
+          path: spec.template.spec.initContainers[0].args[2]
+          pattern: "nc -zv 'db-proxy' 15432"
+        template: deployment.yaml
+
+  - it: renders custom environment entries before chart-managed entries
+    set:
+      database.host: db
+      database.dbUser.username: db_user
+      database.dbUser.password: db_pass
+      search.engine: database
+      environment:
+        - name: SOME_VAR
+          value: some_value
+    asserts:
+      - equal:
+          path: spec.template.spec.containers[0].env[0]
+          value:
+            name: SOME_VAR
+            value: some_value
+        template: deployment.yaml
+      - equal:
+          path: spec.template.spec.containers[0].env[1]
+          value:
+            name: DATABASE_USERNAME
+            value: db_user
+        template: deployment.yaml
+
+  - it: renders legacy inline database credentials without root credentials
+    set:
+      database.host: db
+      database.user: legacy_user
+      database.password: legacy_pass
+      search.engine: database
+    asserts:
+      - hasDocuments:
+          count: 1
+        template: secret.yaml
+      - equal:
+          path: metadata.name
+          value: test-db-credentials
+        template: secret.yaml
+      - equal:
+          path: data.password
+          value: bGVnYWN5X3Bhc3M=
+        template: secret.yaml
+      - contains:
+          path: spec.template.spec.containers[0].env
+          content:
+            name: DATABASE_USERNAME
+            value: legacy_user
+        template: deployment.yaml
+      - contains:
+          path: spec.template.spec.containers[0].env
+          content:
+            name: DATABASE_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: test-db-credentials
+                key: password
+        template: deployment.yaml
+      - notContains:
+          path: spec.template.spec.containers[0].env
+          content:
+            name: DATABASE_ROOT_USERNAME
+            value: legacy_root
+        template: deployment.yaml
+      - notContains:
+          path: spec.template.spec.containers[0].env
+          content:
+            name: DATABASE_ROOT_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: test-db-root-credentials
+                key: password
+        template: deployment.yaml
+
+  - it: renders legacy inline database credentials with root credentials
+    set:
+      database.host: db
+      database.user: legacy_user
+      database.password: legacy_pass
+      database.root.user: legacy_root
+      database.root.password: legacy_root_pass
+      search.engine: database
+    asserts:
+      - hasDocuments:
+          count: 2
+        template: secret.yaml
+      - equal:
+          path: metadata.name
+          value: test-db-credentials
+        documentIndex: 0
+        template: secret.yaml
+      - equal:
+          path: data.password
+          value: bGVnYWN5X3Bhc3M=
+        documentIndex: 0
+        template: secret.yaml
+      - equal:
+          path: metadata.name
+          value: test-db-root-credentials
+        documentIndex: 1
+        template: secret.yaml
+      - equal:
+          path: data.password
+          value: bGVnYWN5X3Jvb3RfcGFzcw==
+        documentIndex: 1
+        template: secret.yaml
+      - contains:
+          path: spec.template.spec.containers[0].env
+          content:
+            name: DATABASE_USERNAME
+            value: legacy_user
+        template: deployment.yaml
+      - contains:
+          path: spec.template.spec.containers[0].env
+          content:
+            name: DATABASE_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: test-db-credentials
+                key: password
+        template: deployment.yaml
+      - contains:
+          path: spec.template.spec.containers[0].env
+          content:
+            name: DATABASE_ROOT_USERNAME
+            value: legacy_root
+        template: deployment.yaml
+      - contains:
+          path: spec.template.spec.containers[0].env
+          content:
+            name: DATABASE_ROOT_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: test-db-root-credentials
+                key: password
+        template: deployment.yaml
+
+  - it: uses legacy existing database secret for database and root credentials
+    set:
+      database.host: db
+      database.user: legacy_user
+      database.existingSecret: legacy-db-creds
+      database.root.user: legacy_root
+      search.engine: database
+    asserts:
+      - hasDocuments:
+          count: 0
+        template: secret.yaml
+      - contains:
+          path: spec.template.spec.containers[0].env
+          content:
+            name: DATABASE_USERNAME
+            value: legacy_user
+        template: deployment.yaml
+      - contains:
+          path: spec.template.spec.containers[0].env
+          content:
+            name: DATABASE_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: legacy-db-creds
+                key: password
+        template: deployment.yaml
+      - contains:
+          path: spec.template.spec.containers[0].env
+          content:
+            name: DATABASE_ROOT_USERNAME
+            value: legacy_root
+        template: deployment.yaml
+      - contains:
+          path: spec.template.spec.containers[0].env
+          content:
+            name: DATABASE_ROOT_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: legacy-db-creds
+                key: rootpassword
+        template: deployment.yaml
+
+  - it: uses legacy existing database secret without root credentials
+    set:
+      database.host: db
+      database.user: legacy_user
+      database.existingSecret: legacy-db-creds
+      search.engine: database
+    asserts:
+      - hasDocuments:
+          count: 0
+        template: secret.yaml
+      - contains:
+          path: spec.template.spec.containers[0].env
+          content:
+            name: DATABASE_USERNAME
+            value: legacy_user
+        template: deployment.yaml
+      - contains:
+          path: spec.template.spec.containers[0].env
+          content:
+            name: DATABASE_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: legacy-db-creds
+                key: password
+        template: deployment.yaml
+      - notContains:
+          path: spec.template.spec.containers[0].env
+          content:
+            name: DATABASE_ROOT_USERNAME
+            value: legacy_root
+        template: deployment.yaml
+
+  - it: renders new inline database credentials without root credentials
+    set:
+      database.host: db
+      database.dbUser.username: db_user
+      database.dbUser.password: db_pass
+      search.engine: database
+    asserts:
+      - hasDocuments:
+          count: 1
+        template: secret.yaml
+      - equal:
+          path: metadata.name
+          value: test-db-credentials
+        template: secret.yaml
+      - equal:
+          path: data.password
+          value: ZGJfcGFzcw==
+        template: secret.yaml
+      - contains:
+          path: spec.template.spec.containers[0].env
+          content:
+            name: DATABASE_USERNAME
+            value: db_user
+        template: deployment.yaml
+      - contains:
+          path: spec.template.spec.containers[0].env
+          content:
+            name: DATABASE_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: test-db-credentials
+                key: password
+        template: deployment.yaml
+      - notContains:
+          path: spec.template.spec.containers[0].env
+          content:
+            name: DATABASE_ROOT_USERNAME
+            value: root_user
+        template: deployment.yaml
+
+  - it: renders new inline database credentials with root credentials
+    set:
+      database.host: db
+      database.dbUser.username: db_user
+      database.dbUser.password: db_pass
+      database.rootUser.username: root_user
+      database.rootUser.password: root_pass
+      search.engine: database
+    asserts:
+      - hasDocuments:
+          count: 2
+        template: secret.yaml
+      - equal:
+          path: metadata.name
+          value: test-db-credentials
+        documentIndex: 0
+        template: secret.yaml
+      - equal:
+          path: data.password
+          value: ZGJfcGFzcw==
+        documentIndex: 0
+        template: secret.yaml
+      - equal:
+          path: metadata.name
+          value: test-db-root-credentials
+        documentIndex: 1
+        template: secret.yaml
+      - equal:
+          path: data.password
+          value: cm9vdF9wYXNz
+        documentIndex: 1
+        template: secret.yaml
+      - contains:
+          path: spec.template.spec.containers[0].env
+          content:
+            name: DATABASE_USERNAME
+            value: db_user
+        template: deployment.yaml
+      - contains:
+          path: spec.template.spec.containers[0].env
+          content:
+            name: DATABASE_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: test-db-credentials
+                key: password
+        template: deployment.yaml
+      - contains:
+          path: spec.template.spec.containers[0].env
+          content:
+            name: DATABASE_ROOT_USERNAME
+            value: root_user
+        template: deployment.yaml
+      - contains:
+          path: spec.template.spec.containers[0].env
+          content:
+            name: DATABASE_ROOT_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: test-db-root-credentials
+                key: password
+        template: deployment.yaml
+
+  - it: uses a new existing secret for database credentials
+    set:
+      database.host: db
+      database.dbUser.username: db_user
+      database.dbUser.existingSecret.enabled: true
+      database.dbUser.existingSecret.name: db-creds
+      database.dbUser.existingSecret.passwordKey: db-password
+      search.engine: database
+    asserts:
+      - hasDocuments:
+          count: 0
+        template: secret.yaml
+      - contains:
+          path: spec.template.spec.containers[0].env
+          content:
+            name: DATABASE_USERNAME
+            value: db_user
+        template: deployment.yaml
+      - contains:
+          path: spec.template.spec.containers[0].env
+          content:
+            name: DATABASE_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: db-creds
+                key: db-password
+        template: deployment.yaml
+      - notContains:
+          path: spec.template.spec.containers[0].env
+          content:
+            name: DATABASE_ROOT_USERNAME
+            value: root_user
+        template: deployment.yaml
+
+  - it: uses separate new existing secrets for database and root credentials
+    set:
+      database.host: db
+      database.dbUser.username: db_user
+      database.dbUser.existingSecret.enabled: true
+      database.dbUser.existingSecret.name: db-creds
+      database.dbUser.existingSecret.passwordKey: db-password
+      database.rootUser.username: root_user
+      database.rootUser.existingSecret.enabled: true
+      database.rootUser.existingSecret.name: root-creds
+      database.rootUser.existingSecret.passwordKey: root-password
+      search.engine: database
+    asserts:
+      - hasDocuments:
+          count: 0
+        template: secret.yaml
+      - contains:
+          path: spec.template.spec.containers[0].env
+          content:
+            name: DATABASE_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: db-creds
+                key: db-password
+        template: deployment.yaml
+      - contains:
+          path: spec.template.spec.containers[0].env
+          content:
+            name: DATABASE_ROOT_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: root-creds
+                key: root-password
+        template: deployment.yaml
+
+  - it: uses existing database secret with generated root secret
+    set:
+      database.host: db
+      database.dbUser.username: db_user
+      database.dbUser.existingSecret.enabled: true
+      database.dbUser.existingSecret.name: db-creds
+      database.dbUser.existingSecret.passwordKey: db-password
+      database.rootUser.username: root_user
+      database.rootUser.password: root_pass
+      search.engine: database
+    asserts:
+      - hasDocuments:
+          count: 1
+        template: secret.yaml
+      - equal:
+          path: metadata.name
+          value: test-db-root-credentials
+        template: secret.yaml
+      - equal:
+          path: data.password
+          value: cm9vdF9wYXNz
+        template: secret.yaml
+      - contains:
+          path: spec.template.spec.containers[0].env
+          content:
+            name: DATABASE_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: db-creds
+                key: db-password
+        template: deployment.yaml
+      - contains:
+          path: spec.template.spec.containers[0].env
+          content:
+            name: DATABASE_ROOT_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: test-db-root-credentials
+                key: password
+        template: deployment.yaml
+
+  - it: uses generated database secret with existing root secret
+    set:
+      database.host: db
+      database.dbUser.username: db_user
+      database.dbUser.password: db_pass
+      database.rootUser.username: root_user
+      database.rootUser.existingSecret.enabled: true
+      database.rootUser.existingSecret.name: root-creds
+      database.rootUser.existingSecret.passwordKey: root-password
+      search.engine: database
+    asserts:
+      - hasDocuments:
+          count: 1
+        template: secret.yaml
+      - equal:
+          path: metadata.name
+          value: test-db-credentials
+        template: secret.yaml
+      - equal:
+          path: data.password
+          value: ZGJfcGFzcw==
+        template: secret.yaml
+      - contains:
+          path: spec.template.spec.containers[0].env
+          content:
+            name: DATABASE_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: test-db-credentials
+                key: password
+        template: deployment.yaml
+      - contains:
+          path: spec.template.spec.containers[0].env
+          content:
+            name: DATABASE_ROOT_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: root-creds
+                key: root-password
+        template: deployment.yaml
+
+  - it: uses shared new existing database secret when keys are different
+    set:
+      database.host: db
+      database.dbUser.username: db_user
+      database.dbUser.existingSecret.enabled: true
+      database.dbUser.existingSecret.name: shared-db-creds
+      database.dbUser.existingSecret.passwordKey: password
+      database.rootUser.username: root_user
+      database.rootUser.existingSecret.enabled: true
+      database.rootUser.existingSecret.name: shared-db-creds
+      database.rootUser.existingSecret.passwordKey: rootpassword
+      search.engine: database
+    asserts:
+      - hasDocuments:
+          count: 0
+        template: secret.yaml
+      - contains:
+          path: spec.template.spec.containers[0].env
+          content:
+            name: DATABASE_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: shared-db-creds
+                key: password
+        template: deployment.yaml
+      - contains:
+          path: spec.template.spec.containers[0].env
+          content:
+            name: DATABASE_ROOT_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: shared-db-creds
+                key: rootpassword
+        template: deployment.yaml

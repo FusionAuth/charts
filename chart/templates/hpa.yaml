@@ -1,13 +1,16 @@
 {{- if .Values.autoscaling.enabled }}
-apiVersion: {{ include "fusionauth.HpaApiVersion" . }}
+{{- if not (or .Values.autoscaling.targetCPU .Values.autoscaling.targetMemory) }}
+{{- fail "autoscaling.enabled requires at least one of autoscaling.targetCPU or autoscaling.targetMemory" }}
+{{- end }}
+{{- if gt (int .Values.autoscaling.minReplicas) (int .Values.autoscaling.maxReplicas) }}
+{{- fail "autoscaling.minReplicas cannot be greater than autoscaling.maxReplicas" }}
+{{- end }}
+apiVersion: autoscaling/v2
 kind: HorizontalPodAutoscaler
 metadata:
   name: {{ include "fusionauth.fullname" . }}
   labels:
-    app.kubernetes.io/name: {{ include "fusionauth.name" . }}
-    helm.sh/chart: {{ include "fusionauth.chart" . }}
-    app.kubernetes.io/instance: {{ .Release.Name }}
-    app.kubernetes.io/managed-by: {{ .Release.Service }}
+    {{- include "fusionauth.labels" . | nindent 4 }}
 spec:
   scaleTargetRef:
     apiVersion: apps/v1

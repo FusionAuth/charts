@@ -3,13 +3,10 @@ kind: Service
 metadata:
   name: {{ include "fusionauth.fullname" . }}
   labels:
-    app.kubernetes.io/name: {{ include "fusionauth.name" . }}
-    helm.sh/chart: {{ include "fusionauth.chart" . }}
-    app.kubernetes.io/instance: {{ .Release.Name }}
-    app.kubernetes.io/managed-by: {{ .Release.Service }}
-  {{- if .Values.service.annotations }}
+    {{- include "fusionauth.labels" . | nindent 4 }}
+  {{- with .Values.service.annotations }}
   annotations:
-{{ .Values.service.annotations | toYaml | indent 4 }}
+    {{- toYaml . | nindent 4 }}
   {{- end }}
 spec:
   type: {{ .Values.service.type }}
@@ -19,8 +16,4 @@ spec:
       protocol: TCP
       name: http
   selector:
-    app.kubernetes.io/name: {{ include "fusionauth.name" . }}
-    app.kubernetes.io/instance: {{ .Release.Name }}
-  {{- if .Values.service.spec }}
-{{ .Values.service.spec | toYaml | indent 2 }}
-  {{- end }}
+    {{- include "fusionauth.selectorLabels" . | nindent 4 }}

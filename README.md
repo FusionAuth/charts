@@ -14,7 +14,48 @@ Beginning with 1.57.1, the Helm chart version is the same as the FusionAuth app 
 
 We'll typically release any changes to the chart alongside new FusionAuth app versions. Changes will be called out in the release notes. If changes must be made to the chart outside of the FusionAuth app release cycle, we'll indicate that with a SemVer pre-release tag. For example, `1.57.1-1` would indicate the 1st revision of the chart after the `1.57.1` release, before the next FusionAuth app release.
 
+## Testing Changes
+
+Install the Helm unit test plugin:
+
+```sh
+helm plugin install https://github.com/helm-unittest/helm-unittest.git --verify=false
+```
+
+Run the chart test matrix locally:
+
+```sh
+helm unittest --strict chart
+sh scripts/validate-chart.sh chart
+```
+
+Changes to the chart should have corresponding tests, and the tests must pass prior to release.
+
+## Updating Chart Documentation
+
+The chart README is generated from README.md.gotmpl and `helm-docs`. Do not manually update `chart/README.md`. Update the template and regenerate it.
+
+Install `helm-docs` with homebrew:
+
+```sh
+brew install norwoodj/tap/helm-docs
+```
+
+Install `helm-docs` with `go install`:
+
+```sh
+go install github.com/norwoodj/helm-docs/cmd/helm-docs@v1.14.2
+```
+
+Regenerate the chart README after changing `chart/values.yaml`, `chart/Chart.yaml`, or `chart/README.md.gotmpl`:
+
+```sh
+helm-docs -x --chart-search-root . --chart-to-generate chart
+```
+
 ## Releasing the Chart
+
+Make sure you've run tests and generated docs before releasing. The release could fail if these are not done.
 
 Release the chart by pushing a new tag.
 

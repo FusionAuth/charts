@@ -25,84 +25,53 @@ If release name contains chart name it will be used as a full name.
 {{- end -}}
 
 {{/*
-Set apiVersion for HPA
+Fail when .Values.environment attempts to override chart-managed FusionAuth
+environment variables. Use the corresponding chart values instead.
 */}}
-{{- define "fusionauth.HpaApiVersion" -}}
-{{- if .Capabilities.APIVersions.Has "autoscaling/v2" -}}
-autoscaling/v2
+{{- define "fusionauth.environment.validate" -}}
+{{- $reserved := dict
+  "DATABASE_USERNAME" "database.dbUser.username"
+  "DATABASE_PASSWORD" "database.dbUser.password or database.dbUser.existingSecret"
+  "DATABASE_ROOT_USERNAME" "database.rootUser.username"
+  "DATABASE_ROOT_PASSWORD" "database.rootUser.password or database.rootUser.existingSecret"
+  "DATABASE_URL" "database.url"
+  "SEARCH_TYPE" "search.engine"
+  "SEARCH_USERNAME" "search.basicAuth.username or search.basicAuth.existingSecret"
+  "SEARCH_PASSWORD" "search.basicAuth.password or search.basicAuth.existingSecret"
+  "SEARCH_SERVERS" "search.host, search.protocol, search.port, and search.basicAuth"
+  "FUSIONAUTH_APP_MEMORY" "app.memory"
+  "FUSIONAUTH_APP_RUNTIME_MODE" "app.runtimeMode"
+  "FUSIONAUTH_APP_SILENT_MODE" "app.silentMode"
+  "FUSIONAUTH_APP_KICKSTART_FILE" "kickstart.file"
+-}}
+{{- range .Values.environment -}}
+{{- if hasKey $reserved .name -}}
+{{- fail (printf "environment cannot override chart-managed variable %s; use chart value(s): %s" .name (get $reserved .name)) -}}
+{{- end -}}
+{{- end -}}
+{{- end -}}
+
+{{/*
+Build a container image reference.
+
+repository keeps its historical meaning: a full image repository path that may
+already include a registry. When registry is explicitly set, either on the image
+or globally, it replaces any registry already present in repository.
+*/}}
+{{- define "fusionauth.image" -}}
+{{- $root := .root -}}
+{{- $image := .image -}}
+{{- $repository := $image.repository -}}
+{{- $globalRegistry := $root.Values.global.imageRegistry -}}
+{{- $registry := default $globalRegistry $image.registry -}}
+{{- if $registry -}}
+{{- $repositoryParts := splitList "/" $repository -}}
+{{- $firstPart := first $repositoryParts -}}
+{{- if or (contains "." $firstPart) (contains ":" $firstPart) (eq $firstPart "localhost") -}}
+{{- $repository = join "/" (rest $repositoryParts) -}}
+{{- end -}}
+{{- printf "%s/%s:%s" (trimSuffix "/" $registry) $repository $image.tag -}}
 {{- else -}}
-autoscaling/v2beta2
+{{- printf "%s:%s" $repository $image.tag -}}
 {{- end -}}
 {{- end -}}
-
-
-{{/*
-Set apiVersion for ingress
-*/}}
-{{- define "fusionauth.ingressApiVersion" -}}
-{{- if .Capabilities.APIVersions.Has "networking.k8s.io/v1" -}}
-networking.k8s.io/v1
-{{- else if .Capabilities.APIVersions.Has "networking.k8s.io/v1beta1" -}}
-networking.k8s.io/v1beta1
-{{- else -}}
-extensions/v1beta1
-{{- end -}}
-{{- end -}}
-
-{{/*
-Set apiVersion for PodDisruptionBudget
-*/}}
-{{- define "fusionauth.PodDisruptionBudget" -}}
-{{- if .Capabilities.APIVersions.Has "policy/v1" -}}
-policy/v1
-{{- else -}}
-policy/v1beta1
-{{- end -}}
-{{- end -}}
-
-
-{{/*
-Configure TLS if enabled
-*/}}
-{{- define "fusionauth.databaseTLS" -}}
-{{- if .Values.database.tls -}}
-?sslmode={{ .Values.database.tlsMode }}
-{{- end -}}
-{{- end -}}
-
-{{- define "fusionauth.searchLogin" -}}
-{{- if .Values.search.user -}}
-{{- printf "%s:%s@" .Values.search.user .Values.search.password -}}
-{{- else -}}
-{{- printf "" -}}
-{{- end -}}
-{{- end -}}
-
-{{/*
-Create chart name and version as used by the chart label.
-*/}}
-{{- define "fusionauth.chart" -}}
-{{- printf "%s-%s" .Chart.Name .Chart.Version | replace "+" "_" | trunc 63 | trimSuffix "-" -}}
-{{- end -}}
-
-{{/*
-Set name of secret to use for credentials
-*/}}
-{{- define "fusionauth.database.secretName" -}}
-{{- if .Values.database.existingSecret -}}
-{{- .Values.database.existingSecret -}}
-{{- else -}}
-{{ .Release.Name }}-credentials
-{{- end -}}
-{{- end -}}
-
-{{/*
-Create the name of the service account to use
-*/}}
-{{- define "fusionauth.serviceAccountName" -}}
-{{- if .Values.serviceAccount.create }}
-{{- default (include "fusionauth.fullname" .) .Values.serviceAccount.name }}
-{{- else }}
-{{- default "default" .Values.serviceAccount.name }}
-{{- end }}
-{{- end }}

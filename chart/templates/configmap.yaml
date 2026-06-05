@@ -1,18 +1,16 @@
 {{- if .Values.kickstart.enabled }}
+{{- if not .Values.kickstart.data }}
+{{- fail "kickstart.data must contain at least one file when kickstart.enabled is true" }}
+{{- end }}
 apiVersion: v1
 kind: ConfigMap
 metadata:
   name: {{ template "fusionauth.fullname" . }}-kickstart-config
   labels:
-    heritage: {{ .Release.Name }}
-    release: {{ .Release.Name }}
-    chart: {{ .Chart.Name }}-{{ .Chart.Version }}
-    app: {{ template "fusionauth.name" . }}
+    {{- include "fusionauth.labels" . | nindent 4 }}
 data:
-  {{- if .Values.kickstart.data }}
   {{- range $key, $value := .Values.kickstart.data }}
   {{ $key }}: |
 {{ $value | indent 4 }}
   {{- end -}}
-{{- end -}}
 {{- end -}}

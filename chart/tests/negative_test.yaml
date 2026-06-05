@@ -1,0 +1,139 @@
+suite: validation matrix
+templates:
+  - secret.yaml
+  - deployment.yaml
+release:
+  name: test
+tests:
+  - it: fails when new database and root existing secrets use the same Secret and key
+    set:
+      database.host: db
+      database.dbUser.username: db_user
+      database.dbUser.existingSecret.enabled: true
+      database.dbUser.existingSecret.name: shared-db-creds
+      database.dbUser.existingSecret.passwordKey: password
+      database.rootUser.username: root_user
+      database.rootUser.existingSecret.enabled: true
+      database.rootUser.existingSecret.name: shared-db-creds
+      database.rootUser.existingSecret.passwordKey: password
+      search.engine: database
+    asserts:
+      - failedTemplate:
+          errorMessage: passwordKey values must be different when database.dbUser.existingSecret.name and database.rootUser.existingSecret.name reference the same Secret
+        template: secret.yaml
+
+  - it: fails when legacy database password is set without legacy database user
+    set:
+      database.host: db
+      database.password: legacy_pass
+      database.dbUser.username: ""
+      search.engine: database
+    asserts:
+      - failedTemplate:
+          errorMessage: database.user is required when database.password is set
+        template: secret.yaml
+
+  - it: fails when new database password is set without new database username
+    set:
+      database.host: db
+      database.dbUser.username: ""
+      database.dbUser.password: db_pass
+      search.engine: database
+    asserts:
+      - failedTemplate:
+          errorMessage: database.dbUser.username is required when database.dbUser.password is set
+        template: secret.yaml
+
+  - it: fails when legacy root password is set without legacy root user
+    set:
+      database.host: db
+      database.dbUser.username: db_user
+      database.dbUser.password: db_pass
+      database.root.password: root_pass
+      database.rootUser.username: ""
+      search.engine: database
+    asserts:
+      - failedTemplate:
+          errorMessage: database.root.user is required when database.root.password is set
+        template: secret.yaml
+
+  - it: fails when new root password is set without new root username
+    set:
+      database.host: db
+      database.dbUser.username: db_user
+      database.dbUser.password: db_pass
+      database.rootUser.username: ""
+      database.rootUser.password: root_pass
+      search.engine: database
+    asserts:
+      - failedTemplate:
+          errorMessage: database.rootUser.username is required when database.rootUser.password is set
+        template: secret.yaml
+
+  - it: fails when environment overrides DATABASE_URL
+    set:
+      database.host: db
+      database.dbUser.username: db_user
+      database.dbUser.password: db_pass
+      search.engine: database
+      environment:
+        - name: DATABASE_URL
+          value: jdbc:postgresql://db:5432/fusionauth
+    asserts:
+      - failedTemplate:
+          errorMessage: "environment cannot override chart-managed variable DATABASE_URL; use chart value(s): database.url"
+        template: secret.yaml
+
+  - it: fails when database.url is set without a wait host
+    set:
+      database.url: jdbc:postgresql://db:5432/fusionauth?sslmode=verify-full
+      database.dbUser.username: db_user
+      database.dbUser.password: db_pass
+      search.engine: database
+    asserts:
+      - failedTemplate:
+          errorMessage: database.host is required when database.url is set and initContainers.waitForDb is true
+        template: secret.yaml
+
+  - it: fails when environment overrides SEARCH_SERVERS
+    set:
+      database.host: db
+      database.dbUser.username: db_user
+      database.dbUser.password: db_pass
+      search.engine: elasticsearch
+      search.host: search
+      environment:
+        - name: SEARCH_SERVERS
+          value: http://search:9200
+    asserts:
+      - failedTemplate:
+          errorMessage: "environment cannot override chart-managed variable SEARCH_SERVERS; use chart value(s): search.host, search.protocol, search.port, and search.basicAuth"
+        template: secret.yaml
+
+  - it: fails when search basic auth is enabled without a username
+    set:
+      database.host: db
+      database.dbUser.username: db_user
+      database.dbUser.password: db_pass
+      search.engine: elasticsearch
+      search.host: search
+      search.basicAuth.enabled: true
+      search.basicAuth.password: search_pass
+    asserts:
+      - failedTemplate:
+          errorMessage: search.basicAuth.username is required when search.basicAuth.enabled is true and search.basicAuth.existingSecret.enabled is false
+        template: deployment.yaml
+
+  - it: fails when search basic auth is enabled without a password
+    set:
+      database.host: db
+      database.dbUser.username: db_user
+      database.dbUser.password: db_pass
+      search.engine: elasticsearch
+      search.host: search
+      search.basicAuth.enabled: true
+      search.basicAuth.username: search_user
+    asserts:
+      - failedTemplate:
+          errorMessage: search.basicAuth.password is required when search.basicAuth.enabled is true and search.basicAuth.existingSecret.enabled is false
+        template: deployment.yaml
