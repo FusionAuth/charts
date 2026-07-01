@@ -14,13 +14,16 @@ jobs:
       version: ${{ steps.release.outputs.version }}
     steps:
       - name: Checkout
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
         with:
           token: "${{ secrets.PAT_ACTIONS_WORKFLOWS }}"
           fetch-depth: 0
 
       - name: add prerequisites
         run: apk add -q curl jq envsubst
+
+      - name: Set up helm
+        uses: azure/setup-helm@v5
 
       - name: prepare release chart
         run: |
