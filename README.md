@@ -6,7 +6,7 @@
 
 ## Installation
 
-**⚠️ The next release of the chart (likely `1.68.0`) will include BREAKING CHANGES.** These changes are not yet in a tagged release but the changes are in `main` as of 2026-Jun-05, and will impact you if you are pulling the chart from `main`.
+**⚠️ Version `1.68.0` includes BREAKING CHANGES.**
 
 See the [chart README](chart/README.md) for detailed information.
 
