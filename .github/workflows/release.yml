@@ -61,7 +61,7 @@ jobs:
       - name: Generate release notes
         run: |
           export CHART_VERSION="${GITHUB_REF##*/}"
-          envsubst < release-notes.md > /tmp/release-notes.md
+          envsubst < release-notes.md > "$RELEASE_CHART/release-notes.md"
 
       - name: Release
         id: release
@@ -75,7 +75,7 @@ jobs:
           CR_RELEASE_NAME_TEMPLATE: "{{ .Version }}"
         run: |
           cr package "$RELEASE_CHART"
-          cr upload --release-notes-file /tmp/release-notes.md
+          cr upload --release-notes-file release-notes.md
           cr index --push
           ARCHIVE=$(ls ${CR_PACKAGE_PATH})
           echo "version=${ARCHIVE%.*}" >> "$GITHUB_OUTPUT"
