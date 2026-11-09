@@ -18,6 +18,89 @@ tests:
       - equal:
           path: spec.template.spec.initContainers[1].name
           value: wait-for-search
+      - notExists:
+          path: spec.template.spec.initContainers[0].securityContext
+      - notExists:
+          path: spec.template.spec.initContainers[1].securityContext
+
+  - it: applies the init security context independently of container and pod security contexts
+    set:
+      database.host: db
+      database.dbUser.username: db_user
+      database.dbUser.password: db_pass
+      search.engine: elasticsearch
+      search.host: search
+      initContainers.securityContext:
+        runAsUser: 1000
+        runAsNonRoot: true
+        allowPrivilegeEscalation: false
+        capabilities:
+          drop:
+            - ALL
+      securityContext:
+        runAsUser: 2000
+        readOnlyRootFilesystem: true
+      podSecurityContext:
+        runAsUser: 3000
+        fsGroup: 3000
+    asserts:
+      - equal:
+          path: spec.template.spec.initContainers[0].securityContext
+          value:
+            runAsUser: 1000
+            runAsNonRoot: true
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+                - ALL
+      - equal:
+          path: spec.template.spec.initContainers[1].securityContext
+          value:
+            runAsUser: 1000
+            runAsNonRoot: true
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+                - ALL
+      - equal:
+          path: spec.template.spec.containers[0].securityContext
+          value:
+            runAsUser: 2000
+            readOnlyRootFilesystem: true
+      - equal:
+          path: spec.template.spec.securityContext
+          value:
+            runAsUser: 3000
+            fsGroup: 3000
+
+  - it: preserves extra init containers when built-in waits are disabled with a security context
+    set:
+      database.host: db
+      database.dbUser.username: db_user
+      database.dbUser.password: db_pass
+      search.engine: elasticsearch
+      search.host: search
+      initContainers.waitForDb: false
+      initContainers.waitForSearch: false
+      initContainers.securityContext:
+        runAsUser: 1000
+        allowPrivilegeEscalation: false
+      extraInitContainers:
+        - name: custom-init
+          image: busybox:1.36
+          securityContext:
+            runAsUser: 2000
+    asserts:
+      - lengthEqual:
+          path: spec.template.spec.initContainers
+          count: 1
+      - equal:
+          path: spec.template.spec.initContainers[0].name
+          value: custom-init
+      - equal:
+          path: spec.template.spec.initContainers[0].securityContext
+          value:
+            runAsUser: 2000
 
   - it: disables database wait using waitForDb
     set:

@@ -312,12 +312,13 @@ You should now be able to connect to the FusionAuth application at http://localh
 | ingress.ingressClassName | string/null | null | Specify the ingressClass to be used by the Ingress. The kubernetes.io/ingress.class annotation is deprecated as of networking.k8s.io/v1 or Kubernetes 1.22+. |
 | ingress.paths | list | `[]` | Paths to be used by the Ingress. |
 | ingress.tls | list | `[]` | List of secrets used to configure TLS for the ingress. |
-| initContainers | object | `{"image":{"registry":"","repository":"docker.io/library/busybox","tag":"1.36.1"},"resources":{},"waitForDb":true,"waitForSearch":true}` | Configures init containers for fusionauth pods. Init containers are used to wait for the database and search engine to be ready before starting fusionauth. |
+| initContainers | object | `{"image":{"registry":"","repository":"docker.io/library/busybox","tag":"1.36.1"},"resources":{},"securityContext":{},"waitForDb":true,"waitForSearch":true}` | Configures init containers for fusionauth pods. Init containers are used to wait for the database and search engine to be ready before starting fusionauth. |
 | initContainers.image | object | `{"registry":"","repository":"docker.io/library/busybox","tag":"1.36.1"}` | Configures the docker image to use for init containers. |
 | initContainers.image.registry | string | `""` | Optional registry override for init containers. When set, this replaces any registry included in initContainers.image.repository. |
 | initContainers.image.repository | string | `"docker.io/library/busybox"` | Docker image to use for initContainers. This image must contain `nc`, `wget` and a shell of some kind to do a simple loop. |
 | initContainers.image.tag | string | `"1.36.1"` | Tag to use for initContainers docker image |
 | initContainers.resources | object | `{}` | It is recommended to set these values when you understand FusionAuth's resource usage in your specific environment. |
+| initContainers.securityContext | object | `{}` | Security context for the built-in database and search wait containers. Does not apply to extraInitContainers. |
 | initContainers.waitForDb | bool | `true` | waits for the database to be ready. Setting this to `false` is not recommended. |
 | initContainers.waitForSearch | bool | `true` | waits for the search engine to be ready. Setting this to `false` is not recommended. |
 | kickstart | object | `{"data":{},"enabled":false,"file":"/kickstart/kickstart.json"}` | Configures kickstart for initial application setup |

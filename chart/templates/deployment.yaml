@@ -53,6 +53,10 @@ spec:
               done
           resources:
             {{- toYaml .Values.initContainers.resources | nindent 12 }}
+          {{- with .Values.initContainers.securityContext }}
+          securityContext:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
         {{- end }}
         {{- if $waitForSearch }}
         - name: wait-for-search
@@ -68,6 +72,10 @@ spec:
               done
           resources:
             {{- toYaml .Values.initContainers.resources | nindent 12 }}
+          {{- with .Values.initContainers.securityContext }}
+          securityContext:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
         {{- end }}
         {{- if .Values.extraInitContainers }}
         {{- toYaml .Values.extraInitContainers | nindent 8 }}
