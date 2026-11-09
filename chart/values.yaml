@@ -48,6 +48,13 @@ initContainers:
     # requests:
     #   cpu: 100m
     #   memory: 128Mi
+  # initContainers.securityContext -- Security context for the built-in database and search wait containers. Does not apply to extraInitContainers.
+  securityContext: {}
+    # allowPrivilegeEscalation: false
+    # capabilities:
+    #   drop:
+    #     - ALL
+    # readOnlyRootFilesystem: true
 
 # extraInitContainers -- Add specs for additional init containers if needed.
 extraInitContainers: []
